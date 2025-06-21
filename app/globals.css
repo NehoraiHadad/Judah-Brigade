@@ -1,26 +1,563 @@
 @import "tailwindcss";
+@config "../tailwind.config.ts";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  * {
+    @apply border-border;
+  }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  body {
+    @apply bg-background text-foreground;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    direction: rtl;
+  }
+
+  [dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+    margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+    margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+  }
+
+  [dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+    margin-right: calc(1rem * var(--tw-space-x-reverse));
+    margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+  }
+
+  [dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+    margin-right: calc(1.5rem * var(--tw-space-x-reverse));
+    margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .timeline-diamond {
+    @apply w-16 h-16 transform rotate-45 bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer;
+  }
+
+  .timeline-diamond::before {
+    content: "";
+    @apply absolute inset-2 bg-white/90 transform -rotate-45;
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #5eead4 100%);
+  }
+
+  .teal-landscape-bg {
+    background: linear-gradient(135deg, #134e4a 0%, #0f766e 25%, #14b8a6 75%, #5eead4 100%);
+  }
+
+  .natural-section {
+    background: linear-gradient(to bottom, #f0fdf4, #ecfdf5);
+  }
+
+  /* Enhanced diamond modal animation */
+  @keyframes diamondAppear {
+    from {
+      opacity: 0;
+      transform: rotate(45deg) scale(0.3);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(45deg) scale(1);
+    }
+  }
+
+  .animate-diamond-appear {
+    animation: diamondAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Enhanced button styles */
+  .btn-enhanced {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-enhanced::before {
+    content: "";
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full transition-transform duration-700;
+  }
+
+  .btn-enhanced:hover::before {
+    @apply translate-x-full;
+  }
+
+  /* Improved card shadows */
+  .card-enhanced {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-enhanced:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Add these enhanced styles for the diamond timeline: */
+
+  .timeline-diamond-enhanced {
+    @apply w-24 h-24 transform rotate-45 border-4 border-gold-600 hover:border-gold-700 bg-gradient-to-br from-gold-50 to-gold-100 hover:from-gold-100 hover:to-gold-200 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative overflow-hidden;
+  }
+
+  .timeline-diamond-content {
+    @apply absolute inset-0 flex items-center justify-center transform -rotate-45 p-2;
+  }
+
+  .diamond-modal-overlay {
+    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4;
+    backdrop-filter: blur(4px);
+  }
+
+  .diamond-modal {
+    @apply w-96 h-96 transform rotate-45 bg-gradient-to-br from-gold-50 to-gold-100 border-4 border-gold-600 shadow-2xl relative overflow-hidden;
+    animation: diamondAppear 0.3s ease-out;
+  }
+
+  .diamond-modal-content {
+    @apply absolute inset-0 transform -rotate-45 p-8 flex flex-col justify-center items-center text-center;
+  }
+}
+
+/* Enhanced animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
+}
+
+@keyframes gentleFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-gentle-float {
+  animation: gentleFloat 3s ease-in-out infinite;
+}
+
+/* Enhanced golden color palette */
+.text-golden {
+  color: #b45309;
+}
+
+.text-golden-light {
+  color: #d97706;
+}
+
+.bg-golden {
+  background-color: #f59e0b;
+}
+
+.bg-golden-light {
+  background-color: #fbbf24;
+}
+
+.border-golden {
+  border-color: #d97706;
+}
+
+/* Smooth scrolling for timeline */
+.timeline-scroll {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #0f766e #f0fdf4;
+}
+
+.timeline-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.timeline-scroll::-webkit-scrollbar-track {
+  background: #f0fdf4;
+  border-radius: 4px;
+}
+
+.timeline-scroll::-webkit-scrollbar-thumb {
+  background: #0f766e;
+  border-radius: 4px;
+}
+
+.timeline-scroll::-webkit-scrollbar-thumb:hover {
+  background: #134e4a;
+}
+
+/* Improved Hebrew text in diamonds */
+.diamond-text {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  font-weight: 600;
+  text-align: center;
+}
+
+.diamond-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+
+.diamond-date {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* Enhanced Hebrew typography */
+.hebrew-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.hebrew-body {
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+/* Responsive adjustments for diamonds */
+@media (max-width: 768px) {
+  .timeline-diamond-enhanced {
+    @apply w-20 h-20;
+  }
+
+  .diamond-modal {
+    @apply w-80 h-80;
+  }
+
+  .diamond-title {
+    font-size: 0.65rem;
+  }
+
+  .diamond-date {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .timeline-diamond-enhanced {
+    @apply w-18 h-18;
+  }
+
+  .diamond-modal {
+    @apply w-72 h-72;
+  }
+
+  .diamond-modal-content {
+    @apply p-6;
+  }
+
+  .diamond-title {
+    font-size: 0.6rem;
+    line-height: 1;
+  }
+
+  .diamond-date {
+    font-size: 0.55rem;
+  }
+}
+
+/* Teal-themed buttons */
+.btn-teal {
+  @apply bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
+}
+
+.btn-teal-outline {
+  @apply border-2 border-teal-700 text-teal-700 hover:bg-teal-700 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+}
+
+/* Enhanced Gold Color Palette - More elegant, less yellow/orange */
+.text-gold-50 {
+  color: #fefdf8;
+}
+.text-gold-100 {
+  color: #fef7e7;
+}
+.text-gold-200 {
+  color: #fdecc4;
+}
+.text-gold-300 {
+  color: #fbdc96;
+}
+.text-gold-400 {
+  color: #f7c566;
+}
+.text-gold-500 {
+  color: #d4af37;
+} /* Classic gold */
+.text-gold-600 {
+  color: #b8941f;
+} /* Deeper gold */
+.text-gold-700 {
+  color: #b45309;
+} /* Rich gold */
+.text-gold-800 {
+  color: #92400e;
+} /* Dark gold */
+.text-gold-900 {
+  color: #654f11;
+} /* Very dark gold */
+
+.bg-gold-50 {
+  background-color: #fefdf8;
+}
+.bg-gold-100 {
+  background-color: #fef7e7;
+}
+.bg-gold-200 {
+  background-color: #fdecc4;
+}
+.bg-gold-300 {
+  background-color: #fbdc96;
+}
+.bg-gold-400 {
+  background-color: #f7c566;
+}
+.bg-gold-500 {
+  background-color: #d4af37;
+}
+.bg-gold-600 {
+  background-color: #b8941f;
+}
+.bg-gold-700 {
+  background-color: #9c7c1a;
+}
+.bg-gold-800 {
+  background-color: #806515;
+}
+.bg-gold-900 {
+  background-color: #654f11;
+}
+
+.border-gold-50 {
+  border-color: #fefdf8;
+}
+.border-gold-100 {
+  border-color: #fef7e7;
+}
+.border-gold-200 {
+  border-color: #fdecc4;
+}
+.border-gold-300 {
+  border-color: #fbdc96;
+}
+.border-gold-400 {
+  border-color: #f7c566;
+}
+.border-gold-500 {
+  border-color: #d4af37;
+}
+.border-gold-600 {
+  border-color: #d97706;
+}
+.border-gold-700 {
+  border-color: #b45309;
+}
+.border-gold-800 {
+  border-color: #806515;
+}
+.border-gold-900 {
+  border-color: #654f11;
+}
+
+/* Enhanced timeline styling for snake pattern */
+.timeline-snake-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Enhanced arrow styling - longer and more elegant */
+.timeline-arrow {
+  filter: drop-shadow(0 3px 6px rgba(184, 148, 31, 0.4));
+  transition: all 0.3s ease;
+}
+
+.timeline-arrow:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 5px 10px rgba(184, 148, 31, 0.5));
+}
+
+/* Snake pattern responsive adjustments */
+@media (max-width: 768px) {
+  .timeline-snake-container {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .block.md\:hidden {
+    display: none !important;
+  }
+}
+
+/* Enhanced diamond positioning for snake pattern */
+.timeline-diamond-snake {
+  position: relative;
+  z-index: 10;
+}
+
+/* Arrow positioning improvements */
+.timeline-row {
+  position: relative;
+  margin-bottom: 4rem;
+}
+
+.timeline-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Enhanced gold gradient for arrows */
+.timeline-arrow path {
+  fill: url(#goldGradient);
+}
+
+/* Add gradient definition */
+.timeline-gradient {
+  background: linear-gradient(45deg, #d4af37, #b8941f, #9c7c1a);
+}
+
+/* Improved spacing for snake pattern */
+.snake-row-spacing {
+  margin-bottom: 5rem;
+}
+
+.snake-row-spacing:last-child {
+  margin-bottom: 2rem;
+}
+
+/* Enhanced hover effects for timeline elements */
+.timeline-diamond-enhanced:hover + .timeline-arrow {
+  transform: scale(1.1);
+  filter: drop-shadow(0 6px 12px rgba(184, 148, 31, 0.6));
+}
+
+/* Smooth transitions for all timeline elements */
+.timeline-element {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced mobile timeline styling */
+@media (max-width: 768px) {
+  .mobile-timeline-item {
+    margin-bottom: 2rem;
+  }
+
+  .mobile-timeline-arrow {
+    margin: 1rem 0;
+  }
+}
+
+/* Timeline line gradient */
+.timeline-line {
+  background: linear-gradient(
+    90deg,
+    rgba(184, 148, 31, 0.3) 0%,
+    rgba(212, 175, 55, 0.8) 50%,
+    rgba(184, 148, 31, 0.3) 100%
+  );
+}
+
+/* Responsive arrow adjustments */
+@media (max-width: 1279px) {
+  .timeline-arrow {
+    transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-arrow {
+    width: 12px;
+    height: 20px;
+  }
+}
+
+/* Improved hover effects */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+.group:hover .group-hover\:text-teal-900 {
+  color: #134e4a;
+}
+
+/* Improved mobile spacing */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+
+  .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Enhanced timeline responsiveness */
+@media (max-width: 1024px) {
+  .timeline-diamond-enhanced {
+    @apply w-20 h-20;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-diamond-enhanced {
+    @apply w-16 h-16;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced focus states for accessibility */
+button:focus-visible,
+a:focus-visible {
+  @apply outline-2 outline-offset-2 outline-amber-500;
+}
+
+/* Loading states */
+.loading {
+  @apply animate-pulse;
+}
+
+/* Enhanced gradient backgrounds */
+.hero-gradient-enhanced {
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 25%, #2dd4bf 50%, #5eead4 75%, #99f6e4 100%);
+}
+
+.footer-gradient {
+  background: linear-gradient(to top, #134e4a 0%, #0f766e 50%, #14b8a6 100%);
 }
