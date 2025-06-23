@@ -140,6 +140,11 @@ const config: Config = {
         "slide-up": "slideUp 0.6s ease-out",
         "bounce-gentle": "bounceGentle 2s infinite",
         "gentle-float": "gentleFloat 3s ease-in-out infinite",
+        "shimmer": "shimmer 2s infinite",
+        "image-fade-in": "imageFadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "timeline-zoom": "timelineZoom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "modal-backdrop": "modalBackdrop 0.3s ease-out",
+        "pulse-glow": "pulseGlow 2s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -157,6 +162,26 @@ const config: Config = {
         gentleFloat: {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-10px)" },
+        },
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        imageFadeIn: {
+          "0%": { opacity: "0", transform: "scale(0.95) translateY(10px)" },
+          "100%": { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        timelineZoom: {
+          "0%": { opacity: "0", transform: "scale(0.8)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        modalBackdrop: {
+          "0%": { opacity: "0", backdropFilter: "blur(0px)" },
+          "100%": { opacity: "1", backdropFilter: "blur(8px)" },
+        },
+        pulseGlow: {
+          "0%, 100%": { boxShadow: "0 0 5px rgba(251, 191, 36, 0.4)" },
+          "50%": { boxShadow: "0 0 20px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.4)" },
         },
       },
       backgroundImage: {

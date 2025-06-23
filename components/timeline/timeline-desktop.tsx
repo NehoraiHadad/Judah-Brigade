@@ -1,129 +1,142 @@
-"use client"
+"use client";
 
-import { TimelineDiamond } from "./timeline-diamond"
-import { TimelineArrow } from "./timeline-arrow"
-import type { TimelineProps } from "@/types/timeline"
+import { useState, useRef, useLayoutEffect, useCallback, useMemo } from "react";
+import { TimelineDiamond } from "./timeline-diamond";
+import { TimelineContinuousPath } from "./timeline-continuous-path";
+import { debounce } from "@/lib/timeline-utils";
+import type { TimelineProps } from "@/types/timeline";
+
+interface Point {
+  x: number;
+  y: number;
+}
 
 export function TimelineDesktop({ items, onItemSelect }: TimelineProps) {
-  return (
-    <div className="hidden lg:block relative max-w-6xl mx-auto">
-      <div className="space-y-16 xl:space-y-20">
-        {/* Row 1 - Right to Left (3 items) */}
-        <div className="flex justify-between items-center relative">
-          {items.slice(0, 3).map((item, index) => (
-            <div key={item.id} className="relative">
-              <TimelineDiamond
-                title={item.title}
-                date={item.date}
-                onClick={() => onItemSelect(item)}
-                animationDelay={index * 200}
-              />
-              {/* Horizontal Arrow */}
-              {index < 2 && (
-                <div className="absolute -left-20 xl:-left-24 top-14 xl:top-16 transform -translate-y-1/2 z-10">
-                  <TimelineArrow direction="horizontal-left" />
-                </div>
-              )}
-            </div>
-          ))}
-          {/* Down Arrow */}
-          <div className="absolute -bottom-12 right-0">
-            <TimelineArrow direction="vertical-down" />
-          </div>
-        </div>
+    const rowConfigs = useMemo(() => [
+        { startIndex: 0, endIndex: 3, isReversed: false },
+        { startIndex: 3, endIndex: 6, isReversed: true },
+        { startIndex: 6, endIndex: 9, isReversed: false },
+        { startIndex: 9, endIndex: 12, isReversed: true },
+        { startIndex: 12, endIndex: 15, isReversed: false },
+    ], []);
 
-        {/* Row 2 - Left to Right (3 items) */}
-        <div className="flex justify-between items-center relative flex-row-reverse">
-          {items.slice(3, 6).map((item, index) => (
-            <div key={item.id} className="relative">
-              <TimelineDiamond
-                title={item.title}
-                date={item.date}
-                onClick={() => onItemSelect(item)}
-                animationDelay={(index + 3) * 200}
-              />
-              {/* Horizontal Arrow */}
-              {index < 2 && (
-                <div className="absolute -right-20 xl:-right-24 top-14 xl:top-16 transform -translate-y-1/2 z-10">
-                  <TimelineArrow direction="horizontal-right" />
-                </div>
-              )}
-            </div>
-          ))}
-          {/* Down Arrow */}
-          <div className="absolute -bottom-12 left-0">
-            <TimelineArrow direction="vertical-down" />
-          </div>
-        </div>
+    const containerRef = useRef<HTMLDivElement>(null);
+    const diamondRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const [diamondPositions, setDiamondPositions] = useState<Point[]>([]);
+    const [isReady, setIsReady] = useState(false);
 
-        {/* Row 3 - Right to Left (3 items) */}
-        <div className="flex justify-between items-center relative">
-          {items.slice(6, 9).map((item, index) => (
-            <div key={item.id} className="relative">
-              <TimelineDiamond
-                title={item.title}
-                date={item.date}
-                onClick={() => onItemSelect(item)}
-                animationDelay={(index + 6) * 200}
-              />
-              {/* Horizontal Arrow */}
-              {index < 2 && (
-                <div className="absolute -left-20 xl:-left-24 top-14 xl:top-16 transform -translate-y-1/2 z-10">
-                  <TimelineArrow direction="horizontal-left" />
-                </div>
-              )}
-            </div>
-          ))}
-          {/* Down Arrow */}
-          <div className="absolute -bottom-12 right-0">
-            <TimelineArrow direction="vertical-down" />
-          </div>
-        </div>
+    const updateDiamondPositions = useCallback(() => {
+        if (!containerRef.current || diamondRefs.current.length !== items.length) {
+            return;
+        }
 
-        {/* Row 4 - Left to Right (3 items) */}
-        <div className="flex justify-between items-center relative flex-row-reverse">
-          {items.slice(9, 12).map((item, index) => (
-            <div key={item.id} className="relative">
-              <TimelineDiamond
-                title={item.title}
-                date={item.date}
-                onClick={() => onItemSelect(item)}
-                animationDelay={(index + 9) * 200}
-              />
-              {/* Horizontal Arrow */}
-              {index < 2 && (
-                <div className="absolute -right-20 xl:-right-24 top-14 xl:top-16 transform -translate-y-1/2 z-10">
-                  <TimelineArrow direction="horizontal-right" />
-                </div>
-              )}
-            </div>
-          ))}
-          {/* Down Arrow */}
-          <div className="absolute -bottom-12 left-0">
-            <TimelineArrow direction="vertical-down" />
-          </div>
-        </div>
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const positions: Point[] = [];
+        
+        for (let i = 0; i < items.length; i++) {
+            const diamondNode = diamondRefs.current[i];
+            if (diamondNode) {
+                try {
+                    const diamondRect = diamondNode.getBoundingClientRect();
+                    
+                    // Calculate center point relative to container
+                    const x = (diamondRect.left + diamondRect.right) / 2 - containerRect.left;
+                    const y = (diamondRect.top + diamondRect.bottom) / 2 - containerRect.top;
+                    
+                    positions.push({ x, y });
+                } catch (error) {
+                    console.warn('Error calculating diamond position', i, error);
+                    // Fallback to previous position or default
+                    if (diamondPositions[i]) {
+                        positions.push(diamondPositions[i]);
+                    } else {
+                        positions.push({ x: 0, y: 0 });
+                    }
+                }
+            }
+        }
+        
+        setDiamondPositions(positions);
+        setIsReady(true);
+    }, [items.length, diamondPositions]);
 
-        {/* Row 5 - Final 2 items */}
-        <div className="flex justify-start items-center relative gap-32">
-          {items.slice(12, 14).map((item, index) => (
-            <div key={item.id} className="relative">
-              <TimelineDiamond
-                title={item.title}
-                date={item.date}
-                onClick={() => onItemSelect(item)}
-                animationDelay={(index + 12) * 200}
-              />
-              {/* Final Arrow */}
-              {index === 0 && (
-                <div className="absolute -left-20 xl:-left-24 top-14 xl:top-16 transform -translate-y-1/2 z-10">
-                  <TimelineArrow direction="horizontal-left" />
-                </div>
-              )}
+    const debouncedUpdatePositions = useMemo(
+        () => debounce(updateDiamondPositions, 150),
+        [updateDiamondPositions]
+    );
+
+    useLayoutEffect(() => {
+        const timeoutId = setTimeout(updateDiamondPositions, 200);
+        
+        const resizeObserver = new ResizeObserver(debouncedUpdatePositions);
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => {
+            clearTimeout(timeoutId);
+            resizeObserver.disconnect();
+        };
+    }, [updateDiamondPositions, debouncedUpdatePositions]);
+
+    const diamondRefCallback = useCallback((el: HTMLDivElement | null, index: number) => {
+        diamondRefs.current[index] = el;
+        
+        // Trigger position update when all diamonds are mounted
+        if (el && diamondRefs.current.filter(Boolean).length === items.length) {
+            setTimeout(updateDiamondPositions, 100);
+        }
+    }, [items.length, updateDiamondPositions]);
+
+    const renderRow = useCallback((config: typeof rowConfigs[0], rowIndex: number) => {
+        const { startIndex, endIndex, isReversed } = config;
+        const rowItems = items.slice(startIndex, endIndex);
+
+        return (
+            <div key={rowIndex} className={`flex justify-between items-center ${isReversed ? 'flex-row-reverse' : ''}`}>
+                {rowItems.map((item, index) => {
+                    const globalIndex = startIndex + index;
+                    return (
+                        <div
+                            key={item.id}
+                            ref={(el) => diamondRefCallback(el, globalIndex)}
+                            className="relative z-10"
+                        >
+                            <TimelineDiamond
+                                title={item.title}
+                                date={item.date}
+                                image={item.image}
+                                onClick={() => onItemSelect(item)}
+                                animationDelay={globalIndex * 200}
+                            />
+                        </div>
+                    );
+                })}
             </div>
-          ))}
+        );
+    }, [items, diamondRefCallback, onItemSelect]);
+
+    return (
+        <div ref={containerRef} className="hidden lg:block relative max-w-6xl mx-auto px-8">
+            <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200">מהתנ"ך ועד היום</h2>
+            </div>
+            <div className="space-y-32 xl:space-y-36 pt-20">
+                {rowConfigs.map(renderRow)}
+            </div>
+            
+            {isReady && containerRef.current && diamondPositions.length > 1 && (
+                <TimelineContinuousPath
+                    diamonds={diamondPositions}
+                    width={containerRef.current.scrollWidth}
+                    height={containerRef.current.scrollHeight}
+                    className="transition-opacity duration-500"
+                    animated={true}
+                    waviness={1.2}
+                    smoothness={0.75}
+                    seed={123}
+                />
+            )}
         </div>
-      </div>
-    </div>
-  )
+    );
 }

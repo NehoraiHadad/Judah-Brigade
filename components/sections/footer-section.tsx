@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Mail, MapPin } from "lucide-react"
+import { Mail, Phone } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import { IMAGES, CONTENT } from "@/constants"
 
@@ -33,12 +33,12 @@ export function FooterSection() {
               </h4>
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-center text-sm sm:text-base group">
-                  <Mail className="h-4 w-4 sm:h-5 sm:w-5 ml-3 text-amber-400 group-hover:scale-110 transition-transform" />
-                  <span className="group-hover:text-amber-200 transition-colors">{CONTENT.FOOTER.EMAIL}</span>
+                  <Phone className="h-4 w-4 sm:h-5 sm:w-5 ml-3 text-amber-400 group-hover:scale-110 transition-transform" />
+                  <span className="group-hover:text-amber-200 transition-colors">{CONTENT.FOOTER.EDUCATION_OFFICER_PHONE}</span>
                 </div>
                 <div className="flex items-center justify-center text-sm sm:text-base group">
-                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 ml-3 text-amber-400 group-hover:scale-110 transition-transform" />
-                  <span className="group-hover:text-amber-200 transition-colors">{CONTENT.FOOTER.LOCATION}</span>
+                  <Mail className="h-4 w-4 sm:h-5 sm:w-5 ml-3 text-amber-400 group-hover:scale-110 transition-transform" />
+                  <span className="group-hover:text-amber-200 transition-colors">{CONTENT.FOOTER.EMAIL}</span>
                 </div>
               </div>
             </div>
@@ -46,12 +46,17 @@ export function FooterSection() {
             {/* Links Section */}
             <div className="text-center md:text-left animate-fade-in-up delay-500">
               <h4 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-amber-200">{CONTENT.FOOTER.LINKS_TITLE}</h4>
+              <p className="text-base sm:text-lg text-amber-100 mb-6 font-semibold">
+                {CONTENT.FOOTER.LINKS_INTRO}
+              </p>
               <div className="space-y-3 sm:space-y-4">
                 {CONTENT.FOOTER.LINKS.map((link, index) => (
                   <a
                     key={index}
                     href={link.href}
-                    className="block text-sm sm:text-base text-stone-300 hover:text-amber-300 transition-colors duration-300 hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-sm sm:text-base text-stone-300 hover:text-amber-300 transition-colors duration-300 hover:underline font-medium"
                   >
                     {link.text}
                   </a>

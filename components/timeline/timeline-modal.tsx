@@ -1,6 +1,7 @@
 "use client"
 
-import Image from "next/image"
+import { useEffect, useState, useCallback } from "react"
+import { OptimizedImage } from "@/components/ui/optimized-image"
 import type { TimelineItem } from "@/types/timeline"
 
 interface TimelineModalProps {
@@ -10,33 +11,109 @@ interface TimelineModalProps {
 }
 
 export function TimelineModal({ item, isOpen, onClose }: TimelineModalProps) {
+  const [isImageLoaded, setIsImageLoaded] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen && item) {
+      setIsImageLoaded(false)
+      setIsClosing(false)
+    }
+  }, [isOpen, item])
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true)
+    setTimeout(() => {
+      onClose()
+      setIsClosing(false)
+    }, 200)
+  }, [onClose])
+
+  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose()
+    }
+  }, [handleClose])
+
+  const handleImageLoad = useCallback(() => {
+    setIsImageLoaded(true)
+  }, [])
+
   if (!isOpen || !item) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="relative" onClick={(e) => e.stopPropagation()}>
-        {/* Diamond Modal Container */}
-        <div className="w-[600px] h-[600px] md:w-[700px] md:h-[700px] lg:w-[800px] lg:h-[800px] relative animate-diamond-appear">
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 left-4 z-20 bg-black/60 hover:bg-black/80 text-white rounded-full p-3 hover:scale-110 transition-all duration-200"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+    <div 
+      className={`timeline-modal-fullscreen animate-modal-backdrop-fade ${
+        isClosing ? 'opacity-0' : 'opacity-100'
+      }`}
+      onClick={handleBackdropClick}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      {/* Close button */}
+      <button
+        onClick={handleClose}
+        className="timeline-modal-close text-white hover:text-gray-200 transition-colors"
+        aria-label="סגור חלון"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
 
-          {/* Direct image display */}
-          <Image
-            src={item.image || "/placeholder.svg"}
+      {/* Modal content */}
+      <div 
+        className={`timeline-modal-image-container animate-timeline-image-zoom ${
+          isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Image container */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <OptimizedImage
+            src={item.image}
             alt={item.title}
             fill
-            className="object-contain"
-            priority={true}
-            quality={90}
-            sizes="(max-width: 768px) 600px, (max-width: 1024px) 700px, 800px"
+            priority
+            quality={95}
+            sizes="100vw"
+            objectFit="contain"
+            onLoad={handleImageLoad}
+            className={`transition-all duration-700 ${
+              isImageLoaded ? 'animate-image-fade-in' : 'opacity-0'
+            }`}
           />
+
+          {/* Loading state */}
+          {!isImageLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="text-center text-white">
+                <div className="image-loading-spinner mx-auto mb-4" />
+                <p className="text-sm">טוען תמונה...</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
