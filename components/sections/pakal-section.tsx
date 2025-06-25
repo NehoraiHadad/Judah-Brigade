@@ -2,8 +2,8 @@ import { SectionTitle } from "@/components/ui/section-title"
 import { BattalionCard } from "@/components/ui/battalion-card"
 import { Button } from "@/components/ui/button"
 import { ArrowDown } from "lucide-react"
-import { battalions } from "@/data/battalion-data"
-import { CONTENT } from "@/constants"
+import { battalions } from "@/data"
+import { CONTENT } from "@/data"
 
 export function PakalSection() {
   const scrollToLinks = () => {

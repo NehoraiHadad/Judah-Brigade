@@ -2,23 +2,23 @@ import type { Battalion } from "@/types/battalion"
 
 export const battalions: Battalion[] = [
   {
-    name: "גדוד 50",
-    description: 'גדוד הנח"ל הראשון של החטיבה',
+    name: "גזרת העיר",
+    description: "אזור העיר חברון והסביבה",
     link: "#",
   },
   {
-    name: "גדוד 932",
-    description: 'גדוד חי"ר מוכן ומאומן',
+    name: "גזרת עוטף חברון",
+    description: "אזור עוטף חברון והיישובים",
     link: "#",
   },
   {
-    name: "גדוד 933",
-    description: "גדוד לוחמים מנוסים",
+    name: "גזרת מצדות יהודה",
+    description: "אזור מצדות יהודה ומבצרי הגבול",
     link: "#",
   },
   {
-    name: "גדוד הנדסה",
-    description: "יחידת ההנדסה הקרבית",
+    name: "גזרת שקף",
+    description: "אזור שקף והסביבה",
     link: "#",
   },
 ]

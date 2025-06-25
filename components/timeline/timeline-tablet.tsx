@@ -4,6 +4,7 @@ import { TimelineDiamond } from "./timeline-diamond"
 import { TimelineContinuousPath } from "./timeline-continuous-path"
 import { debounce } from "@/lib/timeline-utils";
 import type { TimelineProps } from "@/types/timeline"
+import { useVisibleDiamonds } from "@/hooks/use-visible-diamonds"
 
 interface Point {
   x: number;
@@ -30,6 +31,9 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
     const diamondRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [diamondPositions, setDiamondPositions] = useState<Point[]>([]);
     const [isReady, setIsReady] = useState(false);
+
+    // Visible diamonds tracking
+    const { lastVisibleIndex, handleDiamondVisible } = useVisibleDiamonds();
 
     const updateDiamondPositions = useCallback(() => {
         if (!containerRef.current || diamondRefs.current.length === 0) return;
@@ -97,6 +101,21 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
             <div key={rowIndex} className={`flex justify-between items-center max-w-xl mx-auto ${isReversed ? 'flex-row-reverse' : ''}`}>
                 {rowItems.map((item, index) => {
                     const globalIndex = startIndex + index;
+                    
+                    // Skip hidden items but keep their space
+                    if (item.isHidden) {
+                        return (
+                            <div
+                                key={item.id}
+                                ref={(el) => diamondRefCallback(el, globalIndex)}
+                                className="relative z-10 invisible"
+                                style={{ width: '160px', height: '160px' }}
+                            >
+                                {/* Hidden placeholder */}
+                            </div>
+                        );
+                    }
+                    
                     return (
                         <div 
                             key={item.id} 
@@ -108,34 +127,45 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
                                 date={item.date}
                                 image={item.image}
                                 onClick={() => onItemSelect(item)}
-                                animationDelay={globalIndex * 100}
+                                animationDelay={globalIndex * 80}
+                                onVisible={() => handleDiamondVisible(globalIndex)}
                             />
                         </div>
                     );
                 })}
             </div>
         );
-    }, [items, diamondRefCallback, onItemSelect]);
+    }, [items, diamondRefCallback, onItemSelect, handleDiamondVisible]);
 
     return (
         <div ref={containerRef} className="hidden md:block lg:hidden relative max-w-4xl mx-auto px-8">
-            <div className="text-center mb-10">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">מהתנ"ך ועד היום</h2>
+            <div className="text-center mb-14">
+                {/* Enhanced title with decorative elements */}
+                <div className="timeline-title-container">
+                    {/* Background decorative element */}
+                    <div className="timeline-title-background"></div>
+                    
+                    {/* Main title */}
+                    <h2 className="timeline-title-main text-3xl lg:text-4xl font-bold hebrew-title">
+                        מהתנ"ך ועד היום
+                    </h2>
+                </div>
             </div>
             <div className="space-y-24">
                 {rowConfigs.map(renderRow)}
             </div>
             
-            {isReady && containerRef.current && diamondPositions.length > 1 && (
+            {isReady && containerRef.current && diamondPositions.length > 1 && lastVisibleIndex >= 1 && (
                 <TimelineContinuousPath
-                    diamonds={diamondPositions}
-                    width={containerRef.current.scrollWidth}
-                    height={containerRef.current.scrollHeight}
+                    diamonds={diamondPositions.filter((_, index) => !items[index]?.isHidden)}
+                    width={containerRef.current.clientWidth}
+                    height={containerRef.current.clientHeight}
                     className="transition-opacity duration-500"
                     animated={true}
                     waviness={1.3}
                     smoothness={0.7}
                     seed={456}
+                    visibleUntilIndex={lastVisibleIndex}
                 />
             )}
         </div>

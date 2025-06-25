@@ -5,23 +5,14 @@ import { ChevronDown } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import { GradientText } from "@/components/ui/gradient-text"
 import Image from "next/image"
-import { CONTENT } from "@/constants"
+import { CONTENT } from "@/data"
+import { HERO_CAROUSEL_IMAGES } from "@/constants"
 
-// Curated hero images for a clean, professional look
-const HERO_IMAGES = [
-  {
-    src: "/images/hero/hero-cave-machpelah-1.jpg",
-    alt: "Cave of Machpelah - מערת המכפלה"
-  },
-  {
-    src: "/images/hero/hero-yatir-spring.jpg", 
-    alt: "Yatir Forest in Spring - יער יתיר באביב"
-  },
-  {
-    src: "/images/hero/hero-desert-view.jpg",
-    alt: "Judah Desert Landscape - נוף מדבר יהודה"
-  }
-]
+// Use the centralized HERO_CAROUSEL_IMAGES instead of local array
+const HERO_IMAGES = HERO_CAROUSEL_IMAGES.map((src, index) => ({
+  src,
+  alt: `Hero image ${index + 1}`
+}))
 
 export function HeroSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -36,7 +27,7 @@ export function HeroSection() {
   }, [])
 
   const scrollToNext = () => {
-    const nextSection = document.querySelector('#about')
+    const nextSection = document.querySelector('#introduction')
     nextSection?.scrollIntoView({ behavior: 'smooth' })
   }
 
@@ -91,9 +82,9 @@ export function HeroSection() {
             <Logo
               src="/images/judah-brigade-logo-new.png"
               alt="סמל חטיבת יהודה"
-              width={120}
-              height={120}
-              className="mx-auto mb-4 sm:w-[140px] sm:h-[140px] lg:w-[160px] lg:h-[160px] xl:w-[180px] xl:h-[180px] drop-shadow-lg object-contain"
+              width={150}
+              height={150}
+              className="mx-auto mb-4 sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] xl:w-[220px] xl:h-[220px] drop-shadow-lg object-contain"
               priority
             />
           </div>

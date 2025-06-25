@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { SectionTitle } from "@/components/ui/section-title"
-import { CONTENT } from "@/constants"
+import { CONTENT } from "@/data"
 
 export function WhyWeAreHereSection() {
   const [isVisible, setIsVisible] = useState(false)
@@ -78,9 +78,9 @@ export function WhyWeAreHereSection() {
         >
           <div className="text-right max-w-5xl mx-auto">
             {/* Opening quote mark */}
-            <div className="text-center mb-8">
+            {/* <div className="text-center mb-8">
               <span className="text-amber-400 text-6xl sm:text-7xl lg:text-8xl leading-none">"</span>
-            </div>
+            </div> */}
             
             <div 
               className="text-lg sm:text-xl lg:text-2xl leading-relaxed font-medium text-stone-100 space-y-6"
@@ -91,9 +91,9 @@ export function WhyWeAreHereSection() {
             />
             
             {/* Closing quote mark */}
-            <div className="text-center mt-8">
+            {/* <div className="text-center mt-8">
               <span className="text-amber-400 text-6xl sm:text-7xl lg:text-8xl leading-none">"</span>
-            </div>
+            </div> */}
           </div>
         </div>
 

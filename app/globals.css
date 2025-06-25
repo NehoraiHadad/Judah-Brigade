@@ -2,6 +2,7 @@
 @config "../tailwind.config.ts";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
@@ -65,7 +66,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    font-family: "Heebo", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
       "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
 
@@ -915,5 +916,140 @@ a:focus-visible {
   /* Loading spinner for images */
   .image-loading-spinner {
     @apply w-8 h-8 border-4 border-slate-300 border-t-slate-600 rounded-full animate-spin;
+  }
+
+  /* Timeline performance optimizations */
+  .timeline-diamond-glow {
+    will-change: transform, box-shadow;
+  }
+
+  /* Reduce animations on slower devices or reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-up,
+    .animate-pulse-glow,
+    .timeline-diamond-glow,
+    .animate-gentle-float,
+    .animate-float,
+    .animate-spin-slow,
+    .animate-gradient,
+    .animate-shimmer {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* Performance optimizations for mobile */
+  @media (max-width: 768px) {
+    .timeline-diamond-glow {
+      will-change: auto;
+    }
+    
+    .animate-fade-in-up {
+      animation-duration: 0.4s;
+    }
+  }
+}
+
+/* Enhanced Timeline Title Styles */
+.timeline-title-container {
+  position: relative;
+  display: inline-block;
+}
+
+.timeline-title-background {
+  position: absolute;
+  inset: -1rem;
+  background: linear-gradient(45deg, rgba(212, 175, 55, 0.1), rgba(184, 148, 31, 0.2), rgba(212, 175, 55, 0.1));
+  border-radius: 1rem;
+  opacity: 0.3;
+  filter: blur(8px);
+  animation: subtle-pulse 4s ease-in-out infinite;
+}
+
+.timeline-title-main {
+  position: relative;
+  background: linear-gradient(135deg, #b8941f 0%, #d4af37 50%, #b8941f 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(184, 148, 31, 0.3));
+}
+
+.timeline-decorative-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #d4af37 20%, #b8941f 50%, #d4af37 80%, transparent 100%);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-decorative-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+  animation: shine-flow 3s ease-in-out infinite;
+}
+
+.timeline-scroll-icon {
+  background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+  box-shadow: 0 4px 12px rgba(184, 148, 31, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-scroll-icon:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(184, 148, 31, 0.6);
+}
+
+.timeline-subtitle {
+  color: #9c7c1a;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.dark .timeline-subtitle {
+  color: #f7c566;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shine-flow {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Responsive adjustments for timeline title */
+@media (max-width: 768px) {
+  .timeline-title-background {
+    inset: -0.5rem;
+    border-radius: 0.75rem;
+  }
+  
+  .timeline-scroll-icon {
+    box-shadow: 0 2px 8px rgba(184, 148, 31, 0.3);
+  }
+}
+
+@media (max-width: 640px) {
+  .timeline-title-background {
+    inset: -0.25rem;
+    border-radius: 0.5rem;
   }
 }

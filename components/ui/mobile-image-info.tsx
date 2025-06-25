@@ -21,6 +21,10 @@ const IMAGE_INFO = [
     description: "היער הגדול במדינת ישראל"
   },
   {
+    title: "ישוב כרמל",
+    description: "יישוב יהודי בלב חבל יתיר"
+  },
+  {
     title: "נוף מדברי",
     description: "מדבר יהודה"
   },

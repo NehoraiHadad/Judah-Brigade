@@ -4,6 +4,7 @@ import { TimelineDiamond } from "./timeline-diamond"
 import { TimelineContinuousPath } from "./timeline-continuous-path"
 import { debounce } from "@/lib/timeline-utils";
 import type { TimelineProps } from "@/types/timeline"
+import { useVisibleDiamonds } from "@/hooks/use-visible-diamonds"
 
 interface Point {
   x: number;
@@ -15,6 +16,9 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
     const diamondRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [diamondPositions, setDiamondPositions] = useState<Point[]>([]);
     const [isReady, setIsReady] = useState(false);
+
+    // Track which diamonds have been revealed
+    const { lastVisibleIndex, handleDiamondVisible } = useVisibleDiamonds();
 
     const updateDiamondPositions = useCallback(() => {
         if (!containerRef.current || diamondRefs.current.length === 0) return;
@@ -92,15 +96,22 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                         ref={(el) => diamondRefCallback(el, pairIndex * 2)}
                         className="flex justify-start pl-4 mb-6"
                     >
-                        <div className="transform -rotate-1 hover:rotate-0 transition-transform duration-300">
-                            <TimelineDiamond
-                                title={pair[0].title}
-                                date={pair[0].date}
-                                image={pair[0].image}
-                                onClick={() => onItemSelect(pair[0])}
-                                animationDelay={pairIndex * 2 * 100}
-                            />
-                        </div>
+                        {pair[0].isHidden ? (
+                            <div className="invisible" style={{ width: '128px', height: '128px' }}>
+                                {/* Hidden placeholder */}
+                            </div>
+                        ) : (
+                            <div className="transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+                                <TimelineDiamond
+                                    title={pair[0].title}
+                                    date={pair[0].date}
+                                    image={pair[0].image}
+                                    onClick={() => onItemSelect(pair[0])}
+                                    animationDelay={pairIndex * 2 * 50}
+                                    onVisible={() => handleDiamondVisible(pairIndex * 2)}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
                 
@@ -110,39 +121,56 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                         ref={(el) => diamondRefCallback(el, pairIndex * 2 + 1)}
                         className="flex justify-end pr-4"
                     >
-                        <div className="transform rotate-1 hover:-rotate-0 transition-transform duration-300">
-                            <TimelineDiamond
-                                title={pair[1].title}
-                                date={pair[1].date}
-                                image={pair[1].image}
-                                onClick={() => onItemSelect(pair[1])}
-                                animationDelay={(pairIndex * 2 + 1) * 100}
-                            />
-                        </div>
+                        {pair[1].isHidden ? (
+                            <div className="invisible" style={{ width: '128px', height: '128px' }}>
+                                {/* Hidden placeholder */}
+                            </div>
+                        ) : (
+                            <div className="transform rotate-1 hover:-rotate-0 transition-transform duration-300">
+                                <TimelineDiamond
+                                    title={pair[1].title}
+                                    date={pair[1].date}
+                                    image={pair[1].image}
+                                    onClick={() => onItemSelect(pair[1])}
+                                    animationDelay={(pairIndex * 2 + 1) * 50}
+                                    onVisible={() => handleDiamondVisible(pairIndex * 2 + 1)}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
         );
-    }, [diamondRefCallback, onItemSelect]);
+    }, [diamondRefCallback, onItemSelect, handleDiamondVisible]);
 
     return (
         <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative px-2 py-4">
-            <div className="text-center mb-12">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">מהתנ"ך ועד היום</h2>
-                <div className="mt-2 w-16 h-0.5 bg-gradient-to-r from-amber-600 to-amber-400 mx-auto rounded-full"></div>
+            <div className="text-center mb-16">
+                {/* Enhanced title with decorative elements */}
+                <div className="timeline-title-container">
+                    {/* Background decorative element */}
+                    <div className="timeline-title-background"></div>
+                    
+                    {/* Main title */}
+                    <h2 className="timeline-title-main text-2xl sm:text-3xl font-bold hebrew-title leading-tight">
+                        מהתנ"ך ועד היום
+                    </h2>
+                </div>
             </div>
             {itemPairs.map(renderTimelinePair)}
             
-            {isReady && containerRef.current && diamondPositions.length > 1 && (
+            {isReady && containerRef.current && diamondPositions.length > 1 && lastVisibleIndex >= 1 && (
                 <TimelineContinuousPath
-                    diamonds={diamondPositions}
-                    width={containerRef.current.scrollWidth}
-                    height={containerRef.current.scrollHeight}
+                    diamonds={diamondPositions.filter((_, index) => !items[index]?.isHidden)}
+                    width={containerRef.current.clientWidth}
+                    height={containerRef.current.clientHeight}
                     className="transition-opacity duration-500"
                     animated={true}
-                    waviness={1.8}
-                    smoothness={0.6}
+                    sideOffset={60}
+                    waviness={1.2}
+                    smoothness={0.8}
                     seed={789}
+                    visibleUntilIndex={lastVisibleIndex}
                 />
             )}
         </div>

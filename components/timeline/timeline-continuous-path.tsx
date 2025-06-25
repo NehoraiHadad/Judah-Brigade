@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useLayoutEffect } from 'react';
+import { FootprintIcon } from '../ui/footprint-icon';
 
 interface Point {
   x: number;
@@ -21,6 +22,8 @@ interface TimelineContinuousPathProps {
   waviness?: number;
   smoothness?: number;
   seed?: number;
+  sideOffset?: number;
+  visibleUntilIndex?: number;
 }
 
 // Seeded random number generator for consistent paths
@@ -42,17 +45,20 @@ class PathGenerator {
   private rng: SeededRandom;
   private waviness: number;
   private smoothness: number;
+  private sideOffset: number;
 
-  constructor(seed: number, waviness: number, smoothness: number) {
+  constructor(seed: number, waviness: number, smoothness: number, sideOffset: number) {
     this.rng = new SeededRandom(seed);
     this.waviness = waviness;
     this.smoothness = smoothness;
+    this.sideOffset = sideOffset;
   }
 
   private generateSideEntryPoints(diamonds: Point[]): Point[] {
     return diamonds.map((diamond, index) => {
       // Create entry/exit points on diamond sides for mobile diagonal layout
-      const sideOffset = 20 + (this.rng.next() - 0.5) * 10; // 20±5 pixels from center
+      const baseOffset = this.sideOffset || 20;
+      const sideOffset = baseOffset + (this.rng.next() - 0.5) * 10;
       const verticalVariation = (this.rng.next() - 0.5) * 15; // ±7.5 pixels vertical variation
       
       // For mobile diagonal layout: 
@@ -87,7 +93,6 @@ class PathGenerator {
 
     const isFirst = index === 1;
     const isLast = index === totalPoints - 1;
-    const isMidpoint = !isFirst && !isLast;
 
     if (isFirst) {
       return this.generateFirstSegmentControlPoints(prev, curr, dx, dy, perpX, perpY, distance);
@@ -189,17 +194,88 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
   animated = true,
   waviness = 0.5,
   smoothness = 0.7,
-  seed = 42
+  seed = 42,
+  sideOffset = 20,
+  visibleUntilIndex,
 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const pathRef = React.useRef<SVGSVGElement>(null);
+
   const pathData = useMemo(() => {
-    const pathGenerator = new PathGenerator(seed, waviness, smoothness);
+    const pathGenerator = new PathGenerator(seed, waviness, smoothness, sideOffset);
     return pathGenerator.generatePath(diamonds);
-  }, [diamonds, waviness, smoothness, seed]);
+  }, [diamonds, waviness, smoothness, seed, sideOffset]);
 
   const [footsteps, setFootsteps] = useState<Footstep[]>([]);
+  const [existingFootstepsCount, setExistingFootstepsCount] = useState(0);
+
+  // Responsive scale calculation
+  const getResponsiveScale = () => {
+    if (typeof window === 'undefined') return 0.013;
+    
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 768) { // Mobile
+      return 0.035; // Larger for mobile - increased from 0.024
+    } else if (screenWidth < 1024) { // Tablet
+      return 0.025; // Medium for tablet - increased from 0.018
+    } else { // Desktop
+      return 0.015; // Original size for desktop - increased from 0.013
+    }
+  };
+
+  // Responsive footstep parameters
+  const getFootstepParams = () => {
+    if (typeof window === 'undefined') {
+      return { stride: 35, footSpacing: 12, footOffset: 10 };
+    }
+    
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 768) { // Mobile
+      return {
+        stride: 25,        // Closer steps for mobile
+        footSpacing: 12,   // Closer left/right spacing
+        footOffset: 10     // Increased offset to avoid overlapping diamond centre
+      };
+    } else if (screenWidth < 1024) { // Tablet
+      return {
+        stride: 30,        // Medium spacing
+        footSpacing: 11,   
+        footOffset: 5      
+      };
+    } else { // Desktop
+      return {
+        stride: 35,        // Original spacing
+        footSpacing: 12,   
+        footOffset: 6      
+      };
+    }
+  };
+
+  // Intersection Observer to control animations
+  useLayoutEffect(() => {
+    if (!pathRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsVisible(entry.isIntersecting);
+        });
+      },
+      {
+        rootMargin: '100px',
+        threshold: 0.1
+      }
+    );
+
+    observer.observe(pathRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   useLayoutEffect(() => {
-    if (pathData && typeof document !== 'undefined') {
+    if (pathData && typeof document !== 'undefined' && isVisible) {
       const tempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       tempPath.setAttribute('d', pathData);
       
@@ -211,13 +287,27 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
       
       try {
         const totalLength = tempPath.getTotalLength();
+
+        // Determine the maximum distance along the path that we should create
+        // footsteps for. This prevents recalculation של המסלול – רק מוסיפים צעדים.
+        let maxFootstepDistance = totalLength;
+        if (
+          typeof visibleUntilIndex === 'number' &&
+          visibleUntilIndex >= 0 &&
+          diamonds.length > 1 &&
+          visibleUntilIndex < diamonds.length
+        ) {
+          // Approximate the proportional distance: lastVisible / (totalDiamonds-1)
+          const ratio = visibleUntilIndex / (diamonds.length - 1);
+          maxFootstepDistance = totalLength * ratio;
+        }
+
         const newFootsteps: Footstep[] = [];
 
-        const stride = 35;        // distance between each pair of footprints - reduced for mobile
-        const footSpacing = 12;   // distance between left & right footprints in a pair
-        const footOffset = 6;     // lateral offset from the path centre - reduced for mobile
+        const params = getFootstepParams();
+        const { stride, footSpacing, footOffset } = params;
 
-        for (let dist = 0; dist < totalLength; dist += stride) {
+        for (let dist = 0; dist < maxFootstepDistance; dist += stride) {
           // LEFT FOOT
           const pLeft = tempPath.getPointAtLength(dist);
           const pLeftAhead = tempPath.getPointAtLength(Math.min(dist + 1, totalLength));
@@ -227,7 +317,7 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
           newFootsteps.push({
             x: pLeft.x + Math.cos(perpLeft) * -footOffset,
             y: pLeft.y + Math.sin(perpLeft) * -footOffset,
-            angle: angleLeft * (180 / Math.PI),
+            angle: angleLeft * (180 / Math.PI) + 90,
             type: 'left',
           });
 
@@ -241,33 +331,34 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
           newFootsteps.push({
             x: pRight.x + Math.cos(perpRight) * footOffset,
             y: pRight.y + Math.sin(perpRight) * footOffset,
-            angle: angleRight * (180 / Math.PI),
+            angle: angleRight * (180 / Math.PI) + 90,
             type: 'right',
           });
         }
-        setFootsteps(newFootsteps);
+        
+        // Only update if we actually have new footsteps to add
+        if (newFootsteps.length > existingFootstepsCount) {
+          setExistingFootstepsCount(footsteps.length); // Remember current count before update
+          setFootsteps(newFootsteps);
+        }
       } catch (error) {
         console.warn('Error processing path for footsteps:', error);
       } finally {
         document.body.removeChild(tempSvg);
       }
     }
-  }, [pathData]);
+  }, [pathData, isVisible, visibleUntilIndex]);
 
   const gradientId = useMemo(() => 
     `footstep-gradient-${Math.random().toString(36).substr(2, 9)}`, 
     []
   );
 
-  // More realistic footprint shape
-  const leftFootPath = "M12,2 C14,1.5 16,2 18,3 C19,4 19.5,5 20,7 C20.2,9 19.8,11 19,13 C18,15 16.5,16.5 15,17.5 C13.5,18.2 12,18.5 10.5,18.2 C9,17.8 8,17 7.5,15.5 C7,14 7.2,12 8,10 C8.8,8 10,6.5 11,5 C11.5,3.5 12,2.5 12,2 Z M11,5 C10.5,5.3 10,5.8 9.8,6.2 M13,4.8 C13.2,5.1 13.5,5.5 13.7,5.9 M15,6 C15.1,6.3 15.2,6.7 15.1,7 M9,8 C8.9,8.4 9,8.8 9.2,9.1 M16,8.5 C15.9,8.9 15.7,9.2 15.5,9.4";
-  
-  const rightFootPath = "M8,2 C6,1.5 4,2 2,3 C1,4 0.5,5 0,7 C-0.2,9 0.2,11 1,13 C2,15 3.5,16.5 5,17.5 C6.5,18.2 8,18.5 9.5,18.2 C11,17.8 12,17 12.5,15.5 C13,14 12.8,12 12,10 C11.2,8 10,6.5 9,5 C8.5,3.5 8,2.5 8,2 Z M9,5 C9.5,5.3 10,5.8 10.2,6.2 M7,4.8 C6.8,5.1 6.5,5.5 6.3,5.9 M5,6 C4.9,6.3 4.8,6.7 4.9,7 M11,8 C11.1,8.4 11,8.8 10.8,9.1 M4,8.5 C4.1,8.9 4.3,9.2 4.5,9.4";
-
   if (!pathData) return null;
 
   return (
     <svg
+      ref={pathRef}
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
@@ -282,14 +373,12 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
     >
       <defs>
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#8B7355" stopOpacity="0.8" />
-          <stop offset="30%" stopColor="#A0855B" stopOpacity="0.9" />
-          <stop offset="70%" stopColor="#8B7355" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#6B5B47" stopOpacity="0.7" />
+          {/* Color palette aligned with site theme (#ab9b84 as primary) */}
+          <stop offset="0%" stopColor="#e2d8c8" stopOpacity="0.9" />  {/* Light highlight */}
+          <stop offset="30%" stopColor="#ab9b84" stopOpacity="0.95" /> {/* Main beige */}
+          <stop offset="70%" stopColor="#8c7c68" stopOpacity="0.95" /> {/* Darker accent */}
+          <stop offset="100%" stopColor="#6e614e" stopOpacity="0.85" /> {/* Deep shadow */}
         </linearGradient>
-        
-        <path id="left-foot" d={leftFootPath} />
-        <path id="right-foot" d={rightFootPath} />
         
         <filter id="footstep-shadow" x="-50%" y="-50%" width="200%" height="200%">
           <feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.3"/>
@@ -306,39 +395,42 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
       
       <g>
         {footsteps.map((step, index) => {
-          const scale = 0.6;
-          const transform = `translate(${step.x}, ${step.y}) rotate(${step.angle}) scale(${scale}) translate(-10, -10)`;
-          const footType = step.type === 'left' ? 'left-foot' : 'right-foot';
+          const scale = getResponsiveScale();
+          const transform = `translate(${step.x}, ${step.y}) rotate(${step.angle}) scale(${scale}) translate(-503.5, -640)`;
+          
+          // Only animate new footsteps that were added after existing ones
+          const isNewFootstep = index >= existingFootstepsCount;
+          const shouldAnimate = animated && isVisible && isNewFootstep;
           
           return (
             <g 
-              key={index} 
+              key={`${Math.round(step.x)}-${Math.round(step.y)}-${step.type}`}
               transform={transform}
-              style={animated ? {
+              style={shouldAnimate ? {
                 opacity: 0,
                 animation: `footstepFadeIn 0.45s ease-out forwards`,
-                animationDelay: `${index * 0.12 + 0.4}s`
+                animationDelay: `${(index - existingFootstepsCount) * 0.12 + 0.4}s`
               } : { opacity: 0.85 }}
             >
               {/* Shadow */}
-              <use 
-                href={`#${footType}`} 
-                fill="rgba(0,0,0,0.2)" 
-                transform="translate(1.5, 1.5) scale(1.05)"
+              <FootprintIcon
+                type={step.type}
+                gClassName="fill-black/30"
+                transform="translate(15, 15)"
               />
               
               {/* Main footprint */}
-              <use 
-                href={`#${footType}`} 
-                fill={`url(#${gradientId})`}
+              <FootprintIcon
+                type={step.type}
+                gFill={`url(#${gradientId})`}
                 filter="url(#footstep-glow)"
               />
               
               {/* Highlight */}
-              <use 
-                href={`#${footType}`} 
-                fill="rgba(255,255,255,0.1)" 
-                transform="scale(0.8) translate(1, 1)"
+              <FootprintIcon
+                type={step.type}
+                gClassName="fill-white/10"
+                transform="scale(0.8) translate(60, 80)"
               />
             </g>
           );

@@ -1,7 +1,8 @@
 import Image from "next/image"
 import { Mail, Phone } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
-import { IMAGES, CONTENT } from "@/constants"
+import { IMAGES } from "@/constants"
+import { CONTENT } from "@/data"
 
 export function FooterSection() {
   return (
@@ -20,47 +21,37 @@ export function FooterSection() {
       {/* Content Section - Bottom */}
       <div className="relative bg-teal-900 py-12 sm:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12 items-start">
+          {/* Main Content - Horizontal Layout */}
+          <div className="flex flex-col md:flex-row items-center justify-around">
             {/* Logo Section */}
-            <div className="text-center md:text-right animate-fade-in-up">
-              <Logo src={IMAGES.LOGO} alt="סמל חטיבת יהודה" width={100} height={100} className="mx-auto md:mx-0" />
+            <div className="animate-fade-in-up">
+              <Logo 
+                src={IMAGES.LOGO} 
+                alt="סמל חטיבת יהודה" 
+                width={100} 
+                height={100} 
+                className="hover:scale-105 transition-transform duration-300" 
+              />
             </div>
 
             {/* Contact Section */}
-            <div className="text-center animate-fade-in-up delay-300">
+            <div className="text-center md:text-center animate-fade-in-up delay-300">
               <h4 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-amber-200">
                 {CONTENT.FOOTER.CONTACT_TITLE}
               </h4>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center justify-center text-sm sm:text-base group">
+              <div className="flex flex-col sm:flex-row items-center md:items-start gap-4 sm:gap-8">
+                <div className="flex items-center text-sm sm:text-base group cursor-pointer">
                   <Phone className="h-4 w-4 sm:h-5 sm:w-5 ml-3 text-amber-400 group-hover:scale-110 transition-transform" />
-                  <span className="group-hover:text-amber-200 transition-colors">{CONTENT.FOOTER.EDUCATION_OFFICER_PHONE}</span>
+                  <span className="group-hover:text-amber-200 transition-colors font-medium">
+                    {CONTENT.FOOTER.EDUCATION_OFFICER_PHONE}
+                  </span>
                 </div>
-                <div className="flex items-center justify-center text-sm sm:text-base group">
+                <div className="flex items-center text-sm sm:text-base group cursor-pointer">
                   <Mail className="h-4 w-4 sm:h-5 sm:w-5 ml-3 text-amber-400 group-hover:scale-110 transition-transform" />
-                  <span className="group-hover:text-amber-200 transition-colors">{CONTENT.FOOTER.EMAIL}</span>
+                  <span className="group-hover:text-amber-200 transition-colors font-medium">
+                    {CONTENT.FOOTER.EMAIL}
+                  </span>
                 </div>
-              </div>
-            </div>
-
-            {/* Links Section */}
-            <div className="text-center md:text-left animate-fade-in-up delay-500">
-              <h4 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-amber-200">{CONTENT.FOOTER.LINKS_TITLE}</h4>
-              <p className="text-base sm:text-lg text-amber-100 mb-6 font-semibold">
-                {CONTENT.FOOTER.LINKS_INTRO}
-              </p>
-              <div className="space-y-3 sm:space-y-4">
-                {CONTENT.FOOTER.LINKS.map((link, index) => (
-                  <a
-                    key={index}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-sm sm:text-base text-stone-300 hover:text-amber-300 transition-colors duration-300 hover:underline font-medium"
-                  >
-                    {link.text}
-                  </a>
-                ))}
               </div>
             </div>
           </div>

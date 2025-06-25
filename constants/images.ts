@@ -11,14 +11,23 @@ export const HERO_CAROUSEL_IMAGES = [
   "/images/hero/hero-cave-machpelah-1.jpg",
   "/images/hero/hero-cave-machpelah-2.jpg", 
   "/images/hero/hero-yatir-spring.jpg",
-  "/images/hero/hero-desert-view.jpg",
+  "/images/hero/hero-carmel-settlement.jpg",
+  "/images/historical-sites/susya-archaeological-site.jpg"
 ] as const
 
 export const CAROUSEL_IMAGES = [
   "/images/cave-of-machpelah/cave-of-machpelah-1.jpg",
-  "/images/cave-of-machpelah/cave-of-machpelah-2.jpg",
+  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04.jpeg",
   "/images/yatir-forest/yatir-spring.jpg",
+  "/images/brigade-activities/nahal-shafan-tzalim-meeting.jpg",
+  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04 (1).jpeg",
+  "/images/aerial-views/yatir-reservoir-aerial.jpg",
   "/images/yatir-forest/yatir-autumn.jpg",
-  "/images/desert-landscape/desert-view-1.jpg",
-  "/images/desert-landscape/desert-view-2.jpg",
+  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04 (2).jpeg",
+  "/images/aerial-views/mitzpe-yair-viewpoint.jpg",
+  "/images/desert-landscapes/desert-camels-landscape.jpg",
+  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.05.jpeg",
+  "/images/desert-landscapes/sunset-shamea.jpg",
+  "/images/aerial-views/dji-aerial-landscape.jpg",
+  "/images/historical-sites/susya-archaeological-site.jpg",
 ] as const

@@ -4,6 +4,7 @@ export interface TimelineItem {
   date: string
   content: string
   image: string
+  isHidden?: boolean
 }
 
 export interface TimelineProps {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { OptimizedImage } from "@/components/ui/optimized-image"
 
 interface TimelineDiamondProps {
@@ -9,20 +9,53 @@ interface TimelineDiamondProps {
   image: string
   onClick: () => void
   animationDelay?: number
+  /**
+   * Called once when the diamond enters the viewport for the first time.
+   */
+  onVisible?: () => void
 }
 
-export function TimelineDiamond({ title, date, image, onClick, animationDelay = 0 }: TimelineDiamondProps) {
+export function TimelineDiamond({ title, date, image, onClick, animationDelay = 0, onVisible }: TimelineDiamondProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [shouldLoadImage, setShouldLoadImage] = useState(false)
+  const elementRef = useRef<HTMLDivElement>(null)
 
+  // Intersection Observer for lazy loading
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true)
-    }, animationDelay)
-    
-    return () => clearTimeout(timer)
-  }, [animationDelay])
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShouldLoadImage(true)
+            // Trigger visibility animation with delay
+            setTimeout(() => {
+              setIsVisible(true)
+            }, animationDelay)
+
+            // Notify parent component once that this diamond is now visible
+            onVisible?.()
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      {
+        rootMargin: '50px', // Start loading 50px before element is visible
+        threshold: 0.1
+      }
+    )
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current)
+    }
+
+    return () => {
+      if (elementRef.current) {
+        observer.unobserve(elementRef.current)
+      }
+    }
+  }, [animationDelay, onVisible])
 
   const handleImageLoad = () => {
     setIsLoaded(true)
@@ -30,11 +63,11 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
 
   return (
     <div
+      ref={elementRef}
       className={`group relative w-32 h-32 lg:w-40 lg:h-40 cursor-pointer transition-all duration-500 ease-out
                   hover:scale-110 hover:z-10 ${
                     isVisible ? 'animate-fade-in-up opacity-100' : 'opacity-0'
                   }`}
-      style={{ animationDelay: `${animationDelay}ms` }}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -50,24 +83,31 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
         {/* Timeline image preview */}
         <div className="absolute inset-2 overflow-hidden rounded-sm bg-white/80">
           <div className="w-full h-full transform -rotate-45 scale-110 origin-center flex items-center justify-center">
-            <div className="w-full h-full relative">
-              <OptimizedImage
-                src={image}
-                alt={title}
-                fill
-                quality={75}
-                sizes="(max-width: 768px) 128px, 160px"
-                objectFit="contain"
-                onLoad={handleImageLoad}
-                showPlaceholder={false}
-                className={`transition-all duration-700 ${
-                  isLoaded ? 'opacity-90 group-hover:opacity-100' : 'opacity-0'
-                }`}
-              />
-            </div>
+            {shouldLoadImage ? (
+              <div className="w-full h-full relative">
+                <OptimizedImage
+                  src={image}
+                  alt={title}
+                  fill
+                  quality={75}
+                  sizes="(max-width: 768px) 128px, 160px"
+                  objectFit="contain"
+                  onLoad={handleImageLoad}
+                  showPlaceholder={false}
+                  className={`transition-all duration-700 ${
+                    isLoaded ? 'opacity-90 group-hover:opacity-100' : 'opacity-0'
+                  }`}
+                />
+              </div>
+            ) : (
+              // Placeholder while not in viewport
+              <div className="w-full h-full bg-amber-50 flex items-center justify-center">
+                <div className="w-6 h-6 bg-amber-400 rounded-full animate-pulse opacity-60" />
+              </div>
+            )}
             
-            {/* Loading placeholder */}
-            {!isLoaded && (
+            {/* Loading placeholder for when image is loading */}
+            {shouldLoadImage && !isLoaded && (
               <div className="absolute inset-0 flex items-center justify-center bg-amber-50">
                 <div className="w-6 h-6 bg-amber-400 rounded-full animate-pulse opacity-60" />
               </div>
@@ -79,11 +119,13 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent 
                         opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Shine effect on hover */}
-        <div className={`absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent
-                        transform transition-transform duration-700 ${
-                          isHovered ? 'translate-x-full' : '-translate-x-full'
-                        }`} />
+        {/* Shine effect on hover - only when image is loaded */}
+        {isLoaded && (
+          <div className={`absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent
+                          transform transition-transform duration-700 ${
+                            isHovered ? 'translate-x-full' : '-translate-x-full'
+                          }`} />
+        )}
       </div>
 
       {/* Title and date - positioned to avoid overlap */}
@@ -99,14 +141,14 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
         </div>
       </div>
 
-      {/* Pulse animation ring on load */}
-      {isVisible && !isLoaded && (
+      {/* Pulse animation ring on load - only when visible */}
+      {isVisible && shouldLoadImage && !isLoaded && (
         <div className="absolute inset-0 animate-pulse-glow">
           <div className="w-full h-full transform rotate-45 border-2 border-amber-400 opacity-60" />
         </div>
       )}
 
-      {/* Hover indicator */}
+      {/* Hover indicator - only when loaded */}
       {isHovered && isLoaded && (
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-amber-500 rounded-full 
                         animate-bounce shadow-lg border-2 border-white">

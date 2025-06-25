@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   keywords: 'חטיבת יהודה, צה"ל, יהודה ושומרון, מורשת, היסטוריה',
   authors: [{ name: "חטיבת יהודה" }],
   robots: "index, follow",
+  icons: {
+    icon: '/images/judah-brigade-logo-new.png',
+    shortcut: '/images/judah-brigade-logo-new.png',
+    apple: '/images/judah-brigade-logo-new.png',
+  },
   openGraph: {
     title: "חטיבת יהודה - נעים להכיר",
     description: "האתר הרשמי של חטיבת יהודה",
