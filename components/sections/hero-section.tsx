@@ -84,6 +84,7 @@ export function HeroSection() {
             alt="סמל חטיבת יהודה"
             width={150}
             height={150}
+            priority={true}
             className="mx-auto mb-4 sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] xl:w-[220px] xl:h-[220px] drop-shadow-lg object-contain"
           />
         </div>

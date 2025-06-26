@@ -87,6 +87,15 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
         return pairs;
     }, [items]);
 
+    // Create memoized handlers for better performance
+    const createItemClickHandler = useCallback((item: typeof items[0]) => {
+        return () => onItemSelect(item);
+    }, [onItemSelect]);
+
+    const createVisibilityHandler = useCallback((globalIndex: number) => {
+        return () => handleDiamondVisible(globalIndex);
+    }, [handleDiamondVisible]);
+
     const renderTimelinePair = useCallback((pair: typeof items, pairIndex: number) => {
         return (
             <div key={pairIndex} className="relative mb-12 sm:mb-16">
@@ -106,9 +115,9 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                                     title={pair[0].title}
                                     date={pair[0].date}
                                     image={pair[0].image}
-                                    onClick={() => onItemSelect(pair[0])}
+                                    onClick={createItemClickHandler(pair[0])}
                                     animationDelay={pairIndex * 2 * 50}
-                                    onVisible={() => handleDiamondVisible(pairIndex * 2)}
+                                    onVisible={createVisibilityHandler(pairIndex * 2)}
                                 />
                             </div>
                         )}
@@ -131,9 +140,9 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                                     title={pair[1].title}
                                     date={pair[1].date}
                                     image={pair[1].image}
-                                    onClick={() => onItemSelect(pair[1])}
+                                    onClick={createItemClickHandler(pair[1])}
                                     animationDelay={(pairIndex * 2 + 1) * 50}
-                                    onVisible={() => handleDiamondVisible(pairIndex * 2 + 1)}
+                                    onVisible={createVisibilityHandler(pairIndex * 2 + 1)}
                                 />
                             </div>
                         )}
@@ -141,7 +150,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                 )}
             </div>
         );
-    }, [diamondRefCallback, onItemSelect, handleDiamondVisible]);
+    }, [diamondRefCallback, createItemClickHandler, createVisibilityHandler]);
 
     return (
         <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative px-2 py-4">

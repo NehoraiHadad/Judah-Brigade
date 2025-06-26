@@ -93,6 +93,15 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
         }
     }, [items.length, updateDiamondPositions]);
 
+    // Create memoized handlers for better performance
+    const createItemClickHandler = useCallback((item: typeof items[0]) => {
+        return () => onItemSelect(item);
+    }, [onItemSelect]);
+
+    const createVisibilityHandler = useCallback((globalIndex: number) => {
+        return () => handleDiamondVisible(globalIndex);
+    }, [handleDiamondVisible]);
+
     const renderRow = useCallback((config: typeof rowConfigs[0], rowIndex: number) => {
         const { startIndex, endIndex, isReversed } = config;
         const rowItems = items.slice(startIndex, endIndex);
@@ -126,16 +135,16 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
                                 title={item.title}
                                 date={item.date}
                                 image={item.image}
-                                onClick={() => onItemSelect(item)}
+                                onClick={createItemClickHandler(item)}
                                 animationDelay={globalIndex * 80}
-                                onVisible={() => handleDiamondVisible(globalIndex)}
+                                onVisible={createVisibilityHandler(globalIndex)}
                             />
                         </div>
                     );
                 })}
             </div>
         );
-    }, [items, diamondRefCallback, onItemSelect, handleDiamondVisible]);
+    }, [items, diamondRefCallback, createItemClickHandler, createVisibilityHandler]);
 
     return (
         <div ref={containerRef} className="hidden md:block lg:hidden relative max-w-4xl mx-auto px-8">

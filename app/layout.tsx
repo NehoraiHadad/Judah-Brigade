@@ -8,13 +8,13 @@ export const revalidate = 3600 // Revalidate every hour
 export const fetchCache = 'default-cache'
 
 export const metadata: Metadata = {
-  title: "שביל יהודה - חטיבת יהודה",
-  description: "חוויה היסטורית ייחודית על גדות נחל שורק - שביל יהודה חטיבת יהודה",
-  keywords: ["שביל יהודה", "חטיבת יהודה", "נחל שורק", "היסטוריה", "מורשת"],
+  title: "חטיבת יהודה - נעים להכיר",
+  description: "האתר הרשמי של חטיבת יהודה",
+  keywords: 'חטיבת יהודה, צה"ל, יהודה ושומרון, מורשת, היסטוריה',
   authors: [{ name: "חטיבת יהודה" }],
   openGraph: {
-    title: "שביל יהודה - חטיבת יהודה",
-    description: "חוויה היסטורית ייחודית על גדות נחל שורק",
+    title: "חטיבת יהודה - נעים להכיר",
+    description: "האתר הרשמי של חטיבת יהודה",
     type: "website",
     locale: "he_IL",
   },

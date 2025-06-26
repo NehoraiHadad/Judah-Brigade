@@ -1,7 +1,9 @@
+"use client"
+
 import { SectionTitle } from "@/components/ui/section-title"
 import { CONTENT } from "@/data"
-import { IMAGES } from "@/constants"
 import Image from "next/image"
+import { IMAGES } from "@/constants"
 
 export function CommanderMessageSection() {
   return (
@@ -21,6 +23,7 @@ export function CommanderMessageSection() {
                       src={IMAGES.COMMANDER_BRIGADE}
                       alt="מפקד החטיבה"
                       fill
+                      sizes="(max-width: 640px) 128px, 160px"
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
@@ -36,7 +39,7 @@ export function CommanderMessageSection() {
             </div>
             
             {/* Decorative border */}
-            <div className="mt-8 pt-6 border-t border-amber-200 clear-both">
+            <div className="mt-8 pt-6 ">
               <div className="flex items-center justify-center">
                 <div className="w-16 h-1 bg-gradient-to-r from-amber-400 via-teal-500 to-amber-400 rounded-full"></div>
               </div>
@@ -48,14 +51,17 @@ export function CommanderMessageSection() {
         <div className="hidden lg:grid lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16 items-start">
           {/* Commander Image - Desktop */}
           <div className="lg:col-span-1 animate-fade-in-up delay-300">
-            <div className="relative h-80 sm:h-96 lg:h-[32rem] rounded-2xl overflow-hidden shadow-2xl group">
-              <Image
-                src={IMAGES.COMMANDER_BRIGADE}
-                alt="מפקד החטיבה"
-                fill
-                className="object-cover transition-all duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+            <div className="relative w-full max-w-2xl mx-auto">
+              <div className="relative h-80 sm:h-96 lg:h-[32rem] rounded-2xl overflow-hidden shadow-2xl group">
+                <Image
+                  src={IMAGES.COMMANDER_BRIGADE}
+                  alt="מפקד החטיבה"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition-all duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              </div>
             </div>
           </div>
 
