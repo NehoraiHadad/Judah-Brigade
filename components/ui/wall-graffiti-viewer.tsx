@@ -2,28 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { OptimizedImage } from "@/components/ui/optimized-image"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, X, Expand } from "lucide-react"
 import { useSectionVisibility } from "@/hooks/use-section-visibility"
-
-const WALL_IMAGES = [
-  "/images/timeline/background/image.png",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.27.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.28.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.29.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.30.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.31.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.32.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.35.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.36.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.37.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.38.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.39.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.40.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.41.jpeg",
-  "/images/timeline/background/WhatsApp Image 2025-06-23 at 15.45.42.jpeg",
-]
+import { WALL_IMAGES } from "@/constants"
 
 export function WallGraffitiViewer() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -78,15 +61,16 @@ export function WallGraffitiViewer() {
         onClick={openModal}
       >
         {/* Image preview with aspect ratio */}
-        <div className="w-full aspect-[16/10] bg-gradient-to-br from-stone-200/40 to-amber-100/40">
-          <OptimizedImage
+        <div className="w-full aspect-[16/10] bg-gradient-to-br from-stone-200/40 to-amber-100/40 relative">
+          <Image
             src={WALL_IMAGES[previewImageIndex]}
             alt={`קיר גרפיטי ציר זמן ${previewImageIndex + 1}`}
             fill
-            objectFit="cover"
             quality={60}
             sizes="(max-width: 767px) 112px, 160px"
-            className="transition-all duration-500 group-hover:brightness-105"
+            className="object-cover transition-all duration-500 group-hover:brightness-105"
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
           />
 
           {/* Subtle overlay gradient */}
@@ -142,14 +126,15 @@ export function WallGraffitiViewer() {
           {/* Main image */}
           <div className="relative w-full h-full flex items-center justify-center p-4">
             <div className="relative w-full h-full max-w-3xl max-h-[80vh]">
-              <OptimizedImage
+              <Image
                 src={WALL_IMAGES[currentImageIndex]}
                 alt={`קיר גרפיטי ציר זמן ${currentImageIndex + 1}`}
                 fill
-                objectFit="contain"
                 quality={90}
                 sizes="(max-width: 768px) 100vw, 75vw"
-                className="rounded-lg"
+                className="object-contain rounded-lg"
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
               />
             </div>
 
@@ -159,10 +144,10 @@ export function WallGraffitiViewer() {
               size="icon"
               className="absolute left-4 top-1/2 transform -translate-y-1/2 
                          text-white hover:bg-white/20 bg-black/30 backdrop-blur-sm"
-              onClick={prevImage}
+              onClick={nextImage}
               disabled={WALL_IMAGES.length <= 1}
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronLeft className="w-6 h-6" />
             </Button>
 
             <Button
@@ -170,10 +155,10 @@ export function WallGraffitiViewer() {
               size="icon"
               className="absolute right-4 top-1/2 transform -translate-y-1/2 
                          text-white hover:bg-white/20 bg-black/30 backdrop-blur-sm"
-              onClick={nextImage}
+              onClick={prevImage}
               disabled={WALL_IMAGES.length <= 1}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronRight className="w-6 h-6" />
             </Button>
           </div>
 

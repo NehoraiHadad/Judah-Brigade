@@ -1,5 +1,3 @@
-"use client"
-
 import { SectionTitle } from "@/components/ui/section-title"
 import { CONTENT } from "@/data"
 

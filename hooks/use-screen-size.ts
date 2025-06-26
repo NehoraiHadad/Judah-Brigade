@@ -13,37 +13,40 @@ export function useScreenSize(): {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    // Debounce helper – executed at most once every 120 ms
+    let timeout: number | undefined
     const updateScreenSize = () => {
-      const width = window.innerWidth
-      
-      let newScreenSize: ScreenSize
-      if (width < MOBILE_BREAKPOINT) {
-        newScreenSize = 'mobile'
-      } else if (width < TABLET_BREAKPOINT) {
-        newScreenSize = 'tablet'
-      } else {
-        newScreenSize = 'desktop'
-      }
-      
-      setScreenSize(newScreenSize)
-      setIsLoading(false)
+      clearTimeout(timeout)
+      timeout = window.setTimeout(() => {
+        const width = window.innerWidth
+        
+        let newScreenSize: ScreenSize
+        if (width < MOBILE_BREAKPOINT) {
+          newScreenSize = 'mobile'
+        } else if (width < TABLET_BREAKPOINT) {
+          newScreenSize = 'tablet'
+        } else {
+          newScreenSize = 'desktop'
+        }
+        
+        setScreenSize(newScreenSize)
+        setIsLoading(false)
+      }, 120)
     }
 
     // Initial check
     updateScreenSize()
 
-    // Create media query listeners for precise breakpoint detection
     const mobileQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
     const tabletQuery = window.matchMedia(`(min-width: ${MOBILE_BREAKPOINT}px) and (max-width: ${TABLET_BREAKPOINT - 1}px)`)
     
-    const handleChange = () => updateScreenSize()
-    
-    mobileQuery.addEventListener('change', handleChange)
-    tabletQuery.addEventListener('change', handleChange)
+    mobileQuery.addEventListener('change', updateScreenSize, { passive: true })
+    tabletQuery.addEventListener('change', updateScreenSize, { passive: true })
 
     return () => {
-      mobileQuery.removeEventListener('change', handleChange)
-      tabletQuery.removeEventListener('change', handleChange)
+      clearTimeout(timeout)
+      mobileQuery.removeEventListener('change', updateScreenSize)
+      tabletQuery.removeEventListener('change', updateScreenSize)
     }
   }, [])
 

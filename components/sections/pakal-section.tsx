@@ -1,3 +1,5 @@
+"use client"
+
 import { SectionTitle } from "@/components/ui/section-title"
 import { BattalionCard } from "@/components/ui/battalion-card"
 import { Button } from "@/components/ui/button"

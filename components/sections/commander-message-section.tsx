@@ -1,7 +1,6 @@
-"use client"
-
 import { SectionTitle } from "@/components/ui/section-title"
 import { CONTENT } from "@/data"
+import { IMAGES } from "@/constants"
 import Image from "next/image"
 
 export function CommanderMessageSection() {
@@ -19,7 +18,7 @@ export function CommanderMessageSection() {
                 <div className="float-right mr-0 mb-4 sm:mb-6 ml-4 sm:ml-6">
                   <div className="relative w-32 h-40 sm:w-40 sm:h-48 rounded-xl overflow-hidden shadow-lg">
                     <Image
-                      src="/images/brigade-activities/commander-brigade.jpg"
+                      src={IMAGES.COMMANDER_BRIGADE}
                       alt="מפקד החטיבה"
                       fill
                       className="object-cover"
@@ -51,7 +50,7 @@ export function CommanderMessageSection() {
           <div className="lg:col-span-1 animate-fade-in-up delay-300">
             <div className="relative h-80 sm:h-96 lg:h-[32rem] rounded-2xl overflow-hidden shadow-2xl group">
               <Image
-                src="/images/brigade-activities/commander-brigade.jpg"
+                src={IMAGES.COMMANDER_BRIGADE}
                 alt="מפקד החטיבה"
                 fill
                 className="object-cover transition-all duration-700 group-hover:scale-105"

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { OptimizedImage } from "@/components/ui/optimized-image"
+import Image from "next/image"
 
 interface TimelineDiamondProps {
   title: string
@@ -64,7 +64,7 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
   return (
     <div
       ref={elementRef}
-      className={`group relative w-32 h-32 lg:w-40 lg:h-40 cursor-pointer transition-all duration-500 ease-out
+      className={`group relative w-32 h-32 lg:w-40 lg:h-40 cursor-pointer transition-transform duration-500 ease-out
                   hover:scale-110 hover:z-10 ${
                     isVisible ? 'animate-fade-in-up opacity-100' : 'opacity-0'
                   }`}
@@ -77,7 +77,7 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
         {/* Diamond background with enhanced gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-amber-100 to-amber-200 
                         group-hover:from-amber-100 group-hover:via-amber-200 group-hover:to-amber-300 
-                        transition-all duration-500 border-2 border-amber-300 group-hover:border-amber-400
+                        transition-colors duration-500 border-2 border-amber-300 group-hover:border-amber-400
                         shadow-lg group-hover:shadow-xl" />
 
         {/* Timeline image preview */}
@@ -85,18 +85,18 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
           <div className="w-full h-full transform -rotate-45 scale-110 origin-center flex items-center justify-center">
             {shouldLoadImage ? (
               <div className="w-full h-full relative">
-                <OptimizedImage
+                <Image
                   src={image}
                   alt={title}
                   fill
                   quality={75}
                   sizes="(max-width: 768px) 128px, 160px"
-                  objectFit="contain"
                   onLoad={handleImageLoad}
-                  showPlaceholder={false}
-                  className={`transition-all duration-700 ${
+                  className={`object-contain transition-opacity duration-700 ${
                     isLoaded ? 'opacity-90 group-hover:opacity-100' : 'opacity-0'
                   }`}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                 />
               </div>
             ) : (
@@ -130,7 +130,7 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
 
       {/* Title and date - positioned to avoid overlap */}
       <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-max max-w-36 lg:max-w-44 z-20 pointer-events-none">
-        <div className={`transition-all duration-300 ${
+        <div className={`transition-transform duration-300 ${
           isHovered ? 'transform -translate-y-1 scale-105' : ''
         }`}>
           <p className="text-xs lg:text-sm font-bold text-center text-amber-900 

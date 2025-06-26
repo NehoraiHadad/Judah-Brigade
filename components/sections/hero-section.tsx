@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { ChevronDown } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import { GradientText } from "@/components/ui/gradient-text"
-import Image from "next/image"
 import { CONTENT } from "@/data"
-import { HERO_CAROUSEL_IMAGES } from "@/constants"
+import { HERO_CAROUSEL_IMAGES, IMAGES } from "@/constants"
 
 // Use the centralized HERO_CAROUSEL_IMAGES instead of local array
 const HERO_IMAGES = HERO_CAROUSEL_IMAGES.map((src, index) => ({
@@ -17,12 +17,11 @@ const HERO_IMAGES = HERO_CAROUSEL_IMAGES.map((src, index) => ({
 export function HeroSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  // Gentle automatic rotation every 8 seconds
   useEffect(() => {
+    // Gentle automatic rotation every 8 seconds
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % HERO_IMAGES.length)
     }, 8000)
-
     return () => clearInterval(interval)
   }, [])
 
@@ -48,7 +47,8 @@ export function HeroSection() {
               fill
               className="object-cover"
               priority={index === 0}
-              quality={95}
+              quality={index === 0 ? 85 : 75}
+              sizes="100vw"
             />
           </div>
         ))}
@@ -77,33 +77,32 @@ export function HeroSection() {
       
       {/* Main content */}
       <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-          {/* Logo section */}
-          <div className="mb-4 sm:mb-6 animate-fade-in-up">
-            <Logo
-              src="/images/judah-brigade-logo-new.png"
-              alt="סמל חטיבת יהודה"
-              width={150}
-              height={150}
-              className="mx-auto mb-4 sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] xl:w-[220px] xl:h-[220px] drop-shadow-lg object-contain"
-              priority
-            />
-          </div>
-
-          {/* Main title with enhanced gradient */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-4 sm:mb-6 leading-tight animate-fade-in-up delay-300 text-center drop-shadow-lg">
-            <GradientText variant="primary">
-              {CONTENT.HERO.TITLE}
-            </GradientText>
-          </h1>
-
-          {/* Subtitle with better spacing */}
-          <div className="mb-8 sm:mb-10 animate-fade-in-up delay-500">
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-stone-100 max-w-4xl mx-auto leading-relaxed text-center mb-4 drop-shadow-md">
-              {CONTENT.HERO.SUBTITLE}
-            </p>
-            <div className="w-32 h-1 bg-gradient-to-r from-amber-400 via-white to-teal-400 mx-auto rounded-full shadow-lg"></div>
-          </div>
+        {/* Logo section */}
+        <div className="mb-4 sm:mb-6 animate-fade-in-up">
+          <Logo
+            src={IMAGES.LOGO}
+            alt="סמל חטיבת יהודה"
+            width={150}
+            height={150}
+            className="mx-auto mb-4 sm:w-[180px] sm:h-[180px] lg:w-[200px] lg:h-[200px] xl:w-[220px] xl:h-[220px] drop-shadow-lg object-contain"
+          />
         </div>
+
+        {/* Main title with enhanced gradient */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-4 sm:mb-6 leading-tight animate-fade-in-up delay-300 text-center drop-shadow-lg">
+          <GradientText variant="primary">
+            {CONTENT.HERO.TITLE}
+          </GradientText>
+        </h1>
+
+        {/* Subtitle with better spacing */}
+        <div className="mb-8 sm:mb-10 animate-fade-in-up delay-500">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-stone-100 max-w-4xl mx-auto leading-relaxed text-center mb-4 drop-shadow-md">
+            {CONTENT.HERO.SUBTITLE}
+          </p>
+          <div className="w-32 h-1 bg-gradient-to-r from-amber-400 via-white to-teal-400 mx-auto rounded-full shadow-lg"></div>
+        </div>
+      </div>
       
       {/* Scroll indicator positioned in corner */}
       <div className="absolute bottom-8 right-8 z-30 animate-fade-in-up delay-1000">
