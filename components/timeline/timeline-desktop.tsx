@@ -174,6 +174,7 @@ export function TimelineDesktop({ items, onItemSelect }: TimelineProps) {
                     smoothness={0.75}
                     seed={123}
                     visibleUntilIndex={lastVisibleIndex}
+                    layoutType="desktop"
                 />
             )}
         </div>

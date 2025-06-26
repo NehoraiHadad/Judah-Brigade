@@ -1,10 +1,7 @@
 import React, { useMemo, useState, useLayoutEffect } from 'react';
 import { FootprintIcon } from '../ui/footprint-icon';
-
-interface Point {
-  x: number;
-  y: number;
-}
+import { PathGenerator, Point } from '../../lib/path-generator'; // Correct import
+// Point interface is now imported from path-generator
 
 interface Footstep {
   x: number;
@@ -14,7 +11,7 @@ interface Footstep {
 }
 
 interface TimelineContinuousPathProps {
-  diamonds: Point[];
+  diamonds: Point[]; // Uses the imported Point type
   width: number;
   height: number;
   className?: string;
@@ -24,167 +21,12 @@ interface TimelineContinuousPathProps {
   seed?: number;
   sideOffset?: number;
   visibleUntilIndex?: number;
+  layoutType?: 'mobile' | 'tablet' | 'desktop';
 }
 
-// Seeded random number generator for consistent paths
-class SeededRandom {
-  private seed: number;
+import { useFootsteps } from '../../hooks/use-footsteps';
 
-  constructor(seed: number) {
-    this.seed = seed;
-  }
-
-  next(): number {
-    this.seed = (this.seed * 9301 + 49297) % 233280;
-    return this.seed / 233280;
-  }
-}
-
-// Enhanced path generation with improved curvature and diamond entry/exit points
-class PathGenerator {
-  private rng: SeededRandom;
-  private waviness: number;
-  private smoothness: number;
-  private sideOffset: number;
-
-  constructor(seed: number, waviness: number, smoothness: number, sideOffset: number) {
-    this.rng = new SeededRandom(seed);
-    this.waviness = waviness;
-    this.smoothness = smoothness;
-    this.sideOffset = sideOffset;
-  }
-
-  private generateSideEntryPoints(diamonds: Point[]): Point[] {
-    return diamonds.map((diamond, index) => {
-      // Create entry/exit points on diamond sides for mobile diagonal layout
-      const baseOffset = this.sideOffset || 20;
-      const sideOffset = baseOffset + (this.rng.next() - 0.5) * 10;
-      const verticalVariation = (this.rng.next() - 0.5) * 15; // ±7.5 pixels vertical variation
-      
-      // For mobile diagonal layout: 
-      // Even indices (0,2,4...) are left-top positions
-      // Odd indices (1,3,5...) are right-bottom positions
-      const isLeftPosition = index % 2 === 0;
-      
-      if (isLeftPosition) {
-        // Left-positioned diamonds: exit from right side towards next diamond
-        return {
-          x: diamond.x + sideOffset,
-          y: diamond.y + verticalVariation
-        };
-      } else {
-        // Right-positioned diamonds: enter from left side from previous diamond
-        return {
-          x: diamond.x - sideOffset,
-          y: diamond.y + verticalVariation
-        };
-      }
-    });
-  }
-
-  private calculateControlPoints(prev: Point, curr: Point, next: Point | null, index: number, totalPoints: number): { cp1: Point; cp2: Point } {
-    const dx = curr.x - prev.x;
-    const dy = curr.y - prev.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // Enhanced perpendicular calculation for more natural curves
-    const perpX = -dy / distance || 0;
-    const perpY = dx / distance || 0;
-
-    const isFirst = index === 1;
-    const isLast = index === totalPoints - 1;
-
-    if (isFirst) {
-      return this.generateFirstSegmentControlPoints(prev, curr, dx, dy, perpX, perpY, distance);
-    } else if (isLast) {
-      return this.generateLastSegmentControlPoints(prev, curr, dx, dy, perpX, perpY, distance);
-    } else {
-      return this.generateMidSegmentControlPoints(prev, curr, next!, dx, dy, perpX, perpY, distance, index);
-    }
-  }
-
-  private generateFirstSegmentControlPoints(prev: Point, curr: Point, dx: number, dy: number, perpX: number, perpY: number, distance: number) {
-    const meander1 = this.waviness * distance * 0.4 * (this.rng.next() - 0.5);
-    const meander2 = this.waviness * distance * 0.5 * (this.rng.next() - 0.5);
-    const curvature = (this.rng.next() - 0.5) * 45;
-
-    return {
-      cp1: {
-        x: prev.x + dx * 0.3 + perpX * meander1 + curvature,
-        y: prev.y + dy * 0.3 + perpY * meander1
-      },
-      cp2: {
-        x: curr.x - dx * 0.35 + perpX * meander2 - curvature * 0.7,
-        y: curr.y - dy * 0.35 + perpY * meander2
-      }
-    };
-  }
-
-  private generateLastSegmentControlPoints(prev: Point, curr: Point, dx: number, dy: number, perpX: number, perpY: number, distance: number) {
-    const meander1 = this.waviness * distance * 0.45 * (this.rng.next() - 0.5);
-    const meander2 = this.waviness * distance * 0.35 * (this.rng.next() - 0.5);
-    const curvature = (this.rng.next() - 0.5) * 35;
-
-    return {
-      cp1: {
-        x: prev.x + dx * this.smoothness * 0.4 + perpX * meander1 + curvature,
-        y: prev.y + dy * this.smoothness * 0.4 + perpY * meander1
-      },
-      cp2: {
-        x: curr.x - dx * 0.3 + perpX * meander2 - curvature * 0.8,
-        y: curr.y - dy * 0.3 + perpY * meander2
-      }
-    };
-  }
-
-  private generateMidSegmentControlPoints(prev: Point, curr: Point, next: Point, dx: number, dy: number, perpX: number, perpY: number, distance: number, index: number) {
-    const nextDx = next.x - curr.x;
-    const nextDy = next.y - curr.y;
-    
-    // Enhanced meandering with terrain and wind effects - reduced for mobile
-    const primaryMeander = this.waviness * distance * 0.5 * (this.rng.next() - 0.5);
-    const secondaryMeander = this.waviness * distance * 0.4 * (this.rng.next() - 0.5);
-    
-    // Natural environmental influences - reduced for mobile
-    const terrainInfluence1 = Math.sin(index * 0.8) * 20;
-    const terrainInfluence2 = Math.cos(index * 1.1) * 15;
-    const windEffect1 = Math.sin(index * 1.5) * 12;
-    const windEffect2 = Math.cos(index * 1.3) * 10;
-    
-    // Enhanced seeking behavior for more realistic paths - reduced for mobile
-    const seek1 = (this.rng.next() - 0.5) * 30;
-    const seek2 = (this.rng.next() - 0.5) * 25;
-
-    return {
-      cp1: {
-        x: prev.x + dx * this.smoothness * 0.4 + perpX * primaryMeander + terrainInfluence1 + windEffect1 + seek1,
-        y: prev.y + dy * this.smoothness * 0.4 + perpY * primaryMeander
-      },
-      cp2: {
-        x: curr.x - (nextDx * 0.25 + dx) * this.smoothness * 0.4 + perpX * secondaryMeander + terrainInfluence2 + windEffect2 + seek2,
-        y: curr.y - (nextDy * 0.25 + dy) * this.smoothness * 0.4 + perpY * secondaryMeander
-      }
-    };
-  }
-
-  generatePath(diamonds: Point[]): string {
-    if (diamonds.length < 2) return '';
-
-    const trailPoints = this.generateSideEntryPoints(diamonds);
-    let path = `M ${trailPoints[0].x} ${trailPoints[0].y}`;
-
-    for (let i = 1; i < trailPoints.length; i++) {
-      const prev = trailPoints[i - 1];
-      const curr = trailPoints[i];
-      const next = trailPoints[i + 1] || null;
-
-      const { cp1, cp2 } = this.calculateControlPoints(prev, curr, next, i, trailPoints.length);
-      path += ` C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${curr.x} ${curr.y}`;
-    }
-
-    return path;
-  }
-}
+// SeededRandom and PathGenerator classes are removed from here.
 
 export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
   diamonds,
@@ -197,19 +39,42 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
   seed = 42,
   sideOffset = 20,
   visibleUntilIndex,
+  layoutType = 'desktop',
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isSvgVisible, setIsSvgVisible] = useState(false); // For IntersectionObserver
   const pathRef = React.useRef<SVGSVGElement>(null);
 
   const pathData = useMemo(() => {
-    const pathGenerator = new PathGenerator(seed, waviness, smoothness, sideOffset);
+    const pathGenerator = new PathGenerator(seed, waviness, smoothness, sideOffset, layoutType);
     return pathGenerator.generatePath(diamonds);
-  }, [diamonds, waviness, smoothness, seed, sideOffset]);
+  }, [diamonds, waviness, smoothness, seed, sideOffset, layoutType]);
 
-  const [footsteps, setFootsteps] = useState<Footstep[]>([]);
-  const [existingFootstepsCount, setExistingFootstepsCount] = useState(0);
+  // Memoize getFootstepParams to prevent re-creation on every render
+  const getFootstepParams = useMemo(() => {
+    return () => {
+      if (typeof window === 'undefined') {
+        return { stride: 35, footSpacing: 12, footOffset: 10 };
+      }
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 768) { // Mobile
+        return { stride: 25, footSpacing: 12, footOffset: 10 };
+      } else if (screenWidth < 1024) { // Tablet
+        return { stride: 30, footSpacing: 11, footOffset: 5 };
+      } else { // Desktop
+        return { stride: 35, footSpacing: 12, footOffset: 6 };
+      }
+    };
+  }, []); // Empty dependency array ensures this function is stable
 
-  // Responsive scale calculation
+  const { footsteps, existingFootstepsCount } = useFootsteps({
+    pathData,
+    isVisible: isSvgVisible,
+    visibleUntilIndex,
+    totalPathPoints: diamonds.length,
+    getFootstepParams, // Pass the memoized function
+  });
+
+  // Responsive scale calculation (remains in component as it's purely render-related)
   const getResponsiveScale = () => {
     if (typeof window === 'undefined') return 0.013;
     
@@ -223,47 +88,33 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
     }
   };
 
-  // Responsive footstep parameters
-  const getFootstepParams = () => {
-    if (typeof window === 'undefined') {
-      return { stride: 35, footSpacing: 12, footOffset: 10 };
-    }
+  // Responsive scale calculation (remains in component as it's purely render-related)
+  const getResponsiveScale = () => {
+    if (typeof window === 'undefined') return 0.013;
     
     const screenWidth = window.innerWidth;
     if (screenWidth < 768) { // Mobile
-      return {
-        stride: 25,        // Closer steps for mobile
-        footSpacing: 12,   // Closer left/right spacing
-        footOffset: 10     // Increased offset to avoid overlapping diamond centre
-      };
+      return 0.035;
     } else if (screenWidth < 1024) { // Tablet
-      return {
-        stride: 30,        // Medium spacing
-        footSpacing: 11,   
-        footOffset: 5      
-      };
+      return 0.025;
     } else { // Desktop
-      return {
-        stride: 35,        // Original spacing
-        footSpacing: 12,   
-        footOffset: 6      
-      };
+      return 0.015;
     }
   };
 
-  // Intersection Observer to control animations
+  // Intersection Observer to control animations based on SVG visibility
   useLayoutEffect(() => {
     if (!pathRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          setIsVisible(entry.isIntersecting);
+          setIsSvgVisible(entry.isIntersecting); // Update SVG visibility state
         });
       },
       {
-        rootMargin: '100px',
-        threshold: 0.1
+        rootMargin: '100px', // Start loading/animating when SVG is 100px from viewport
+        threshold: 0.1       // At least 10% of SVG is visible
       }
     );
 
@@ -272,82 +123,9 @@ export const TimelineContinuousPath: React.FC<TimelineContinuousPathProps> = ({
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, []); // Empty dependency array: observe on mount, disconnect on unmount
 
-  useLayoutEffect(() => {
-    if (pathData && typeof document !== 'undefined' && isVisible) {
-      const tempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      tempPath.setAttribute('d', pathData);
-      
-      const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      tempSvg.style.visibility = 'hidden';
-      tempSvg.style.position = 'absolute';
-      tempSvg.appendChild(tempPath);
-      document.body.appendChild(tempSvg);
-      
-      try {
-        const totalLength = tempPath.getTotalLength();
-
-        // Determine the maximum distance along the path that we should create
-        // footsteps for. This prevents recalculation של המסלול – רק מוסיפים צעדים.
-        let maxFootstepDistance = totalLength;
-        if (
-          typeof visibleUntilIndex === 'number' &&
-          visibleUntilIndex >= 0 &&
-          diamonds.length > 1 &&
-          visibleUntilIndex < diamonds.length
-        ) {
-          // Approximate the proportional distance: lastVisible / (totalDiamonds-1)
-          const ratio = visibleUntilIndex / (diamonds.length - 1);
-          maxFootstepDistance = totalLength * ratio;
-        }
-
-        const newFootsteps: Footstep[] = [];
-
-        const params = getFootstepParams();
-        const { stride, footSpacing, footOffset } = params;
-
-        for (let dist = 0; dist < maxFootstepDistance; dist += stride) {
-          // LEFT FOOT
-          const pLeft = tempPath.getPointAtLength(dist);
-          const pLeftAhead = tempPath.getPointAtLength(Math.min(dist + 1, totalLength));
-          const angleLeft = Math.atan2(pLeftAhead.y - pLeft.y, pLeftAhead.x - pLeft.x);
-          const perpLeft = angleLeft + Math.PI / 2;
-
-          newFootsteps.push({
-            x: pLeft.x + Math.cos(perpLeft) * -footOffset,
-            y: pLeft.y + Math.sin(perpLeft) * -footOffset,
-            angle: angleLeft * (180 / Math.PI) + 90,
-            type: 'left',
-          });
-
-          // RIGHT FOOT slightly ahead on the path
-          const distRight = Math.min(dist + footSpacing, totalLength);
-          const pRight = tempPath.getPointAtLength(distRight);
-          const pRightAhead = tempPath.getPointAtLength(Math.min(distRight + 1, totalLength));
-          const angleRight = Math.atan2(pRightAhead.y - pRight.y, pRightAhead.x - pRight.x);
-          const perpRight = angleRight + Math.PI / 2;
-
-          newFootsteps.push({
-            x: pRight.x + Math.cos(perpRight) * footOffset,
-            y: pRight.y + Math.sin(perpRight) * footOffset,
-            angle: angleRight * (180 / Math.PI) + 90,
-            type: 'right',
-          });
-        }
-        
-        // Only update if we actually have new footsteps to add
-        if (newFootsteps.length > existingFootstepsCount) {
-          setExistingFootstepsCount(footsteps.length); // Remember current count before update
-          setFootsteps(newFootsteps);
-        }
-      } catch (error) {
-        console.warn('Error processing path for footsteps:', error);
-      } finally {
-        document.body.removeChild(tempSvg);
-      }
-    }
-  }, [pathData, isVisible, visibleUntilIndex]);
+  // The main useLayoutEffect for calculating footsteps has been moved to useFootsteps hook.
 
   const gradientId = useMemo(() => 
     `footstep-gradient-${Math.random().toString(36).substr(2, 9)}`, 

@@ -180,6 +180,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                     smoothness={0.8}
                     seed={789}
                     visibleUntilIndex={lastVisibleIndex}
+                    layoutType="mobile"
                 />
             )}
         </div>

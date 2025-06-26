@@ -175,6 +175,7 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
                     smoothness={0.7}
                     seed={456}
                     visibleUntilIndex={lastVisibleIndex}
+                    layoutType="tablet"
                 />
             )}
         </div>
