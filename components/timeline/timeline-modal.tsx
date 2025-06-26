@@ -1,154 +1,120 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { X, ChevronLeft, ChevronRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import type { TimelineItem } from "@/types/timeline"
 
 interface TimelineModalProps {
+  item: TimelineItem | null
   isOpen: boolean
   onClose: () => void
-  data: {
-    title: string
-    date: string
-    content: string
-    image: string
-  }
-  onPrevious?: () => void
-  onNext?: () => void
-  canGoPrevious?: boolean
-  canGoNext?: boolean
 }
 
-export function TimelineModal({
-  isOpen,
-  onClose,
-  data,
-  onPrevious,
-  onNext,
-  canGoPrevious = false,
-  canGoNext = false,
-}: TimelineModalProps) {
-  const [imageLoaded, setImageLoaded] = useState(false)
+export function TimelineModal({ item, isOpen, onClose }: TimelineModalProps) {
+  const [isImageLoaded, setIsImageLoaded] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
 
-  if (!isOpen) return null
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose()
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen && item) {
+      setIsImageLoaded(false)
+      setIsClosing(false)
     }
-  }
+  }, [isOpen, item])
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true)
+    setTimeout(() => {
+      onClose()
+      setIsClosing(false)
+    }, 200)
+  }, [onClose])
+
+  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose()
+    }
+  }, [handleClose])
+
+  const handleImageLoad = useCallback(() => {
+    setIsImageLoaded(true)
+  }, [])
+
+  if (!isOpen || !item) return null
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    <div
+      className={`timeline-modal-fullscreen animate-modal-backdrop-fade ${
+        isClosing ? 'opacity-0' : 'opacity-100'
+      }`}
       onClick={handleBackdropClick}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
     >
-      <Card className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl animate-scale-in bg-gradient-to-br from-white via-stone-50 to-amber-50 border-2 border-amber-200">
-        {/* Close button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 h-8 w-8 rounded-full bg-white/80 hover:bg-white/90 text-stone-600 hover:text-stone-800 border border-stone-200 shadow-md"
-        >
-          <X className="h-4 w-4" />
-        </Button>
+      {/* Close button */}
+      <button
+        onClick={handleClose}
+        className="timeline-modal-close text-white hover:text-gray-200 transition-colors"
+        aria-label="סגור חלון"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
 
-        {/* Navigation buttons */}
-        {canGoPrevious && onPrevious && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onPrevious}
-            className="absolute top-1/2 left-4 z-10 h-10 w-10 rounded-full bg-white/80 hover:bg-white/90 text-stone-600 hover:text-stone-800 border border-stone-200 shadow-md transform -translate-y-1/2"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-        )}
+      {/* Modal content */}
+      <div 
+        className={`timeline-modal-image-container animate-timeline-image-zoom ${
+          isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Image container */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <Image
+            src={item.image}
+            alt={item.title}
+            fill
+            priority
+            quality={95}
+            sizes="100vw"
+            className={`object-contain transition-all duration-700 ${
+              isImageLoaded ? 'animate-image-fade-in' : 'opacity-0'
+            }`}
+            onLoad={handleImageLoad}
+          />
 
-        {canGoNext && onNext && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onNext}
-            className="absolute top-1/2 right-4 z-10 h-10 w-10 rounded-full bg-white/80 hover:bg-white/90 text-stone-600 hover:text-stone-800 border border-stone-200 shadow-md transform -translate-y-1/2"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
-        )}
-
-        <CardContent className="p-0 flex flex-col lg:flex-row max-h-[90vh]">
-          {/* Image section */}
-          <div className="lg:w-1/2 relative bg-stone-100 min-h-[300px] lg:min-h-[500px]">
-            <Image
-              src={data.image}
-              alt={data.title}
-              fill
-              quality={90}
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className={cn(
-                "object-contain transition-opacity duration-700",
-                imageLoaded ? "opacity-100" : "opacity-0"
-              )}
-              onLoad={() => setImageLoaded(true)}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-            />
-            
-            {/* Image loading placeholder */}
-            {!imageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-amber-50 to-amber-100">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                  <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                </div>
+          {/* Loading state */}
+          {!isImageLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="text-center text-white">
+                <div className="image-loading-spinner mx-auto mb-4" />
+                <p className="text-sm">טוען תמונה...</p>
               </div>
-            )}
-          </div>
-
-          {/* Content section */}
-          <div className="lg:w-1/2 p-6 lg:p-8 overflow-y-auto">
-            <div className="space-y-4">
-              {/* Date badge */}
-              <div className="inline-block px-3 py-1 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-sm font-semibold rounded-full shadow-md">
-                {data.date}
-              </div>
-
-              {/* Title */}
-              <h2 className="text-2xl lg:text-3xl font-bold text-stone-800 leading-tight">
-                {data.title}
-              </h2>
-
-              {/* Decorative line */}
-              <div className="w-16 h-1 bg-gradient-to-r from-amber-400 via-teal-500 to-amber-400 rounded-full"></div>
-
-              {/* Content */}
-              <div className="prose prose-stone max-w-none text-stone-700 leading-relaxed">
-                {data.content.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="mb-4 text-base lg:text-lg">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-
-              {/* Navigation indicators */}
-              {(canGoPrevious || canGoNext) && (
-                <div className="flex items-center justify-center space-x-2 pt-4 border-t border-stone-200">
-                  <span className="text-xs text-stone-500">
-                    {canGoPrevious && "◀ "}
-                    הקש על החצים לניווט
-                    {canGoNext && " ▶"}
-                  </span>
-                </div>
-              )}
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
