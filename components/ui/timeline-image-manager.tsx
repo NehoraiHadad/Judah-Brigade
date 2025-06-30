@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import Image from "next/image"
 import type { TimelineItem } from "@/types/timeline"
+import { cn } from "@/lib/utils"
 
 interface TimelineImageManagerProps {
   items: TimelineItem[]
@@ -32,7 +33,7 @@ export function TimelineImageManager({
 
       try {
         if (!preloadCache.current.has(item.image)) {
-          const img = new Image()
+          const img = new window.Image()
           img.src = item.image
           
           await new Promise((resolve, reject) => {
@@ -74,6 +75,8 @@ export function TimelineImageManager({
     if (distance <= 2) return 85  // Near images - high quality
     return 75                     // Far images - standard quality
   }, [currentIndex])
+
+
 
   return (
     <>

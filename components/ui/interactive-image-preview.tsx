@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
 import { HERO_CAROUSEL_IMAGES } from "@/constants"
 
 interface InteractiveImagePreviewProps {
@@ -21,12 +22,14 @@ export function InteractiveImagePreview({
     <div className={`absolute left-6 top-1/2 transform -translate-y-1/2 z-30 hidden lg:block ${className}`}>
       <div className="flex flex-col space-y-3">
         {HERO_CAROUSEL_IMAGES.map((image, index) => (
-          <button
+          <Button
             key={index}
+            variant="carouselLight"
+            size="icon"
             onClick={() => onImageSelect(index)}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
-            className={`relative w-16 h-12 rounded-lg overflow-hidden transition-all duration-300 ${
+            className={`relative w-16 h-12 rounded-lg overflow-hidden transition-all duration-300 p-0 ${
               index === currentIndex 
                 ? "ring-2 ring-amber-400 scale-110 shadow-lg" 
                 : "opacity-70 hover:opacity-100 hover:scale-105"
@@ -54,7 +57,7 @@ export function InteractiveImagePreview({
             {index === currentIndex && (
               <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
             )}
-          </button>
+          </Button>
         ))}
       </div>
       

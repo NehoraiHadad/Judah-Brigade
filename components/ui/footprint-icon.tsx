@@ -6,7 +6,7 @@ interface FootprintIconProps extends React.SVGProps<SVGSVGElement> {
   gFill?: string;
 }
 
-export const FootprintIcon = ({ type, gClassName, gFill, ...props }: FootprintIconProps) => {
+const FootprintIconComponent = ({ type, gClassName, gFill, ...props }: FootprintIconProps) => {
   if (type === 'left') {
     return (
       <svg
@@ -60,4 +60,7 @@ export const FootprintIcon = ({ type, gClassName, gFill, ...props }: FootprintIc
   }
 
   return null;
-}; 
+};
+
+// Memoize component for performance
+export const FootprintIcon = React.memo(FootprintIconComponent); 

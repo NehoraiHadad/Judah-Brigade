@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
+import { NavigationDots } from "@/components/ui/navigation-dots"
 import { HERO_CAROUSEL_IMAGES } from "@/constants"
 
 interface HeroBackgroundCarouselProps {
@@ -100,21 +101,15 @@ export function HeroBackgroundCarousel({
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-teal-600/20 via-transparent to-amber-600/20" />
       </div>
       
-      {/* Hide carousel indicators when only one image */}
+      {/* Navigation dots - hide when only one image */}
       {HERO_CAROUSEL_IMAGES.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-30">
-          {HERO_CAROUSEL_IMAGES.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentIndex 
-                  ? "bg-amber-400 scale-125" 
-                  : "bg-white/50 hover:bg-white/75"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
+          <NavigationDots
+            total={HERO_CAROUSEL_IMAGES.length}
+            current={currentIndex}
+            onSelect={setCurrentIndex}
+            variant="default"
+          />
         </div>
       )}
     </div>

@@ -147,7 +147,7 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
     }, [items, diamondRefCallback, createItemClickHandler, createVisibilityHandler]);
 
     return (
-        <div ref={containerRef} className="hidden md:block lg:hidden relative max-w-4xl mx-auto px-8">
+        <div ref={containerRef} className="hidden sm:block lg:hidden relative max-w-4xl mx-auto px-6">
             <div className="text-center mb-14">
                 {/* Enhanced title with decorative elements */}
                 <div className="timeline-title-container">
@@ -160,7 +160,7 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
                     </h2>
                 </div>
             </div>
-            <div className="space-y-24">
+            <div className="space-y-28">
                 {rowConfigs.map(renderRow)}
             </div>
             

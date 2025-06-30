@@ -1,6 +1,9 @@
 "use client"
 
 import { SectionTitle } from "@/components/ui/section-title"
+import { ContentCard } from "@/components/ui/content-card"
+import { NavigationDots } from "@/components/ui/navigation-dots"
+import { Button } from "@/components/ui/button"
 import { useCarousel } from "@/hooks/use-carousel"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
@@ -19,7 +22,7 @@ export function AboutSection() {
         <div className="space-y-6 sm:space-y-8 mb-12 sm:mb-16">
           
           {/* Mission Section - Compact, Full Width */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in-up delay-300">
+          <ContentCard variant="compact" animationDelay="300" enableHoverScale>
             <h3 className="text-xl sm:text-2xl font-bold text-teal-800 mb-4 text-center">
               {CONTENT.ABOUT.MISSION.TITLE}
             </h3>
@@ -27,10 +30,10 @@ export function AboutSection() {
             <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-teal-700 text-center whitespace-pre-line max-w-4xl mx-auto">
               {CONTENT.ABOUT.MISSION.CONTENT}
             </p>
-          </div>
+          </ContentCard>
 
           {/* Sector Characteristics Section - Extended, Full Width */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in-up delay-500">
+          <ContentCard variant="extended" animationDelay="500" enableHoverScale>
             <h3 className="text-xl sm:text-2xl font-bold text-teal-800 mb-4 text-center">
               {CONTENT.ABOUT.SECTOR_CHARACTERISTICS.TITLE}
             </h3>
@@ -40,7 +43,7 @@ export function AboutSection() {
                 {CONTENT.ABOUT.SECTOR_CHARACTERISTICS.CONTENT}
               </p>
             </div>
-          </div>
+          </ContentCard>
         </div>
 
         {/* Brigade Activities Image Carousel */}
@@ -57,33 +60,35 @@ export function AboutSection() {
               className="object-cover transition-all duration-700 group-hover:scale-105"
             />
 
-            <button
+            <Button
+              variant="carousel"
+              size="carouselIcon"
               onClick={prev}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all duration-300 backdrop-blur-sm hover:scale-110"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2"
+              aria-label="תמונה קודמת"
             >
               <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
+            </Button>
 
-            <button
+            <Button
+              variant="carousel"
+              size="carouselIcon"
               onClick={next}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all duration-300 backdrop-blur-sm hover:scale-110"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2"
+              aria-label="תמונה הבאה"
             >
               <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
-          </div>
+            </Button>
 
-          <div className="flex justify-center items-center mt-6 gap-2">
-            {CAROUSEL_IMAGES.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goTo(index)}
-                className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? "bg-amber-600 scale-125 shadow-lg"
-                    : "bg-gray-300 hover:bg-gray-400 hover:scale-110"
-                }`}
+            {/* Navigation dots on image with backdrop */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm px-3 py-2 rounded-full">
+              <NavigationDots
+                total={CAROUSEL_IMAGES.length}
+                current={currentIndex}
+                onSelect={goTo}
+                variant="default"
               />
-            ))}
+            </div>
           </div>
         </div>
       </div>

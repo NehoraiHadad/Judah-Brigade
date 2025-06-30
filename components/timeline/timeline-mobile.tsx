@@ -5,6 +5,13 @@ import { TimelineContinuousPath } from "./timeline-continuous-path"
 import { debounce } from "@/lib/timeline-utils";
 import type { TimelineProps } from "@/types/timeline"
 import { useVisibleDiamonds } from "@/hooks/use-visible-diamonds"
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+} from "@/components/ui/carousel";
+import { MobileCarouselControls } from "../ui/mobile-carousel-controls";
+import { type CarouselApi } from "@/components/ui/carousel"
 
 interface Point {
   x: number;
@@ -12,16 +19,19 @@ interface Point {
 }
 
 export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
+    const [isReady, setIsReady] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const diamondRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [diamondPositions, setDiamondPositions] = useState<Point[]>([]);
-    const [isReady, setIsReady] = useState(false);
-
-    // Track which diamonds have been revealed
     const { lastVisibleIndex, handleDiamondVisible } = useVisibleDiamonds();
+    const [api, setApi] = useState<CarouselApi>()
+    const [current, setCurrent] = useState(0)
+    const [count, setCount] = useState(0)
 
     const updateDiamondPositions = useCallback(() => {
-        if (!containerRef.current || diamondRefs.current.length === 0) return;
+        if (!containerRef.current || diamondRefs.current.length !== items.length) {
+            return;
+        }
 
         const containerRect = containerRef.current.getBoundingClientRect();
         const positions: Point[] = [];
@@ -153,8 +163,8 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
     }, [diamondRefCallback, createItemClickHandler, createVisibilityHandler]);
 
     return (
-        <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative px-2 py-4">
-            <div className="text-center mb-16">
+        <div className="sm:hidden">
+             <div className="text-center mb-16">
                 {/* Enhanced title with decorative elements */}
                 <div className="timeline-title-container">
                     {/* Background decorative element */}
@@ -166,22 +176,29 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                     </h2>
                 </div>
             </div>
-            {itemPairs.map(renderTimelinePair)}
             
-            {isReady && containerRef.current && diamondPositions.length > 1 && lastVisibleIndex >= 1 && (
-                <TimelineContinuousPath
-                    diamonds={diamondPositions.filter((_, index) => !items[index]?.isHidden)}
-                    width={containerRef.current.clientWidth}
-                    height={containerRef.current.clientHeight}
-                    className="transition-opacity duration-500"
-                    animated={true}
-                    sideOffset={60}
-                    waviness={1.2}
-                    smoothness={0.8}
-                    seed={789}
-                    visibleUntilIndex={lastVisibleIndex}
-                />
-            )}
+            <Carousel setApi={setApi} className="w-full">
+                <CarouselContent>
+            <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative px-2 py-4">
+                {itemPairs.map(renderTimelinePair)}
+                
+                {isReady && containerRef.current && diamondPositions.length > 1 && lastVisibleIndex >= 1 && (
+                    <TimelineContinuousPath
+                        diamonds={diamondPositions.filter((_, index) => !items[index]?.isHidden)}
+                        width={containerRef.current.clientWidth}
+                        height={containerRef.current.clientHeight}
+                        className="transition-opacity duration-500"
+                        animated={true}
+                        sideOffset={60}
+                        waviness={1.2}
+                        smoothness={0.8}
+                        seed={789}
+                        visibleUntilIndex={lastVisibleIndex}
+                    />
+                )}
+            </div>
+            </CarouselContent>
+            </Carousel>
         </div>
     )
 }

@@ -1,4 +1,5 @@
 import { SectionTitle } from "@/components/ui/section-title"
+import { ContentCard } from "@/components/ui/content-card"
 import { CONTENT } from "@/data"
 
 export function IntroductionSection() {
@@ -9,7 +10,7 @@ export function IntroductionSection() {
           {CONTENT.INTRODUCTION.TITLE}
         </SectionTitle>
         
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 sm:p-10 lg:p-12 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 animate-fade-in-up">
+        <ContentCard>
           <div className="prose prose-lg sm:prose-xl lg:prose-2xl mx-auto text-center">
             <div className="text-teal-700 leading-relaxed space-y-6 whitespace-pre-line">
               {CONTENT.INTRODUCTION.CONTENT}
@@ -20,7 +21,7 @@ export function IntroductionSection() {
           <div className="flex justify-center mt-8">
             <div className="w-24 h-1 bg-gradient-to-r from-amber-400 via-teal-500 to-amber-400 rounded-full shadow-lg"></div>
           </div>
-        </div>
+        </ContentCard>
       </div>
     </section>
   )

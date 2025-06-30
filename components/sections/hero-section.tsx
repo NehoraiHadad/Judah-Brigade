@@ -5,6 +5,8 @@ import Image from "next/image"
 import { ChevronDown } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 import { GradientText } from "@/components/ui/gradient-text"
+import { NavigationDots } from "@/components/ui/navigation-dots"
+import { Button } from "@/components/ui/button"
 import { CONTENT } from "@/data"
 import { HERO_CAROUSEL_IMAGES, IMAGES } from "@/constants"
 
@@ -59,20 +61,14 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-br from-teal-950/30 via-transparent to-amber-950/30" />
       </div>
       
-      {/* Minimal indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-30">
-        {HERO_IMAGES.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentImageIndex(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-500 ${
-              index === currentImageIndex 
-                ? "bg-white scale-150 shadow-lg" 
-                : "bg-white/40 hover:bg-white/70"
-            }`}
-            aria-label={`Switch to image ${index + 1}`}
-          />
-        ))}
+      {/* Navigation dots */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
+        <NavigationDots
+          total={HERO_IMAGES.length}
+          current={currentImageIndex}
+          onSelect={setCurrentImageIndex}
+          variant="small"
+        />
       </div>
       
       {/* Main content */}
@@ -107,16 +103,16 @@ export function HeroSection() {
       
       {/* Scroll indicator positioned in corner */}
       <div className="absolute bottom-8 right-8 z-30 animate-fade-in-up delay-1000">
-        <button
+        <Button
+          variant="scrollIndicator"
+          size="scrollIcon"
           onClick={scrollToNext}
-          className="group flex flex-col items-center text-white/70 hover:text-white transition-all duration-300"
           aria-label="Scroll to next section"
+          className="flex-col"
         >
           <span className="text-xs mb-1 font-medium tracking-wide opacity-80 group-hover:opacity-100">גלה עוד</span>
-          <div className="p-3 rounded-full border border-white/30 group-hover:border-white/60 transition-all duration-300 group-hover:bg-white/20 backdrop-blur-sm">
-            <ChevronDown className="h-5 w-5 animate-bounce group-hover:scale-110 transition-transform duration-300" />
-          </div>
-        </button>
+          <ChevronDown className="h-5 w-5 animate-bounce group-hover:scale-110 transition-transform duration-300" />
+        </Button>
       </div>
     </section>
   )

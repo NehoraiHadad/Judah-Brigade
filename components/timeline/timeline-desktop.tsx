@@ -159,7 +159,7 @@ export function TimelineDesktop({ items, onItemSelect }: TimelineProps) {
                     </h2>
                 </div>
             </div>
-            <div className="space-y-32 xl:space-y-36 pt-20">
+            <div className="space-y-32 xl:space-y-36">
                 {rowConfigs.map(renderRow)}
             </div>
             
