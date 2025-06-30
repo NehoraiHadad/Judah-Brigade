@@ -6,6 +6,7 @@ import { ContentCard } from "@/components/ui/content-card"
 import { NavigationDots } from "@/components/ui/navigation-dots"
 import { Button } from "@/components/ui/button"
 import { useCarousel } from "@/hooks/use-carousel"
+import { useReadMore } from "@/hooks/use-read-more"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { CONTENT } from "@/data"
@@ -13,6 +14,13 @@ import { CAROUSEL_IMAGES } from "@/constants"
 
 export function AboutSection() {
   const { currentIndex, next, prev, goTo } = useCarousel(CAROUSEL_IMAGES.length)
+  const { displayText, isExpanded, hasMore, toggleExpanded } = useReadMore(
+    CONTENT.ABOUT.SECTOR_CHARACTERISTICS.CONTENT,
+    { 
+      truncateAt: "בחברון פועל גדוד העיר, האמון על ביטחון העיר חברון וסביבתה.",
+      mobiletruncateAt: "הווה מאתגר ואחריות לעתיד."
+    }
+  )
 
   return (
     <section id="about" className="py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-stone-50 to-stone-100">
@@ -41,9 +49,21 @@ export function AboutSection() {
             <GradientDivider size="sm" variant="minimal" className="mb-6" />
             <div className="columns-1 lg:columns-2 xl:columns-2 gap-6 lg:gap-8 text-sm sm:text-base lg:text-lg leading-relaxed text-teal-700 text-justify space-y-4">
               <p className="whitespace-pre-line break-words">
-                {CONTENT.ABOUT.SECTOR_CHARACTERISTICS.CONTENT}
+                {displayText}
               </p>
             </div>
+            
+            {/* Read More Button */}
+            {hasMore && (
+              <div className="flex justify-center mt-8">
+                <Button 
+                  variant="readMore" 
+                  onClick={toggleExpanded}
+                >
+                  {isExpanded ? "הצג פחות" : "קרא עוד"}
+                </Button>
+              </div>
+            )}
           </ContentCard>
         </div>
 

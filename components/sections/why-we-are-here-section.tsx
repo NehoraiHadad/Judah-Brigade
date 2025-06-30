@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { SectionTitle } from "@/components/ui/section-title";
 import { GradientDivider } from "@/components/ui/gradient-divider";
+import { ImagePreviewModal } from "@/components/ui/image-preview-modal";
 import { CONTENT } from "@/data";
+import { IMAGES } from "@/constants";
 
 export function WhyWeAreHereSection() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -99,6 +103,14 @@ export function WhyWeAreHereSection() {
       );
   };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <section
       ref={sectionRef}
@@ -116,6 +128,31 @@ export function WhyWeAreHereSection() {
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         <div className="text-center mb-16 sm:mb-20">
+          {/* Memorial Circle Image */}
+          <div className="mb-8 sm:mb-12 flex justify-center">
+            <div 
+              className="relative w-72 h-54 sm:w-96 sm:h-72 lg:w-[32rem] lg:h-96 cursor-pointer group transition-all duration-300 hover:scale-105 bg-black/10 rounded-lg"
+              onClick={openModal}
+            >
+              <Image
+                src={IMAGES.MEMORY_CIRCLE}
+                alt="מעגל הזיכרון - חטיבת יהודה"
+                fill
+                className="object-contain rounded-lg shadow-2xl transition-all duration-300"
+                sizes="(max-width: 640px) 288px, (max-width: 1024px) 384px, 512px"
+              />
+              {/* Border effect - separate element */}
+              <div className="absolute inset-0 border-4 border-amber-300/30 group-hover:border-amber-300/60 rounded-lg transition-all duration-300 pointer-events-none"></div>
+              
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-all duration-300 flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-sm px-4 py-2 text-sm font-bold text-teal-800 rounded-full shadow-lg">
+                  לחץ לצפייה מלאה
+                </div>
+              </div>
+            </div>
+          </div>
+
           <SectionTitle className="text-amber-100 mb-8">
             {CONTENT.WHY_WE_ARE_HERE.TITLE}
           </SectionTitle>
@@ -142,6 +179,15 @@ export function WhyWeAreHereSection() {
           </div>
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      <ImagePreviewModal
+        src={IMAGES.MEMORY_CIRCLE}
+        alt="מעגל הזיכרון - חטיבת יהודה"
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title="מעגל הזיכרון"
+      />
     </section>
   );
 }

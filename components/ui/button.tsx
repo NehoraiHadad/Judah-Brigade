@@ -25,7 +25,8 @@ const buttonVariants = cva(
         modalNav: "text-white hover:bg-white/20 bg-black/30 backdrop-blur-sm",
         scrollIndicator: "group flex flex-col items-center text-white/70 hover:text-white border border-white/30 hover:border-white/60 hover:bg-white/20 backdrop-blur-sm rounded-full p-3",
         heroPrimary: "relative overflow-hidden bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white hover:from-amber-700 hover:via-amber-600 hover:to-amber-700 shadow-lg hover:shadow-xl",
-        heroSecondary: "relative overflow-hidden backdrop-blur-md bg-gradient-to-r from-white/10 to-white/20 border-2 border-white/30 text-white hover:bg-white/30"
+        heroSecondary: "relative overflow-hidden backdrop-blur-md bg-gradient-to-r from-white/10 to-white/20 border-2 border-white/30 text-white hover:bg-white/30",
+        readMore: "text-teal-600 hover:text-teal-700 hover:bg-teal-50/50 underline-offset-4 hover:underline transition-all duration-200 font-medium"
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -1,6 +1,5 @@
 export interface Battalion {
   name: string
-  description: string
   link: string
 }
 

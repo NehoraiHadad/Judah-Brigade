@@ -16,9 +16,6 @@ export function BattalionCard({ battalion, index }: BattalionCardProps) {
           <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-teal-800 group-hover:text-teal-900 transition-colors">
             {battalion.name}
           </h3>
-          <p className="text-teal-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base font-medium">
-            {battalion.description}
-          </p>
         </div>
         <Button className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
           לכניסה
