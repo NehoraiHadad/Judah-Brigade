@@ -40,18 +40,26 @@ export function FooterSection() {
                 {CONTENT.FOOTER.CONTACT_TITLE}
               </h4>
               <div className="flex flex-col sm:flex-row items-center md:items-start gap-4 sm:gap-8">
-                <div className="flex items-center text-sm sm:text-base group cursor-pointer">
+                <a 
+                  href={`tel:${CONTENT.FOOTER.EDUCATION_OFFICER_PHONE}`}
+                  className="flex items-center text-sm sm:text-base group cursor-pointer hover:no-underline"
+                  aria-label={`התקשר ל ${CONTENT.FOOTER.EDUCATION_OFFICER_PHONE}`}
+                >
                   <Phone className="h-4 w-4 sm:h-5 sm:w-5 ml-3 text-amber-400 group-hover:scale-110 transition-transform" />
                   <span className="group-hover:text-amber-200 transition-colors font-medium">
                     {CONTENT.FOOTER.EDUCATION_OFFICER_PHONE}
                   </span>
-                </div>
-                <div className="flex items-center text-sm sm:text-base group cursor-pointer">
+                </a>
+                <a 
+                  href={`mailto:${CONTENT.FOOTER.EMAIL}`}
+                  className="flex items-center text-sm sm:text-base group cursor-pointer hover:no-underline"
+                  aria-label={`שלח מייל ל ${CONTENT.FOOTER.EMAIL}`}
+                >
                   <Mail className="h-4 w-4 sm:h-5 sm:w-5 ml-3 text-amber-400 group-hover:scale-110 transition-transform" />
                   <span className="group-hover:text-amber-200 transition-colors font-medium">
                     {CONTENT.FOOTER.EMAIL}
                   </span>
-                </div>
+                </a>
               </div>
             </div>
           </div>

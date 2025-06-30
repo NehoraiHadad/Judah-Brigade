@@ -1,36 +1,37 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { ChevronDown } from "lucide-react"
-import { Logo } from "@/components/ui/logo"
-import { GradientText } from "@/components/ui/gradient-text"
-import { NavigationDots } from "@/components/ui/navigation-dots"
-import { Button } from "@/components/ui/button"
-import { CONTENT } from "@/data"
-import { HERO_CAROUSEL_IMAGES, IMAGES } from "@/constants"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { ChevronDown } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
+import { GradientText } from "@/components/ui/gradient-text";
+import { NavigationDots } from "@/components/ui/navigation-dots";
+import { Button } from "@/components/ui/button";
+import { CONTENT } from "@/data";
+import { HERO_CAROUSEL_IMAGES, IMAGES } from "@/constants";
+import { GradientDivider } from "@/components/ui/gradient-divider";
 
 // Use the centralized HERO_CAROUSEL_IMAGES instead of local array
 const HERO_IMAGES = HERO_CAROUSEL_IMAGES.map((src, index) => ({
   src,
-  alt: `Hero image ${index + 1}`
-}))
+  alt: `Hero image ${index + 1}`,
+}));
 
 export function HeroSection() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     // Gentle automatic rotation every 8 seconds
     const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % HERO_IMAGES.length)
-    }, 8000)
-    return () => clearInterval(interval)
-  }, [])
+      setCurrentImageIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   const scrollToNext = () => {
-    const nextSection = document.querySelector('#introduction')
-    nextSection?.scrollIntoView({ behavior: 'smooth' })
-  }
+    const nextSection = document.querySelector("#introduction");
+    nextSection?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -54,13 +55,13 @@ export function HeroSection() {
             />
           </div>
         ))}
-        
+
         {/* Enhanced gradient overlay for optimal readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/65 via-black/45 to-black/75" />
         {/* Subtle brand color overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-teal-950/30 via-transparent to-amber-950/30" />
       </div>
-      
+
       {/* Navigation dots */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
         <NavigationDots
@@ -70,7 +71,7 @@ export function HeroSection() {
           variant="small"
         />
       </div>
-      
+
       {/* Main content */}
       <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         {/* Logo section */}
@@ -87,9 +88,7 @@ export function HeroSection() {
 
         {/* Main title with enhanced gradient */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-4 sm:mb-6 leading-tight animate-fade-in-up delay-300 text-center drop-shadow-lg">
-          <GradientText variant="primary">
-            {CONTENT.HERO.TITLE}
-          </GradientText>
+          <GradientText variant="primary">{CONTENT.HERO.TITLE}</GradientText>
         </h1>
 
         {/* Subtitle with better spacing */}
@@ -97,10 +96,10 @@ export function HeroSection() {
           <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-stone-100 max-w-4xl mx-auto leading-relaxed text-center mb-4 drop-shadow-md">
             {CONTENT.HERO.SUBTITLE}
           </p>
-          <div className="w-32 h-1 bg-gradient-to-r from-amber-400 via-white to-teal-400 mx-auto rounded-full shadow-lg"></div>
+          <GradientDivider size="lg" variant="primary" className="shadow-lg" />
         </div>
       </div>
-      
+
       {/* Scroll indicator positioned in corner */}
       <div className="absolute bottom-8 right-8 z-30 animate-fade-in-up delay-1000">
         <Button
@@ -110,10 +109,12 @@ export function HeroSection() {
           aria-label="Scroll to next section"
           className="flex-col"
         >
-          <span className="text-xs mb-1 font-medium tracking-wide opacity-80 group-hover:opacity-100">גלה עוד</span>
+          <span className="text-xs mb-1 font-medium tracking-wide opacity-80 group-hover:opacity-100">
+            גלה עוד
+          </span>
           <ChevronDown className="h-5 w-5 animate-bounce group-hover:scale-110 transition-transform duration-300" />
         </Button>
       </div>
     </section>
-  )
+  );
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { SectionTitle } from "@/components/ui/section-title"
+import { GradientDivider } from "@/components/ui/gradient-divider"
 import { CONTENT } from "@/data"
 import Image from "next/image"
 import { IMAGES } from "@/constants"
@@ -41,7 +42,7 @@ export function CommanderMessageSection() {
             {/* Decorative border */}
             <div className="mt-8 pt-6 ">
               <div className="flex items-center justify-center">
-                <div className="w-16 h-1 bg-gradient-to-r from-amber-400 via-teal-500 to-amber-400 rounded-full"></div>
+                <GradientDivider size="sm" variant="accent" />
               </div>
             </div>
           </div>
@@ -81,7 +82,7 @@ export function CommanderMessageSection() {
               {/* Decorative border - Desktop */}
               <div className="mt-8 pt-4">
                 <div className="flex items-center justify-center">
-                  <div className="w-16 h-1 bg-gradient-to-r from-amber-400 via-teal-500 to-amber-400 rounded-full"></div>
+                  <GradientDivider size="sm" variant="accent" />
                 </div>
               </div>
             </div>

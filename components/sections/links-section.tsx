@@ -1,6 +1,8 @@
 "use client"
 
 import { Globe } from "lucide-react"
+import { GradientDivider } from "@/components/ui/gradient-divider"
+
 import { CONTENT } from "@/data"
 // Import from simple-icons library
 import { siInstagram, siWhatsapp, siYoutube } from 'simple-icons'
@@ -71,7 +73,7 @@ export function LinksSection() {
           <p className="text-xl sm:text-2xl lg:text-3xl text-teal-600 font-medium mb-8 max-w-4xl mx-auto leading-relaxed">
             {CONTENT.LINKS_SECTION.SUBTITLE}
           </p>
-          <div className="w-32 h-1 bg-gradient-to-r from-amber-400 via-teal-500 to-amber-400 mx-auto rounded-full mb-8"></div>
+          <GradientDivider size="lg" variant="accent" className="mb-8" />
           <p className="text-lg sm:text-xl lg:text-2xl text-amber-700 font-bold max-w-3xl mx-auto">
             {CONTENT.LINKS_SECTION.ACTION_TEXT}
           </p>

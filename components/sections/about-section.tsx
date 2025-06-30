@@ -1,6 +1,7 @@
 "use client"
 
 import { SectionTitle } from "@/components/ui/section-title"
+import { GradientDivider } from "@/components/ui/gradient-divider"
 import { ContentCard } from "@/components/ui/content-card"
 import { NavigationDots } from "@/components/ui/navigation-dots"
 import { Button } from "@/components/ui/button"
@@ -26,7 +27,7 @@ export function AboutSection() {
             <h3 className="text-xl sm:text-2xl font-bold text-teal-800 mb-4 text-center">
               {CONTENT.ABOUT.MISSION.TITLE}
             </h3>
-            <div className="w-16 h-1 bg-gradient-to-r from-amber-400 to-teal-500 mx-auto mb-6 rounded-full"></div>
+            <GradientDivider size="sm" variant="minimal" className="mb-6" />
             <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-teal-700 text-center whitespace-pre-line max-w-4xl mx-auto">
               {CONTENT.ABOUT.MISSION.CONTENT}
             </p>
@@ -37,7 +38,7 @@ export function AboutSection() {
             <h3 className="text-xl sm:text-2xl font-bold text-teal-800 mb-4 text-center">
               {CONTENT.ABOUT.SECTOR_CHARACTERISTICS.TITLE}
             </h3>
-            <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-amber-400 mx-auto mb-6 rounded-full"></div>
+            <GradientDivider size="sm" variant="minimal" className="mb-6" />
             <div className="columns-1 lg:columns-2 xl:columns-2 gap-6 lg:gap-8 text-sm sm:text-base lg:text-lg leading-relaxed text-teal-700 text-justify space-y-4">
               <p className="whitespace-pre-line break-words">
                 {CONTENT.ABOUT.SECTOR_CHARACTERISTICS.CONTENT}

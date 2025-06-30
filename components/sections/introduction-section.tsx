@@ -1,5 +1,6 @@
 import { SectionTitle } from "@/components/ui/section-title"
 import { ContentCard } from "@/components/ui/content-card"
+import { GradientDivider } from "@/components/ui/gradient-divider"
 import { CONTENT } from "@/data"
 
 export function IntroductionSection() {
@@ -19,7 +20,7 @@ export function IntroductionSection() {
           
           {/* Decorative element */}
           <div className="flex justify-center mt-8">
-            <div className="w-24 h-1 bg-gradient-to-r from-amber-400 via-teal-500 to-amber-400 rounded-full shadow-lg"></div>
+            <GradientDivider size="md" variant="accent" className="shadow-lg" />
           </div>
         </ContentCard>
       </div>

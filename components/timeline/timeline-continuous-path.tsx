@@ -67,52 +67,41 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
     return pathGenerator.generatePath(diamonds);
   }, [diamonds, waviness, smoothness, seed, sideOffset]);
 
-  // Main effect for footstep generation using the streaming hook with debouncing
+  // Main effect for footstep generation
   useLayoutEffect(() => {
     if (!pathData || typeof document === 'undefined') return;
 
-    const timeoutId = setTimeout(() => {
-      try {
-        const { pathElement, totalLength } = pathCache.getOrCreateTempPath(pathData);
-        let targetDistance = totalLength;
+    try {
+      const { totalLength } = pathCache.getOrCreateTempPath(pathData);
+      let targetDistance = totalLength;
+
+      // Calculate target distance based on visible diamonds
+      if (
+        typeof visibleUntilIndex === 'number' &&
+        visibleUntilIndex >= 0 &&
+        diamonds.length > 1 &&
+        visibleUntilIndex < diamonds.length
+      ) {
+        const ratio = (visibleUntilIndex + 1) / diamonds.length;
+        const calculatedDistance = totalLength * ratio;
         
-        // Calculate target distance based on visible diamonds
-        if (typeof visibleUntilIndex === 'number' && 
-            visibleUntilIndex >= 0 && 
-            diamonds.length > 1 && 
-            visibleUntilIndex < diamonds.length) {
-          const ratio = (visibleUntilIndex + 1) / diamonds.length; // +1 to include the diamond itself
-          const calculatedDistance = totalLength * ratio;
-          
-          // Never go backwards - only advance forward
-          targetDistance = Math.max(calculatedDistance, lastTargetDistanceRef.current);
-        } else {
-          // If no specific limit, use full path but don't go backwards
-          targetDistance = Math.max(totalLength, lastTargetDistanceRef.current);
-        }
-
-        // Only proceed if we have a new target distance
-        if (targetDistance > lastTargetDistanceRef.current) {
-          lastTargetDistanceRef.current = targetDistance;
-          
-          // Use idle callback for better performance
-          const processFootsteps = () => {
-            const config = getResponsiveConfig();
-            addFootsteps(pathData, targetDistance, config);
-          };
-
-          if ('requestIdleCallback' in window) {
-            (window as any).requestIdleCallback(processFootsteps, { timeout: 50 });
-          } else {
-            setTimeout(processFootsteps, 0);
-          }
-        }
-      } catch (error) {
-        console.warn('Error processing path for footsteps:', error);
+        // Never go backwards - only advance forward
+        targetDistance = Math.max(calculatedDistance, lastTargetDistanceRef.current);
+      } else {
+        // If no specific limit, use full path but don't go backwards
+        targetDistance = Math.max(totalLength, lastTargetDistanceRef.current);
       }
-    }, 50); // 50ms debounce
 
-    return () => clearTimeout(timeoutId);
+      // Only proceed if we have a new target distance
+      if (targetDistance > lastTargetDistanceRef.current) {
+        lastTargetDistanceRef.current = targetDistance;
+        
+        const config = getResponsiveConfig();
+        addFootsteps(pathData, targetDistance, config);
+      }
+    } catch (error) {
+      console.warn('Error processing path for footsteps:', error);
+    }
   }, [pathData, visibleUntilIndex, diamonds.length, addFootsteps]);
 
   // Reset when path changes significantly
