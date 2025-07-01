@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { CONTENT } from "@/data";
 import { HERO_CAROUSEL_IMAGES, IMAGES } from "@/constants";
 import { GradientDivider } from "@/components/ui/gradient-divider";
+import { useCarousel } from "@/hooks/use-carousel";
 
 // Use the centralized HERO_CAROUSEL_IMAGES instead of local array
 const HERO_IMAGES = HERO_CAROUSEL_IMAGES.map((src, index) => ({
@@ -18,15 +19,15 @@ const HERO_IMAGES = HERO_CAROUSEL_IMAGES.map((src, index) => ({
 }));
 
 export function HeroSection() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { currentIndex, next, goTo, swipeHandlers } = useCarousel(HERO_IMAGES.length);
 
   useEffect(() => {
     // Gentle automatic rotation every 8 seconds
     const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+      next();
     }, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [next]);
 
   const scrollToNext = () => {
     const nextSection = document.querySelector("#introduction");
@@ -34,14 +35,17 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      {...swipeHandlers}
+    >
       {/* Clean background with subtle rotation */}
       <div className="absolute inset-0">
         {HERO_IMAGES.map((image, index) => (
           <div
             key={image.src}
             className={`absolute inset-0 transition-opacity duration-3000 ease-in-out ${
-              index === currentImageIndex ? "opacity-100" : "opacity-0"
+              index === currentIndex ? "opacity-100" : "opacity-0"
             }`}
           >
             <Image
@@ -66,8 +70,8 @@ export function HeroSection() {
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
         <NavigationDots
           total={HERO_IMAGES.length}
-          current={currentImageIndex}
-          onSelect={setCurrentImageIndex}
+          current={currentIndex}
+          onSelect={goTo}
           variant="small"
         />
       </div>

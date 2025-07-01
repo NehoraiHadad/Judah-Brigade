@@ -13,7 +13,7 @@ import { CONTENT } from "@/data"
 import { CAROUSEL_IMAGES } from "@/constants"
 
 export function AboutSection() {
-  const { currentIndex, next, prev, goTo } = useCarousel(CAROUSEL_IMAGES.length)
+  const { currentIndex, next, prev, goTo, swipeHandlers } = useCarousel(CAROUSEL_IMAGES.length)
   const { displayText, isExpanded, hasMore, toggleExpanded } = useReadMore(
     CONTENT.ABOUT.SECTOR_CHARACTERISTICS.CONTENT,
     { 
@@ -73,7 +73,10 @@ export function AboutSection() {
             פעילות החטיבה ונופי הגזרה
           </h3>
           
-          <div className="relative h-80 sm:h-96 lg:h-[28rem] rounded-2xl overflow-hidden shadow-2xl group">
+          <div
+            className="relative h-80 sm:h-96 lg:h-[28rem] rounded-2xl overflow-hidden shadow-2xl group"
+            {...swipeHandlers}
+          >
             <Image
               src={CAROUSEL_IMAGES[currentIndex] || "/placeholder.svg"}
               alt={`תמונה ${currentIndex + 1} מפעילות החטיבה`}

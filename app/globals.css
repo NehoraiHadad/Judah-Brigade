@@ -421,3 +421,34 @@
     border-radius: 0.5rem;
   }
 }
+
+/* Image Preview Modal - Mobile Zoom Support */
+.image-modal-content {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.image-modal-content img {
+  touch-action: pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: auto;
+  -webkit-touch-callout: none;
+}
+
+/* Allow natural pinch-to-zoom on modal images */
+.zoomable-image {
+  touch-action: pinch-zoom;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  max-width: none !important;
+  max-height: none !important;
+}

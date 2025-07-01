@@ -37,6 +37,7 @@ export function ImagePreviewModal({
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
+  const [initialTouchDistance, setInitialTouchDistance] = useState<number | null>(null)
 
   // Determine if we're in gallery mode
   const isGallery = images && images.length > 0
@@ -78,18 +79,52 @@ export function ImagePreviewModal({
     setIsImageLoaded(false)
   }, [])
 
-  // Handle touch gestures for mobile swipe
+  // Helper function to calculate distance between two touches (for pinch detection)
+  const getTouchDistance = useCallback((touches: React.TouchList) => {
+    if (touches.length < 2) return null
+    const touch1 = touches[0]
+    const touch2 = touches[1]
+    return Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) + 
+      Math.pow(touch2.clientY - touch1.clientY, 2)
+    )
+  }, [])
+
+  // Handle touch gestures for mobile swipe (improved to detect pinch)
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     setTouchEnd(null)
-    setTouchStart(e.targetTouches[0].clientX)
-  }, [])
+    
+    if (e.targetTouches.length === 1) {
+      // Single touch - potential swipe
+      setTouchStart(e.targetTouches[0].clientX)
+      setInitialTouchDistance(null)
+    } else if (e.targetTouches.length === 2) {
+      // Two touches - potential pinch
+      const distance = getTouchDistance(e.targetTouches)
+      setInitialTouchDistance(distance)
+      setTouchStart(null)
+    }
+  }, [getTouchDistance])
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX)
-  }, [])
+    if (e.targetTouches.length === 1 && touchStart !== null) {
+      // Single touch movement - track for swipe
+      setTouchEnd(e.targetTouches[0].clientX)
+    } else if (e.targetTouches.length === 2) {
+      // Two touches - this is pinch/zoom, don't interfere
+      // Let the browser handle zoom naturally
+      return
+    }
+  }, [touchStart])
 
   const handleTouchEnd = useCallback(() => {
-    if (!touchStart || !touchEnd) return
+    // Only process swipe if it was a single touch gesture (not pinch)
+    if (!touchStart || !touchEnd || initialTouchDistance !== null) {
+      setTouchStart(null)
+      setTouchEnd(null)
+      setInitialTouchDistance(null)
+      return
+    }
     
     const distance = touchStart - touchEnd
     const isLeftSwipe = distance > 50
@@ -101,7 +136,12 @@ export function ImagePreviewModal({
     if (isRightSwipe && galleryImages.length > 1) {
       prevImage()
     }
-  }, [touchStart, touchEnd, nextImage, prevImage, galleryImages.length])
+
+    // Reset touch state
+    setTouchStart(null)
+    setTouchEnd(null)
+    setInitialTouchDistance(null)
+  }, [touchStart, touchEnd, initialTouchDistance, nextImage, prevImage, galleryImages.length])
 
   // Keyboard navigation
   useEffect(() => {
@@ -128,20 +168,10 @@ export function ImagePreviewModal({
       document.addEventListener('keydown', handleKeyDown)
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden'
-      // Prevent zoom on mobile when modal is open
-      const viewport = document.querySelector('meta[name=viewport]')
-      const originalContent = viewport?.getAttribute('content')
-      if (viewport) {
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
-      }
 
       return () => {
         document.removeEventListener('keydown', handleKeyDown)
         document.body.style.overflow = ''
-        // Restore original viewport settings
-        if (viewport && originalContent) {
-          viewport.setAttribute('content', originalContent)
-        }
       }
     }
 
@@ -185,7 +215,7 @@ export function ImagePreviewModal({
         </Button>
 
         <div 
-          className="absolute inset-0 flex items-center justify-center p-2 md:p-4"
+          className="absolute inset-0 flex items-center justify-center p-2 md:p-4 image-modal-content"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -200,7 +230,7 @@ export function ImagePreviewModal({
               priority={true}
               quality={100}
               unoptimized={false}
-              className={`object-contain transition-opacity duration-500 ${
+              className={`object-contain transition-opacity duration-500 zoomable-image ${
                 isImageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
               onLoad={handleImageLoad}
@@ -253,15 +283,6 @@ export function ImagePreviewModal({
               onSelect={goToImage}
               variant="default"
             />
-          </div>
-        )}
-
-        {/* Mobile swipe hint - only show on first load for galleries */}
-        {showNavigation && (
-          <div className="absolute bottom-12 md:bottom-16 left-1/2 transform -translate-x-1/2 sm:hidden">
-            <p className="text-white/60 text-xs bg-black/30 backdrop-blur-sm rounded px-2 py-1">
-              החלק שמאלה/ימינה לעבור בין תמונות
-            </p>
           </div>
         )}
       </DialogContent>
