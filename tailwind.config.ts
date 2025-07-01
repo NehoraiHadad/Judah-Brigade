@@ -127,8 +127,9 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Heebo", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
-        hebrew: ["Heebo", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+        sans: ["var(--font-heebo)", "Heebo", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        hebrew: ["var(--font-heebo)", "Heebo", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Arial", "sans-serif"],
+        heebo: ["var(--font-heebo)", "Heebo", "sans-serif"],
       },
       spacing: {
         "18": "4.5rem",

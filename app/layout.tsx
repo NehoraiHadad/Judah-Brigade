@@ -1,6 +1,14 @@
 import type { Metadata } from "next"
+import { Heebo } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+
+// Configure Heebo font with Hebrew support
+const heebo = Heebo({
+  subsets: ['latin', 'hebrew'],
+  display: 'swap',
+  variable: '--font-heebo',
+})
 
 // Route Segment Config for better performance
 export const dynamic = 'auto'
@@ -30,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="he" dir="rtl" suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
+    <html lang="he" dir="rtl" suppressHydrationWarning className={`${heebo.variable}`}>
+      <body className={`min-h-screen bg-background font-heebo antialiased ${heebo.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
