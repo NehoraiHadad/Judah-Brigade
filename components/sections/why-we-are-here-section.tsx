@@ -130,9 +130,9 @@ export function WhyWeAreHereSection() {
         {/* Memory Circle Section */}
         <div className="text-center mb-16 sm:mb-20">
           <SectionTitle className="text-amber-100 mb-8">
-            מעגל הזכרון
+            מעגל הזיכרון
           </SectionTitle>
-          <GradientDivider size="lg" variant="primary" />
+          {/* <GradientDivider size="lg" variant="primary" /> */}
           
           {/* Memory Circle Image */}
           <div className="mt-12 sm:mt-16 mb-16 sm:mb-20 flex justify-center">
@@ -159,11 +159,14 @@ export function WhyWeAreHereSection() {
             </div>
           </div>
 
-          <SectionTitle className="text-amber-100 mb-8">
+        </div>
+
+        <GradientDivider size="lg" variant="primary" />
+
+        {/* Why We Are Here Section */}
+          <SectionTitle className="text-amber-100 mb-8 mt-16">
             {CONTENT.WHY_WE_ARE_HERE.TITLE}
           </SectionTitle>
-          <GradientDivider size="lg" variant="primary" />
-        </div>
 
         <div
           ref={contentRef}
