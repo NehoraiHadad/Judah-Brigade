@@ -213,7 +213,7 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
       </g>
       
       {animated && (
-        <style jsx>{`
+        <style jsx global>{`
           @keyframes footstepFadeIn {
             to { opacity: 0.85; }
           }
