@@ -115,9 +115,10 @@ export function ImagePreviewModal({
               src={currentImage}
               alt={currentAlt}
               fill
-              priority
-              quality={90}
-              sizes="(max-width: 768px) 100vw, 75vw"
+              priority={true}
+              quality={100}
+              unoptimized={false}
+              sizes="100vw"
               className={`object-contain rounded-lg transition-opacity duration-500 ${
                 isImageLoaded ? 'opacity-100' : 'opacity-0'
               }`}

@@ -131,18 +131,17 @@ export function WhyWeAreHereSection() {
           {/* Memorial Circle Image */}
           <div className="mb-8 sm:mb-12 flex justify-center">
             <div 
-              className="relative w-72 h-54 sm:w-96 sm:h-72 lg:w-[32rem] lg:h-96 cursor-pointer group transition-all duration-300 hover:scale-105 bg-black/10 rounded-lg"
+              className="relative cursor-pointer group transition-all duration-300 hover:scale-105 inline-block"
               onClick={openModal}
             >
               <Image
                 src={IMAGES.MEMORY_CIRCLE}
                 alt="מעגל הזיכרון - חטיבת יהודה"
-                fill
-                className="object-contain rounded-lg shadow-2xl transition-all duration-300"
+                width={512}
+                height={384}
+                className="rounded-lg shadow-2xl transition-all duration-300 border-2 border-amber-300/30 group-hover:border-amber-300/60 w-auto h-auto max-w-72 max-h-54 sm:max-w-96 sm:max-h-72 lg:max-w-[32rem] lg:max-h-96"
                 sizes="(max-width: 640px) 288px, (max-width: 1024px) 384px, 512px"
               />
-              {/* Border effect - separate element */}
-              <div className="absolute inset-0 border-4 border-amber-300/30 group-hover:border-amber-300/60 rounded-lg transition-all duration-300 pointer-events-none"></div>
               
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-all duration-300 flex items-center justify-center">

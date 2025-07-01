@@ -24,9 +24,6 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
     const diamondRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [diamondPositions, setDiamondPositions] = useState<Point[]>([]);
     const { lastVisibleIndex, handleDiamondVisible } = useVisibleDiamonds();
-    const [api, setApi] = useState<CarouselApi>()
-    const [current, setCurrent] = useState(0)
-    const [count, setCount] = useState(0)
 
     const updateDiamondPositions = useCallback(() => {
         if (!containerRef.current || diamondRefs.current.length !== items.length) {
@@ -108,7 +105,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
 
     const renderTimelinePair = useCallback((pair: typeof items, pairIndex: number) => {
         return (
-            <div key={pairIndex} className="relative mb-12 sm:mb-16">
+            <div key={pairIndex} className="relative mb-8 sm:mb-16">
                 {/* First item - left side, higher */}
                 {pair[0] && (
                     <div
@@ -177,7 +174,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                 </div>
             </div>
             
-            <Carousel setApi={setApi} className="w-full">
+            <Carousel className="w-full">
                 <CarouselContent>
             <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative px-2 py-4">
                 {itemPairs.map(renderTimelinePair)}
