@@ -114,7 +114,7 @@ export function WhyWeAreHereSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-20 sm:py-24 lg:py-32 bg-gradient-to-br from-teal-800 via-teal-900 to-slate-900 text-white relative overflow-hidden"
+      className="py-20 sm:py-24 lg:py-32 bg-gradient-to-b from-slate-900 via-teal-900 to-slate-900 text-white relative overflow-hidden"
     >
       {/* Background Effects */}
       <div className="absolute inset-0">
@@ -127,20 +127,27 @@ export function WhyWeAreHereSection() {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+        {/* Memory Circle Section */}
         <div className="text-center mb-16 sm:mb-20">
-          {/* Memorial Circle Image */}
-          <div className="mb-8 sm:mb-12 flex justify-center">
+          <SectionTitle className="text-amber-100 mb-8">
+            מעגל הזכרון
+          </SectionTitle>
+          <GradientDivider size="lg" variant="primary" />
+          
+          {/* Memory Circle Image */}
+          <div className="mt-12 sm:mt-16 mb-16 sm:mb-20 flex justify-center">
             <div 
               className="relative cursor-pointer group transition-all duration-300 hover:scale-105 inline-block"
               onClick={openModal}
             >
               <Image
                 src={IMAGES.MEMORY_CIRCLE}
-                alt="מעגל הזיכרון - חטיבת יהודה"
-                width={512}
-                height={384}
-                className="rounded-lg shadow-2xl transition-all duration-300 border-2 border-amber-300/30 group-hover:border-amber-300/60 w-auto h-auto max-w-72 max-h-54 sm:max-w-96 sm:max-h-72 lg:max-w-[32rem] lg:max-h-96"
-                sizes="(max-width: 640px) 288px, (max-width: 1024px) 384px, 512px"
+                alt="מעגל הזכרון - חטיבת יהודה"
+                width={640}
+                height={480}
+                className="rounded-lg shadow-2xl transition-all duration-300 border-2 border-amber-300/30 group-hover:border-amber-300/60 w-auto h-auto max-w-80 max-h-60 sm:max-w-[30rem] sm:max-h-80 lg:max-w-[40rem] lg:max-h-96"
+                sizes="(max-width: 640px) 320px, (max-width: 1024px) 480px, 640px"
+                priority
               />
               
               {/* Hover overlay */}
@@ -182,10 +189,10 @@ export function WhyWeAreHereSection() {
       {/* Image Preview Modal */}
       <ImagePreviewModal
         src={IMAGES.MEMORY_CIRCLE}
-        alt="מעגל הזיכרון - חטיבת יהודה"
+        alt="מעגל הזכרון - חטיבת יהודה"
         isOpen={isModalOpen}
         onClose={closeModal}
-        title="מעגל הזיכרון"
+        title="מעגל הזכרון"
       />
     </section>
   );

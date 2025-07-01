@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -35,6 +35,8 @@ export function ImagePreviewModal({
 }: ImagePreviewModalProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [isImageLoaded, setIsImageLoaded] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   // Determine if we're in gallery mode
   const isGallery = images && images.length > 0
@@ -76,6 +78,79 @@ export function ImagePreviewModal({
     setIsImageLoaded(false)
   }, [])
 
+  // Handle touch gestures for mobile swipe
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }, [])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStart || !touchEnd) return
+    
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > 50
+    const isRightSwipe = distance < -50
+
+    if (isLeftSwipe && galleryImages.length > 1) {
+      nextImage()
+    }
+    if (isRightSwipe && galleryImages.length > 1) {
+      prevImage()
+    }
+  }, [touchStart, touchEnd, nextImage, prevImage, galleryImages.length])
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return
+      
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          prevImage()
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          nextImage()
+          break
+        case 'Escape':
+          e.preventDefault()
+          handleOpenChange(false)
+          break
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden'
+      // Prevent zoom on mobile when modal is open
+      const viewport = document.querySelector('meta[name=viewport]')
+      const originalContent = viewport?.getAttribute('content')
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+      }
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown)
+        document.body.style.overflow = ''
+        // Restore original viewport settings
+        if (viewport && originalContent) {
+          viewport.setAttribute('content', originalContent)
+        }
+      }
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [isOpen, nextImage, prevImage, handleOpenChange])
+
   // Reset to initial index when modal opens
   const handleDialogOpenChange = useCallback((open: boolean) => {
     if (open) {
@@ -90,10 +165,11 @@ export function ImagePreviewModal({
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogContent 
-        className={`max-w-4xl h-[90vh] p-0 bg-black/80 backdrop-blur-lg border-none ${className || ''}`}
+        overlayClassName="bg-black/10 backdrop-blur-sm"
+        className={`fixed inset-0 w-screen h-screen max-w-none max-h-none p-0 bg-transparent border-none shadow-none overflow-hidden ${className || ''}`}
       >
         {/* Title for accessibility */}
-        <DialogTitle className={title ? "absolute top-4 left-4 z-10 text-white text-xl font-bold" : "sr-only"}>
+        <DialogTitle className={title ? "absolute top-2 left-2 md:top-4 md:left-4 z-10 text-white text-sm md:text-xl font-bold bg-black/50 backdrop-blur-sm rounded px-2 py-1" : "sr-only"}>
           {title || currentAlt}
         </DialogTitle>
 
@@ -101,25 +177,30 @@ export function ImagePreviewModal({
         <Button
           variant="carousel"
           size="carouselIcon"
-          className="absolute top-4 right-4 z-10"
+          className="absolute top-2 right-2 md:top-4 md:right-4 z-10 bg-black/50 backdrop-blur-sm hover:bg-black/70 w-8 h-8 md:w-10 md:h-10"
           onClick={() => handleOpenChange(false)}
           aria-label="סגור"
         >
-          <X className="w-6 h-6" />
+          <X className="w-4 h-4 md:w-6 md:h-6" />
         </Button>
 
-        <div className="relative w-full h-full flex items-center justify-center p-4">
-          {/* Main Image */}
-          <div className="relative w-full h-full max-w-3xl max-h-[80vh]">
+        <div 
+          className="absolute inset-0 flex items-center justify-center p-2 md:p-4"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Main Image Container */}
+          <div className="relative w-full h-full flex items-center justify-center">
             <Image
               src={currentImage}
               alt={currentAlt}
               fill
+              sizes="100vw"
               priority={true}
               quality={100}
               unoptimized={false}
-              sizes="100vw"
-              className={`object-contain rounded-lg transition-opacity duration-500 ${
+              className={`object-contain transition-opacity duration-500 ${
                 isImageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
               onLoad={handleImageLoad}
@@ -127,36 +208,36 @@ export function ImagePreviewModal({
 
             {/* Loading State */}
             {!isImageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                 <div className="text-center text-white">
-                  <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-sm">טוען תמונה...</p>
+                  <div className="w-6 h-6 md:w-8 md:h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2 md:mb-4" />
+                  <p className="text-xs md:text-sm">טוען תמונה...</p>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Navigation buttons - only show when there are multiple images */}
+          {/* Navigation buttons - only show when there are multiple images and not on small mobile */}
           {showNavigation && (
             <>
               <Button
                 variant="carousel"
                 size="carouselIcon"
-                className="absolute left-4 top-1/2 transform -translate-y-1/2"
+                className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-black/50 backdrop-blur-sm hover:bg-black/70 w-8 h-8 md:w-10 md:h-10 hidden sm:flex z-10"
                 onClick={nextImage}
                 aria-label="תמונה הבאה"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
               </Button>
 
               <Button
                 variant="carousel"
                 size="carouselIcon"
-                className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-black/50 backdrop-blur-sm hover:bg-black/70 w-8 h-8 md:w-10 md:h-10 hidden sm:flex z-10"
                 onClick={prevImage}
                 aria-label="תמונה קודמת"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
               </Button>
             </>
           )}
@@ -164,14 +245,23 @@ export function ImagePreviewModal({
 
         {/* Navigation dots - only show when there are multiple images */}
         {showNavigation && (
-          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 
-                          bg-black/60 backdrop-blur-sm p-2 rounded-lg">
+          <div className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 
+                          bg-black/50 backdrop-blur-sm p-1 md:p-2 rounded-lg">
             <NavigationDots
               total={galleryImages.length}
               current={currentIndex}
               onSelect={goToImage}
               variant="default"
             />
+          </div>
+        )}
+
+        {/* Mobile swipe hint - only show on first load for galleries */}
+        {showNavigation && (
+          <div className="absolute bottom-12 md:bottom-16 left-1/2 transform -translate-x-1/2 sm:hidden">
+            <p className="text-white/60 text-xs bg-black/30 backdrop-blur-sm rounded px-2 py-1">
+              החלק שמאלה/ימינה לעבור בין תמונות
+            </p>
           </div>
         )}
       </DialogContent>

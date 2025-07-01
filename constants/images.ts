@@ -7,7 +7,7 @@ export const IMAGES = {
   MILITARY_LANDSCAPE: "/images/military-landscape.webp",
   WHY_WE_ARE_HERE_BACKGROUND: "/images/military-landscape.webp",
   COMMANDER_BRIGADE: "/images/brigade-activities/commander-brigade.webp",
-  MEMORY_CIRCLE: "/images/brigade-activities/memory-circle.webp",
+  MEMORY_CIRCLE: "/images/brigade-activities/memory-circle-V2.webp",
 } as const
 
 // ===== HERO CAROUSEL IMAGES =====
@@ -108,7 +108,7 @@ export const DESERT_IMAGES = [
 // Brigade activities
 export const BRIGADE_IMAGES = [
   "/images/brigade-activities/commander-brigade.webp",
-  "/images/brigade-activities/memory-circle.webp",
+  "/images/brigade-activities/memory-circle-V2.webp",
   "/images/brigade-activities/nahal-shafan-tzalim-meeting.webp",
 ] as const
 

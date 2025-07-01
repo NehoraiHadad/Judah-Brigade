@@ -11,6 +11,7 @@ interface TimelineDiamondProps {
   animationDelay?: number
   /**
    * Called once when the diamond enters the viewport for the first time.
+   * Can be undefined for mobile where Embla API handles visibility instead.
    */
   onVisible?: () => void
 }
@@ -22,8 +23,18 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
   const [shouldLoadImage, setShouldLoadImage] = useState(false)
   const elementRef = useRef<HTMLDivElement>(null)
 
-  // Intersection Observer for lazy loading
+  // Intersection Observer for lazy loading - only if onVisible is provided
   useEffect(() => {
+    // If no onVisible callback is provided (mobile case), show immediately
+    if (!onVisible) {
+      setShouldLoadImage(true)
+      setTimeout(() => {
+        setIsVisible(true)
+      }, animationDelay)
+      return
+    }
+
+    // Use IntersectionObserver only when onVisible callback is provided (desktop/tablet)
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -35,7 +46,7 @@ export function TimelineDiamond({ title, date, image, onClick, animationDelay = 
             }, animationDelay)
 
             // Notify parent component once that this diamond is now visible
-            onVisible?.()
+            onVisible()
             observer.unobserve(entry.target)
           }
         })

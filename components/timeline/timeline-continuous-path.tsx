@@ -33,7 +33,7 @@ const getResponsiveConfig = () => {
   
   const width = window.innerWidth;
   if (width < 768) {
-    return { scale: 0.08, stride: 25, footSpacing: 12, footOffset: 6 };
+    return { scale: 0.035, stride: 25, footSpacing: 12, footOffset: 6 };
   } else if (width < 1024) {
     return { scale: 0.020, stride: 30, footSpacing: 11, footOffset: 6 };
   } else {

@@ -117,8 +117,8 @@ export function TimelineTablet({ items, onItemSelect }: TimelineProps) {
                             <div
                                 key={item.id}
                                 ref={(el) => diamondRefCallback(el, globalIndex)}
-                                className="relative z-10 invisible"
-                                style={{ width: '160px', height: '160px' }}
+                                className="hidden"
+                                
                             >
                                 {/* Hidden placeholder */}
                             </div>

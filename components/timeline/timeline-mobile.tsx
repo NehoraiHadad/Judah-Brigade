@@ -1,5 +1,5 @@
 "use client"
-import { useLayoutEffect, useRef, useCallback, useMemo, useState } from "react"
+import { useState, useRef, useLayoutEffect, useCallback, useMemo, useEffect } from "react";
 import { TimelineDiamond } from "./timeline-diamond"
 import { TimelineContinuousPath } from "./timeline-continuous-path"
 import { debounce } from "@/lib/timeline-utils";
@@ -17,6 +17,44 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
     const diamondRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [diamondPositions, setDiamondPositions] = useState<Point[]>([]);
     const { lastVisibleIndex, handleDiamondVisible } = useVisibleDiamonds();
+
+    // For mobile, we'll use scroll-based detection instead of carousel
+    // since the original design is vertical scrolling with diagonal diamonds
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        const handleScroll = () => {
+            const container = containerRef.current;
+            if (!container) return;
+
+            const containerRect = container.getBoundingClientRect();
+            const containerTop = containerRect.top;
+            const containerHeight = containerRect.height;
+            
+            // Check which diamonds are currently visible
+            diamondRefs.current.forEach((diamondEl, index) => {
+                if (!diamondEl) return;
+                
+                const diamondRect = diamondEl.getBoundingClientRect();
+                const diamondCenter = diamondRect.top + diamondRect.height / 2;
+                
+                // Consider diamond visible if its center is within the viewport
+                if (diamondCenter >= 0 && diamondCenter <= window.innerHeight) {
+                    handleDiamondVisible(index);
+                }
+            });
+        };
+
+        // Initial check
+        handleScroll();
+
+        // Listen to scroll events on window
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [handleDiamondVisible]);
 
     const updateDiamondPositions = useCallback(() => {
         if (!containerRef.current || diamondRefs.current.length !== items.length) {
@@ -92,9 +130,12 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
         return () => onItemSelect(item);
     }, [onItemSelect]);
 
-    const createVisibilityHandler = useCallback((globalIndex: number) => {
-        return () => handleDiamondVisible(globalIndex);
-    }, [handleDiamondVisible]);
+    // No longer use IntersectionObserver-based visibility handler for mobile
+    // The scroll-based detection handles visibility instead
+    const createMobileVisibilityHandler = useCallback((globalIndex: number) => {
+        // For mobile, we don't need individual onVisible handlers since scroll detection handles it
+        return undefined;
+    }, []);
 
     const renderTimelinePair = useCallback((pair: typeof items, pairIndex: number) => {
         return (
@@ -106,7 +147,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                         className="flex justify-start pl-4 mb-6"
                     >
                         {pair[0].isHidden ? (
-                            <div className="invisible" style={{ width: '128px', height: '128px' }}>
+                            <div className="hidden" style={{ width: '128px', height: '128px' }}>
                                 {/* Hidden placeholder */}
                             </div>
                         ) : (
@@ -117,7 +158,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                                     image={pair[0].image}
                                     onClick={createItemClickHandler(pair[0])}
                                     animationDelay={pairIndex * 2 * 50}
-                                    onVisible={createVisibilityHandler(pairIndex * 2)}
+                                    onVisible={createMobileVisibilityHandler(pairIndex * 2)}
                                 />
                             </div>
                         )}
@@ -142,7 +183,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                                     image={pair[1].image}
                                     onClick={createItemClickHandler(pair[1])}
                                     animationDelay={(pairIndex * 2 + 1) * 50}
-                                    onVisible={createVisibilityHandler(pairIndex * 2 + 1)}
+                                    onVisible={createMobileVisibilityHandler(pairIndex * 2 + 1)}
                                 />
                             </div>
                         )}
@@ -150,7 +191,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                 )}
             </div>
         );
-    }, [diamondRefCallback, createItemClickHandler, createVisibilityHandler]);
+    }, [diamondRefCallback, createItemClickHandler, createMobileVisibilityHandler]);
 
     return (
         <div className="sm:hidden">
@@ -170,7 +211,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
             <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative px-2 py-4">
                 {itemPairs.map(renderTimelinePair)}
                 
-                {isReady && containerRef.current && diamondPositions.length > 1 && lastVisibleIndex >= 1 && (
+                {isReady && containerRef.current && diamondPositions.length > 1 && lastVisibleIndex >= 0 && (
                     <TimelineContinuousPath
                         diamonds={diamondPositions.filter((_, index) => !items[index]?.isHidden)}
                         width={containerRef.current.clientWidth}
