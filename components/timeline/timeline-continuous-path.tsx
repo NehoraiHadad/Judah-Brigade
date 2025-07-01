@@ -177,15 +177,13 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
             const transform = `translate(${step.x}, ${step.y}) rotate(${step.angle}) scale(${effectiveScale}) translate(-503.5, -640)`;
             const symbolId = step.type === 'left' ? '#foot-left' : '#foot-right';
             
+            const delay = `${index * 0.12 + 0.4}s`;
             return (
               <g 
                 key={step.id}
                 transform={transform}
-                style={animated ? {
-                  opacity: 0,
-                  animation: `footstepFadeIn 0.45s ease-out forwards`,
-                  animationDelay: `${index * 0.12 + 0.4}s`
-                } : { opacity: 0.85 }}
+                className={animated ? "footstep-fade" : "footstep-static"}
+                style={animated ? { animationDelay: delay } : undefined}
               >
                 {/* Shadow layer */}
                 <use 
@@ -218,11 +216,18 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
         </g>
       </svg>
 
-      {/* Animation keyframes – must live outside the SVG so they are applied in production */}
+      {/* Animation keyframes and helper classes – global scope */}
       {animated && (
         <style jsx global>{`
           @keyframes footstepFadeIn {
             to { opacity: 0.85; }
+          }
+          .footstep-fade {
+            opacity: 0;
+            animation: footstepFadeIn 0.45s ease-out forwards;
+          }
+          .footstep-static {
+            opacity: 0.85;
           }
         `}</style>
       )}
