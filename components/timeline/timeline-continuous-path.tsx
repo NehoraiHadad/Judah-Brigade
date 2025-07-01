@@ -190,6 +190,7 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
                 {/* Shadow layer */}
                 <use 
                   href={symbolId}
+                  xlinkHref={symbolId as any}
                   fill="black"
                   opacity="0.3"
                   transform="translate(15, 15)"
@@ -198,6 +199,7 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
                 {/* Main footprint */}
                 <use 
                   href={symbolId}
+                  xlinkHref={symbolId as any}
                   fill={`url(#${gradientId})`}
                   filter="url(#footstep-shadow)"
                 />
@@ -205,6 +207,7 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
                 {/* Highlight layer */}
                 <use 
                   href={symbolId}
+                  xlinkHref={symbolId as any}
                   fill="white"
                   opacity="0.1"
                   transform="scale(0.8) translate(60, 80)"

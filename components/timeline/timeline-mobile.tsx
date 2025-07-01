@@ -211,7 +211,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
             <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative px-2 py-4">
                 {itemPairs.map(renderTimelinePair)}
                 
-                {isReady && containerRef.current && diamondPositions.length > 1 && lastVisibleIndex >= 0 && (
+                {isReady && containerRef.current && diamondPositions.length > 1 && (
                     <TimelineContinuousPath
                         diamonds={diamondPositions.filter((_, index) => !items[index]?.isHidden)}
                         width={containerRef.current.clientWidth}
@@ -222,7 +222,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                         waviness={1.2}
                         smoothness={0.8}
                         seed={789}
-                        visibleUntilIndex={lastVisibleIndex}
+                        visibleUntilIndex={lastVisibleIndex >= 0 ? lastVisibleIndex : undefined}
                     />
                 )}
             </div>
