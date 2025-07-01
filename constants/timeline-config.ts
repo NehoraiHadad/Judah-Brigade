@@ -2,9 +2,9 @@
 export const TIMELINE_CONFIG = {
   // Footprint appearance - separate scales for each device type
   FOOTPRINT_SCALE: {
-    MOBILE: 0.35,    // < 768px - קטן יותר למובייל
-    TABLET: 0.7,   // 768px - 1024px - בינוני לטאבלט  
-    DESKTOP: 1.0,   // >= 1024px - מלא לדסקטופ
+    MOBILE: 0.8,    // < 768px 
+    TABLET: 0.7,   // 768px - 1024px 
+    DESKTOP: 1.0,   // >= 1024px 
   },
   
   // Path generation

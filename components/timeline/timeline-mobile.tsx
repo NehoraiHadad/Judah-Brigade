@@ -1,17 +1,10 @@
 "use client"
-import { useState, useRef, useLayoutEffect, useCallback, useMemo } from "react";
+import { useLayoutEffect, useRef, useCallback, useMemo, useState } from "react"
 import { TimelineDiamond } from "./timeline-diamond"
 import { TimelineContinuousPath } from "./timeline-continuous-path"
 import { debounce } from "@/lib/timeline-utils";
 import type { TimelineProps } from "@/types/timeline"
 import { useVisibleDiamonds } from "@/hooks/use-visible-diamonds"
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-} from "@/components/ui/carousel";
-import { MobileCarouselControls } from "../ui/mobile-carousel-controls";
-import { type CarouselApi } from "@/components/ui/carousel"
 
 interface Point {
   x: number;
@@ -174,8 +167,6 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                 </div>
             </div>
             
-            <Carousel className="w-full">
-                <CarouselContent>
             <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative px-2 py-4">
                 {itemPairs.map(renderTimelinePair)}
                 
@@ -194,8 +185,6 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                     />
                 )}
             </div>
-            </CarouselContent>
-            </Carousel>
         </div>
     )
 }
