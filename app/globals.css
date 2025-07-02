@@ -311,9 +311,14 @@
   @media (prefers-reduced-motion: reduce) {
     .animate-fade-in-up,
     .animate-diamond-appear,
-    .btn-enhanced::before {
+    .btn-enhanced::before,
+    .footstep-fade {
       animation: none;
       transition: none;
+    }
+    
+    .footstep-fade {
+      opacity: 0.85 !important;
     }
   }
 }
