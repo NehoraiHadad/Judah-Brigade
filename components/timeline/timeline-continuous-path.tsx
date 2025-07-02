@@ -1,4 +1,4 @@
-import React, { useMemo, useLayoutEffect, useRef } from 'react';
+import React, { useMemo, useLayoutEffect, useRef, useEffect } from 'react';
 import { PathGenerator } from '@/lib/path-generator';
 import { useFootstepStreaming } from '@/hooks/use-footstep-streaming';
 import { pathCache } from '@/utils/path-cache';
@@ -63,6 +63,9 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
 
   // Generate path using the extracted PathGenerator class
   const pathData = useMemo(() => {
+    // Lazy generation: only create path when we have diamonds
+    if (diamonds.length === 0) return '';
+    
     const pathGenerator = new PathGenerator(seed, waviness, smoothness, sideOffset);
     return pathGenerator.generatePath(diamonds);
   }, [diamonds, waviness, smoothness, seed, sideOffset]);
@@ -98,6 +101,15 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
         
         const config = getResponsiveConfig();
         addFootsteps(pathData, targetDistance, config);
+        
+        // Debug: Log footstep generation for production troubleshooting
+        if (process.env.NODE_ENV === 'production') {
+          console.log('Timeline footsteps generated:', { 
+            targetDistance: Math.round(targetDistance), 
+            totalLength: Math.round(pathCache.getOrCreateTempPath(pathData).totalLength),
+            visibleIndex: visibleUntilIndex ?? 'initial' 
+          });
+        }
       }
     } catch (error) {
       console.warn('Error processing path for footsteps:', error);
@@ -118,7 +130,18 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
     []
   );
 
-  if (!pathData) return null;
+  // Production logging: Track footsteps count for debugging
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production' && footsteps.length > 0) {
+      console.log('Timeline footsteps rendered:', { 
+        count: footsteps.length,
+        lastFootstepId: footsteps[footsteps.length - 1]?.id || 'none'
+      });
+    }
+  }, [footsteps.length]);
+
+  // Lazy SVG creation: don't render if no path or footsteps
+  if (!pathData || diamonds.length === 0) return null;
 
   return (
     <>
@@ -173,46 +196,49 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
         </defs>
         
         <g>
-          {footsteps.map((step, index) => {
+          {useMemo(() => {
             const config = getResponsiveConfig();
             const globalFootprintScale = getResponsiveFootprintScale();
-            const effectiveScale = config.scale * footprintScale * globalFootprintScale;
-            const transform = `translate(${step.x}, ${step.y}) rotate(${step.angle}) scale(${effectiveScale}) translate(-503.5, -640)`;
-            const symbolId = step.type === 'left' ? '#foot-left' : '#foot-right';
             
-            const delay = `${index * 0.12 + 0.4}s`;
-            return (
-              <g 
-                key={step.id}
-                transform={transform}
-                className={animated ? "footstep-fade" : "footstep-static"}
-                style={animated ? { animationDelay: delay } : undefined}
-              >
-                {/* Shadow layer */}
-                <use 
-                  href={symbolId}
-                  fill="black"
-                  opacity="0.3"
-                  transform="translate(15, 15)"
-                />
-                
-                {/* Main footprint */}
-                <use 
-                  href={symbolId}
-                  fill={`url(#${gradientId})`}
-                  filter="url(#footstep-shadow)"
-                />
-                
-                {/* Highlight layer */}
-                <use 
-                  href={symbolId}
-                  fill="white"
-                  opacity="0.1"
-                  transform="scale(0.8) translate(60, 80)"
-                />
-              </g>
-            );
-          })}
+            return footsteps.map((step, index) => {
+              const effectiveScale = config.scale * footprintScale * globalFootprintScale;
+              const transform = `translate(${step.x}, ${step.y}) rotate(${step.angle}) scale(${effectiveScale}) translate(-503.5, -640)`;
+              const symbolId = step.type === 'left' ? '#foot-left' : '#foot-right';
+              
+              const delay = `${index * 0.12 + 0.4}s`;
+              return (
+                <g 
+                  key={step.id}
+                  transform={transform}
+                  className={animated ? "footstep-fade" : "footstep-static"}
+                  style={animated ? { animationDelay: delay } : undefined}
+                >
+                  {/* Shadow layer */}
+                  <use 
+                    href={symbolId}
+                    fill="black"
+                    opacity="0.3"
+                    transform="translate(15, 15)"
+                  />
+                  
+                  {/* Main footprint */}
+                  <use 
+                    href={symbolId}
+                    fill={`url(#${gradientId})`}
+                    filter="url(#footstep-shadow)"
+                  />
+                  
+                  {/* Highlight layer */}
+                  <use 
+                    href={symbolId}
+                    fill="white"
+                    opacity="0.1"
+                    transform="scale(0.8) translate(60, 80)"
+                  />
+                </g>
+              );
+            });
+          }, [footsteps, footprintScale, gradientId, animated])}
         </g>
       </svg>
 
