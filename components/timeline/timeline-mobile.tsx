@@ -56,6 +56,13 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
         };
     }, [handleDiamondVisible]);
 
+    // Ensure the first diamond is considered visible immediately after mount
+    useEffect(() => {
+        if (items.length > 0) {
+            handleDiamondVisible(0);
+        }
+    }, [handleDiamondVisible, items.length]);
+
     const updateDiamondPositions = useCallback(() => {
         if (!containerRef.current || diamondRefs.current.length !== items.length) {
             return;
@@ -102,9 +109,17 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
             resizeObserver.observe(containerRef.current);
         }
 
+        // Handle orientation change events for mobile devices
+        const handleOrientationChange = () => {
+            setTimeout(updateDiamondPositions, 300); // Delay to allow layout to settle
+        };
+        
+        window.addEventListener('orientationchange', handleOrientationChange);
+
         return () => {
             clearTimeout(timeoutId);
             resizeObserver.disconnect();
+            window.removeEventListener('orientationchange', handleOrientationChange);
         };
     }, [updateDiamondPositions, debouncedUpdatePositions]);
 
@@ -222,7 +237,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                         waviness={1.2}
                         smoothness={0.8}
                         seed={789}
-                        visibleUntilIndex={lastVisibleIndex >= 0 ? lastVisibleIndex : undefined}
+                        visibleUntilIndex={lastVisibleIndex >= 0 ? lastVisibleIndex : 0}
                     />
                 )}
             </div>
