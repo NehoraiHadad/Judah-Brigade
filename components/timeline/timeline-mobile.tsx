@@ -208,7 +208,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                 </div>
             </div>
             
-            <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative z-0 px-2 py-4">
+            <div ref={containerRef} className="block md:hidden w-[95%] mx-auto relative z-0 px-2 py-4" style={{ willChange: 'auto', transform: 'translateZ(0)' }}>
                 {itemPairs.map(renderTimelinePair)}
                 
                 {isReady && containerRef.current && diamondPositions.length > 1 && (

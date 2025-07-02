@@ -135,6 +135,9 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
           left: 0, 
           pointerEvents: 'none',
           zIndex: 0,
+          willChange: 'opacity, transform',
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
         }}
       >
         <defs>
