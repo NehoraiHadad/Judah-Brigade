@@ -40,35 +40,88 @@ const copyLogsToClipboard = async () => {
     }
 };
 
-// ✅ SIMPLIFIED: Single debug button
-const createSimpleDebugButton = () => {
-    const existingButton = document.getElementById('mobile-debug-btn');
-    if (existingButton) existingButton.remove();
+// ✅ SIMPLIFIED: Emergency force footsteps function
+const forceShowAllFootsteps = () => {
+    const allSvgs = document.querySelectorAll('svg');
+    let totalFixed = 0;
+    
+    allSvgs.forEach((svg) => {
+        // Force SVG to be visible
+        svg.style.display = 'block';
+        svg.style.opacity = '1';
+        svg.style.visibility = 'visible';
+        svg.style.zIndex = '10';
+        
+        const footsteps = svg.querySelectorAll('g[class*="footstep"], g > *');
+        footsteps.forEach((g) => {
+            (g as HTMLElement).style.opacity = '0.8';
+            (g as HTMLElement).style.display = 'block';
+            (g as HTMLElement).style.visibility = 'visible';
+            (g as HTMLElement).style.animation = 'none';
+            totalFixed++;
+        });
+    });
+    
+    addDebugLog(`FORCE FOOTSTEPS: Fixed ${totalFixed} elements`);
+    alert(`הוכרחו ${totalFixed} צעדים להופיע! 👣`);
+};
 
-    const button = document.createElement('button');
-    button.id = 'mobile-debug-btn';
-    button.innerHTML = '📋 העתק לוגים';
-    button.style.cssText = `
+// ✅ SIMPLIFIED: Two debug buttons
+const createDebugButtons = () => {
+    const existingLog = document.getElementById('mobile-log-btn');
+    const existingForce = document.getElementById('mobile-force-btn');
+    if (existingLog) existingLog.remove();
+    if (existingForce) existingForce.remove();
+
+    // Copy logs button
+    const logButton = document.createElement('button');
+    logButton.id = 'mobile-log-btn';
+    logButton.innerHTML = '📋 לוגים';
+    logButton.style.cssText = `
         position: fixed;
-        bottom: 20px;
+        bottom: 70px;
         right: 10px;
         z-index: 9999;
         background: #007bff;
         color: white;
         border: none;
         border-radius: 8px;
-        padding: 10px 15px;
-        font-size: 14px;
+        padding: 8px 12px;
+        font-size: 12px;
         font-weight: bold;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         cursor: pointer;
         font-family: system-ui, -apple-system, sans-serif;
     `;
     
-    button.addEventListener('click', copyLogsToClipboard);
-    document.body.appendChild(button);
+    // Force footsteps button
+    const forceButton = document.createElement('button');
+    forceButton.id = 'mobile-force-btn';
+    forceButton.innerHTML = '👣 כפה צעדים';
+    forceButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 10px;
+        z-index: 9999;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        cursor: pointer;
+        font-family: system-ui, -apple-system, sans-serif;
+    `;
     
-    return button;
+    logButton.addEventListener('click', copyLogsToClipboard);
+    forceButton.addEventListener('click', forceShowAllFootsteps);
+    
+    document.body.appendChild(logButton);
+    document.body.appendChild(forceButton);
+    
+    return { logButton, forceButton };
 };
 
 export const TimelineMobile = React.memo(function TimelineMobile({ items, onItemSelect }: TimelineProps) {
@@ -115,11 +168,12 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
     useEffect(() => {
         if (process.env.NODE_ENV === 'production' && window.innerWidth < 768) {
             window.addDebugLog = addDebugLog;
-            const button = createSimpleDebugButton();
+            const { logButton, forceButton } = createDebugButtons();
             addDebugLog(`Mobile Timeline: ${items.length} items loaded`);
             
             return () => {
-                button.remove();
+                logButton.remove();
+                forceButton.remove();
             };
         }
     }, [items.length]);
@@ -244,8 +298,13 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
             
             <div 
                 ref={containerRef} 
-                className="block md:hidden w-[95%] mx-auto relative z-0 px-2 py-4"
-                style={{ willChange: 'auto', transform: 'translateZ(0)' }}
+                className="block md:hidden w-[95%] mx-auto relative px-2 py-4"
+                style={{ 
+                    willChange: 'auto', 
+                    transform: 'translateZ(0)',
+                    zIndex: 1, // ✅ Ensure container is above background
+                    isolation: 'isolate' // ✅ Create new stacking context
+                }}
             >
                 {itemPairs.map(renderTimelinePair)}
                 
@@ -255,13 +314,13 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
                         diamonds={diamondPositions.filter((_, index) => !items[index]?.isHidden)}
                         width={containerRef.current.clientWidth}
                         height={containerRef.current.clientHeight}
-                        className="transition-opacity duration-500"
-                        animated={true}
+                        className="opacity-100" // ✅ Force full opacity immediately
+                        animated={false} // ✅ Disable animations on mobile for reliability
                         sideOffset={60}
                         waviness={1.2}
                         smoothness={0.8}
                         seed={789}
-                        visibleUntilIndex={items.length} // ✅ Show ALL footsteps immediately
+                        visibleUntilIndex={999} // ✅ Very high number to ensure all show
                     />
                 )}
             </div>
