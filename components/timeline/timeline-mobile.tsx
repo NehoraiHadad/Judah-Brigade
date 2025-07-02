@@ -124,7 +124,7 @@ const createDebugButtons = () => {
     return { logButton, forceButton };
 };
 
-// ✅ SIMPLIFIED: Static footsteps without any effects
+// ✅ SIMPLIFIED: Static footsteps between diamonds (like original design)
 const createStaticFootsteps = (containerRef: React.RefObject<HTMLDivElement | null>, positions: Point[]) => {
     if (!containerRef.current || positions.length < 2) return;
     
@@ -144,31 +144,57 @@ const createStaticFootsteps = (containerRef: React.RefObject<HTMLDivElement | nu
         z-index: 5;
     `;
     
-    // Create simple path between diamonds
+    // Create curved path between each pair of diamonds (like original)
     for (let i = 0; i < positions.length - 1; i++) {
         const start = positions[i];
         const end = positions[i + 1];
         
-        // Calculate distance and steps
-        const distance = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2);
-        const steps = Math.floor(distance / 30); // Every 30px
+        // Calculate distance and curve
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
         
-        for (let step = 0; step <= steps; step++) {
+        // Create curved path (like original design)
+        const steps = Math.max(8, Math.floor(distance / 25)); // More steps for smoother curve
+        
+        for (let step = 1; step < steps; step++) { // Skip start and end (where diamonds are)
             const progress = step / steps;
-            const x = start.x + (end.x - start.x) * progress;
-            const y = start.y + (end.y - start.y) * progress;
             
+            // Add slight curve (wave effect like original)
+            const curveStrength = 20; // Curve intensity
+            const curveOffset = Math.sin(progress * Math.PI) * curveStrength;
+            
+            // Calculate position along straight line
+            const baseX = start.x + dx * progress;
+            const baseY = start.y + dy * progress;
+            
+            // Add curve perpendicular to the line
+            const perpX = -dy / distance; // Perpendicular direction
+            const perpY = dx / distance;
+            
+            const x = baseX + perpX * curveOffset;
+            const y = baseY + perpY * curveOffset;
+            
+            // Create footprint element
             const footprint = document.createElement('div');
-            footprint.innerHTML = step % 2 === 0 ? '👣' : '🦶'; // Alternate footprints
+            
+            // Alternate between left and right foot, with different styles
+            const isLeftFoot = step % 2 === 0;
+            const footSymbol = isLeftFoot ? '🦶' : '👣';
+            const rotation = isLeftFoot ? -15 : 15; // Slight rotation for natural look
+            
+            footprint.innerHTML = footSymbol;
             footprint.style.cssText = `
                 position: absolute;
-                left: ${x - 8}px;
-                top: ${y - 8}px;
-                font-size: 16px;
-                opacity: 0.7;
-                transform: rotate(${Math.random() * 20 - 10}deg);
+                left: ${x - 12}px;
+                top: ${y - 12}px;
+                font-size: 18px;
+                opacity: 0.8;
+                transform: rotate(${rotation}deg);
                 z-index: 5;
                 pointer-events: none;
+                filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+                transition: none;
             `;
             
             footstepsContainer.appendChild(footprint);
@@ -176,7 +202,7 @@ const createStaticFootsteps = (containerRef: React.RefObject<HTMLDivElement | nu
     }
     
     container.appendChild(footstepsContainer);
-    addDebugLog(`Static footsteps created: ${footstepsContainer.children.length} footprints`);
+    addDebugLog(`Static footsteps created: ${footstepsContainer.children.length} footprints between ${positions.length} diamonds`);
 };
 
 export const TimelineMobile = React.memo(function TimelineMobile({ items, onItemSelect }: TimelineProps) {
