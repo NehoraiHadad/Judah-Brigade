@@ -124,7 +124,7 @@ const createDebugButtons = () => {
     return { logButton, forceButton };
 };
 
-// ✅ SIMPLIFIED: Static footsteps between diamonds (like original design)
+// ✅ SIMPLIFIED: Static SVG footsteps between diamonds (like original design)
 const createStaticFootsteps = (containerRef: React.RefObject<HTMLDivElement | null>, positions: Point[]) => {
     if (!containerRef.current || positions.length < 2) return;
     
@@ -132,9 +132,12 @@ const createStaticFootsteps = (containerRef: React.RefObject<HTMLDivElement | nu
     const existingFootsteps = container.querySelector('.static-footsteps');
     if (existingFootsteps) existingFootsteps.remove();
     
-    const footstepsContainer = document.createElement('div');
-    footstepsContainer.className = 'static-footsteps';
-    footstepsContainer.style.cssText = `
+    // Create SVG container
+    const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgElement.setAttribute('class', 'static-footsteps');
+    svgElement.setAttribute('width', '100%');
+    svgElement.setAttribute('height', '100%');
+    svgElement.style.cssText = `
         position: absolute;
         top: 0;
         left: 0;
@@ -142,9 +145,14 @@ const createStaticFootsteps = (containerRef: React.RefObject<HTMLDivElement | nu
         height: 100%;
         pointer-events: none;
         z-index: 5;
+        overflow: visible;
     `;
     
-    // Create curved path between each pair of diamonds (like original)
+    // Define footprint SVG paths
+    const leftFootPath = "M12,2 C16,2 18,4 18,8 C18,12 16,16 12,20 C10,18 8,16 6,14 C4,12 2,10 2,8 C2,4 4,2 8,2 L12,2 Z";
+    const rightFootPath = "M8,2 C12,2 14,4 14,8 C14,12 12,16 8,20 C6,18 4,16 2,14 C0,12 -2,10 -2,8 C-2,4 0,2 4,2 L8,2 Z";
+    
+    // Create curved path between each pair of diamonds
     for (let i = 0; i < positions.length - 1; i++) {
         const start = positions[i];
         const end = positions[i + 1];
@@ -175,34 +183,34 @@ const createStaticFootsteps = (containerRef: React.RefObject<HTMLDivElement | nu
             const x = baseX + perpX * curveOffset;
             const y = baseY + perpY * curveOffset;
             
-            // Create footprint element
-            const footprint = document.createElement('div');
+            // Calculate direction angle for footprint orientation
+            const directionAngle = Math.atan2(dy, dx) * (180 / Math.PI);
             
-            // Alternate between left and right foot, with different styles
+            // Create footprint SVG element
             const isLeftFoot = step % 2 === 0;
-            const footSymbol = isLeftFoot ? '🦶' : '👣';
-            const rotation = isLeftFoot ? -15 : 15; // Slight rotation for natural look
+            const footprintGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             
-            footprint.innerHTML = footSymbol;
-            footprint.style.cssText = `
-                position: absolute;
-                left: ${x - 12}px;
-                top: ${y - 12}px;
-                font-size: 18px;
-                opacity: 0.8;
-                transform: rotate(${rotation}deg);
-                z-index: 5;
-                pointer-events: none;
-                filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
-                transition: none;
-            `;
+            // Create the footprint path
+            const footprintPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            footprintPath.setAttribute('d', isLeftFoot ? leftFootPath : rightFootPath);
+            footprintPath.setAttribute('fill', '#8B4513'); // Brown color
+            footprintPath.setAttribute('opacity', '0.7');
+            footprintPath.setAttribute('stroke', '#654321');
+            footprintPath.setAttribute('stroke-width', '0.5');
             
-            footstepsContainer.appendChild(footprint);
+            // Position and rotate the footprint
+            const footRotation = directionAngle + (isLeftFoot ? -20 : 20);
+            footprintGroup.setAttribute('transform', 
+                `translate(${x}, ${y}) rotate(${footRotation}) scale(0.8)`
+            );
+            
+            footprintGroup.appendChild(footprintPath);
+            svgElement.appendChild(footprintGroup);
         }
     }
     
-    container.appendChild(footstepsContainer);
-    addDebugLog(`Static footsteps created: ${footstepsContainer.children.length} footprints between ${positions.length} diamonds`);
+    container.appendChild(svgElement);
+    addDebugLog(`Static SVG footsteps created: ${svgElement.children.length} footprints between ${positions.length} diamonds`);
 };
 
 export const TimelineMobile = React.memo(function TimelineMobile({ items, onItemSelect }: TimelineProps) {
