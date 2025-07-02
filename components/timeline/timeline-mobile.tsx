@@ -1,11 +1,10 @@
 "use client"
-import { useState, useRef, useLayoutEffect, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useCallback, useMemo, useEffect } from "react";
 import { TimelineDiamond } from "./timeline-diamond"
 import { TimelineContinuousPath } from "./timeline-continuous-path"
 import { debounce } from "@/lib/timeline-utils";
 import type { TimelineProps } from "@/types/timeline"
 import { useVisibleDiamonds } from "@/hooks/use-visible-diamonds"
-import React from "react";
 
 interface Point {
   x: number;
@@ -181,32 +180,31 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
     const diamondRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [diamondPositions, setDiamondPositions] = useState<Point[]>([]);
     const { lastVisibleIndex, handleDiamondVisible } = useVisibleDiamonds();
+    
+    // ✅ Add throttling ref to prevent spam
+    const lastUpdateTimeRef = useRef(0);
+    const isCalculatingRef = useRef(false);
 
-    // For mobile, we'll use scroll-based detection instead of carousel
-    // since the original design is vertical scrolling with diagonal diamonds
+    // Scroll handler to track visible diamonds
     useEffect(() => {
-        if (!containerRef.current) return;
-
         const handleScroll = () => {
-            const container = containerRef.current;
-            if (!container) return;
+            if (!containerRef.current) return;
 
+            const container = containerRef.current;
             const containerRect = container.getBoundingClientRect();
-            const containerTop = containerRect.top;
-            const containerHeight = containerRect.height;
-            
-            // Check which diamonds are currently visible
-            diamondRefs.current.forEach((diamondEl, index) => {
-                if (!diamondEl) return;
-                
-                const diamondRect = diamondEl.getBoundingClientRect();
-                const diamondCenter = diamondRect.top + diamondRect.height / 2;
-                
-                // Consider diamond visible if its center is within the viewport
-                if (diamondCenter >= 0 && diamondCenter <= window.innerHeight) {
-                    handleDiamondVisible(index);
+            const viewportCenter = window.innerHeight / 2;
+
+            for (let i = 0; i < diamondRefs.current.length; i++) {
+                const diamond = diamondRefs.current[i];
+                if (diamond) {
+                    const diamondRect = diamond.getBoundingClientRect();
+                    const diamondCenter = diamondRect.top + diamondRect.height / 2;
+                    
+                    if (diamondCenter <= viewportCenter) {
+                        handleDiamondVisible(i);
+                    }
                 }
-            });
+            }
         };
 
         // Initial check
@@ -266,12 +264,25 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
     }, []); // ✅ Empty dependency array - only run once!
 
     const updateDiamondPositions = useCallback(() => {
+        // ✅ Prevent spam calls
+        const now = Date.now();
+        if (now - lastUpdateTimeRef.current < 100) { // Minimum 100ms between calls
+            return;
+        }
+        
+        if (isCalculatingRef.current) {
+            return; // Already calculating
+        }
+        
         if (!containerRef.current || diamondRefs.current.length !== items.length) {
             const debugLog = `Diamond positions FAILED: container=${!!containerRef.current}, refs=${diamondRefs.current.length}, items=${items.length}`;
             console.warn(debugLog);
             addDebugLog && addDebugLog(debugLog);
             return;
         }
+
+        isCalculatingRef.current = true;
+        lastUpdateTimeRef.current = now;
 
         const containerRect = containerRef.current.getBoundingClientRect();
         const positions: Point[] = [];
@@ -288,11 +299,8 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
                     positions.push({ x, y });
                 } catch (error) {
                     console.warn('Error calculating diamond position for mobile', i, error);
-                    if (diamondPositions[i]) {
-                        positions.push(diamondPositions[i]);
-                    } else {
-                        positions.push({ x: 0, y: 0 });
-                    }
+                    // Use fallback position
+                    positions.push({ x: 100, y: i * 200 });
                 }
             } else {
                 const errorLog = `Diamond ref missing for index ${i}`;
@@ -303,30 +311,47 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
             }
         }
         
-        const successLog = `Diamond positions calculated: ${positions.length} positions, container=${Math.round(containerRect.width)}x${Math.round(containerRect.height)}`;
+        const successLog = `Diamond positions calculated: ${positions.length} positions, container=${Math.round(containerRect.width)}x${Math.round(containerRect.height)} [throttled: ${now}]`;
         console.log(successLog);
         addDebugLog && addDebugLog(successLog);
         
         setDiamondPositions(positions);
         setIsReady(true);
-    }, [items, diamondPositions]);
+        isCalculatingRef.current = false;
+    }, [items.length]); // ✅ Only depend on items count, not diamondPositions array
 
     const debouncedUpdatePositions = useMemo(
-        () => debounce(updateDiamondPositions, 150),
+        () => debounce(updateDiamondPositions, 300), // ✅ Increased debounce to 300ms
         [updateDiamondPositions]
     );
 
     useLayoutEffect(() => {
-        const timeoutId = setTimeout(updateDiamondPositions, 200);
+        // ✅ Only run initial calculation once per mount
+        const timeoutId = setTimeout(() => {
+            if (items.length > 0 && diamondPositions.length === 0) {
+                updateDiamondPositions();
+            }
+        }, 500); // Increased delay to ensure everything is loaded
         
-        const resizeObserver = new ResizeObserver(debouncedUpdatePositions);
+        const resizeObserver = new ResizeObserver(() => {
+            // ✅ Additional throttling for resize events
+            const now = Date.now();
+            if (now - lastUpdateTimeRef.current > 500) { // Only resize update every 500ms
+                debouncedUpdatePositions();
+            }
+        });
+        
         if (containerRef.current) {
             resizeObserver.observe(containerRef.current);
         }
 
         // Handle orientation change events for mobile devices
         const handleOrientationChange = () => {
-            setTimeout(updateDiamondPositions, 300); // Delay to allow layout to settle
+            setTimeout(() => {
+                if (items.length > 0) {
+                    updateDiamondPositions();
+                }
+            }, 800); // Longer delay for orientation change
         };
         
         window.addEventListener('orientationchange', handleOrientationChange);
@@ -336,7 +361,7 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
             resizeObserver.disconnect();
             window.removeEventListener('orientationchange', handleOrientationChange);
         };
-    }, [updateDiamondPositions, debouncedUpdatePositions]);
+    }, []); // ✅ Empty dependencies - only run once!
 
     const diamondRefCallback = useCallback((el: HTMLDivElement | null, index: number) => {
         diamondRefs.current[index] = el;
