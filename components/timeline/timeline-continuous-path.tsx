@@ -170,11 +170,25 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
         console.log(visibilityLog);
         addDebugLog(visibilityLog);
         
+        // ✅ Check if SVG is in viewport
+        const viewport = {
+          width: window.innerWidth,
+          height: window.innerHeight
+        };
+        const isInViewport = rect.left < viewport.width && 
+                           rect.right > 0 && 
+                           rect.top < viewport.height && 
+                           rect.bottom > 0;
+        const viewportLog = `SVG viewport check: viewport=${viewport.width}x${viewport.height}, inViewport=${isInViewport}, svgRect=${Math.round(rect.left)},${Math.round(rect.top)} to ${Math.round(rect.right)},${Math.round(rect.bottom)}`;
+        console.log(viewportLog);
+        addDebugLog(viewportLog);
+        
         // Check if any footsteps are actually visible
         const footstepGroups = svgElement.querySelectorAll('g[class*="footstep"]');
         const visibleFootsteps = Array.from(footstepGroups).filter(g => {
           const gStyle = window.getComputedStyle(g);
-          return gStyle.opacity !== '0' && gStyle.display !== 'none';
+          const opacity = parseFloat(gStyle.opacity);
+          return opacity > 0.1 && gStyle.display !== 'none';
         });
         
         const footstepVisibilityLog = `Footstep visibility: total=${footstepGroups.length}, visible=${visibleFootsteps.length}, classes=[${Array.from(footstepGroups).slice(0,3).map(g => g.getAttribute('class') || '').join(',')}]`;

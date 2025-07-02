@@ -59,18 +59,33 @@ const clearLogs = () => {
 const forceShowFootsteps = () => {
     const allSvgs = document.querySelectorAll('svg');
     let totalFixed = 0;
+    let debugInfo = '';
     
-    allSvgs.forEach(svg => {
+    allSvgs.forEach((svg, svgIndex) => {
+        const rect = svg.getBoundingClientRect();
+        const style = window.getComputedStyle(svg);
+        
+        debugInfo += `SVG ${svgIndex}: ${Math.round(rect.width)}x${Math.round(rect.height)} at (${Math.round(rect.left)},${Math.round(rect.top)}), opacity=${style.opacity}, display=${style.display}\n`;
+        
         const footsteps = svg.querySelectorAll('g[class*="footstep-fade"]');
-        footsteps.forEach(g => {
+        footsteps.forEach((g, i) => {
+            const gStyle = window.getComputedStyle(g);
+            if (i < 3) { // Log first 3 for debugging
+                debugInfo += `  Footstep ${i}: opacity=${gStyle.opacity}, animation=${gStyle.animation.slice(0,50)}\n`;
+            }
+            
             (g as HTMLElement).style.opacity = '0.85';
             (g as HTMLElement).style.animation = 'none';
+            (g as HTMLElement).style.display = 'block';
             totalFixed++;
         });
     });
     
+    addDebugLog(`FORCE SHOW DEBUG:\n${debugInfo}`);
     addDebugLog(`FORCE SHOW: Fixed ${totalFixed} footsteps manually`);
-    alert(`הוצגו ${totalFixed} צעדים! 👣`);
+    
+    // Show detailed alert
+    alert(`הוצגו ${totalFixed} צעדים!\n\nפרטי דיבאג:\n${debugInfo.slice(0, 200)}...`);
 };
 
 // Create floating debug buttons
@@ -252,6 +267,9 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
 
     const updateDiamondPositions = useCallback(() => {
         if (!containerRef.current || diamondRefs.current.length !== items.length) {
+            const debugLog = `Diamond positions FAILED: container=${!!containerRef.current}, refs=${diamondRefs.current.length}, items=${items.length}`;
+            console.warn(debugLog);
+            addDebugLog && addDebugLog(debugLog);
             return;
         }
 
@@ -276,8 +294,18 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
                         positions.push({ x: 0, y: 0 });
                     }
                 }
+            } else {
+                const errorLog = `Diamond ref missing for index ${i}`;
+                console.warn(errorLog);
+                addDebugLog && addDebugLog(errorLog);
+                // Use fallback position
+                positions.push({ x: 100, y: i * 200 });
             }
         }
+        
+        const successLog = `Diamond positions calculated: ${positions.length} positions, container=${Math.round(containerRect.width)}x${Math.round(containerRect.height)}`;
+        console.log(successLog);
+        addDebugLog && addDebugLog(successLog);
         
         setDiamondPositions(positions);
         setIsReady(true);
