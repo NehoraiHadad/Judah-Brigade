@@ -4,6 +4,20 @@ import { useFootstepStreaming } from '@/hooks/use-footstep-streaming';
 import { pathCache } from '@/utils/path-cache';
 import { getResponsiveFootprintScale } from '@/constants/timeline-config';
 
+// Access the global debug logger (defined in timeline-mobile.tsx)
+declare global {
+  interface Window {
+    addDebugLog?: (message: string) => void;
+  }
+}
+
+// Helper to add debug logs safely
+const addDebugLog = (message: string) => {
+  if (typeof window !== 'undefined' && window.addDebugLog) {
+    window.addDebugLog(message);
+  }
+};
+
 interface Point {
   x: number;
   y: number;
@@ -104,29 +118,20 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
         
         // Debug: Log footstep generation for production troubleshooting
         if (process.env.NODE_ENV === 'production') {
-          console.log('Timeline footsteps generated:', { 
-            targetDistance: Math.round(targetDistance), 
-            totalLength: Math.round(pathCache.getOrCreateTempPath(pathData).totalLength),
-            visibleIndex: visibleUntilIndex ?? 'initial',
-            device: window.innerWidth < 768 ? 'mobile' : 'desktop'
-          });
+          const logMessage = `Footsteps generated: targetDistance=${Math.round(targetDistance)}, totalLength=${Math.round(pathCache.getOrCreateTempPath(pathData).totalLength)}, visibleIndex=${visibleUntilIndex ?? 'initial'}, device=${window.innerWidth < 768 ? 'mobile' : 'desktop'}`;
+          console.log(logMessage);
+          addDebugLog(logMessage);
         }
       }
-          } catch (error) {
-        // Enhanced error logging for mobile debugging
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const errorStack = error instanceof Error ? error.stack?.slice(0, 200) : undefined;
-        
-        console.error('Error processing path for footsteps:', {
-          error: errorMessage,
-          stack: errorStack,
-          pathDataLength: pathData?.length || 0,
-          diamondsCount: diamonds.length,
-          visibleIndex: visibleUntilIndex,
-          userAgent: navigator.userAgent.slice(0, 100),
-          viewport: `${window.innerWidth}x${window.innerHeight}`
-        });
-      }
+    } catch (error) {
+      // Enhanced error logging for mobile debugging
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack?.slice(0, 200) : undefined;
+      
+      const errorLog = `ERROR in footsteps: ${errorMessage}, pathLength=${pathData?.length || 0}, diamonds=${diamonds.length}, visible=${visibleUntilIndex}, viewport=${window.innerWidth}x${window.innerHeight}`;
+      console.error(errorLog);
+      addDebugLog(errorLog);
+    }
   }, [pathData, visibleUntilIndex, diamonds.length, addFootsteps]);
 
   // Reset when path changes significantly
@@ -146,10 +151,9 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
   // Production logging: Track footsteps count for debugging
   useEffect(() => {
     if (process.env.NODE_ENV === 'production' && footsteps.length > 0) {
-      console.log('Timeline footsteps rendered:', { 
-        count: footsteps.length,
-        lastFootstepId: footsteps[footsteps.length - 1]?.id || 'none'
-      });
+      const renderLog = `Footsteps rendered: count=${footsteps.length}, lastId=${footsteps[footsteps.length - 1]?.id || 'none'}`;
+      console.log(renderLog);
+      addDebugLog(renderLog);
     }
   }, [footsteps.length]);
 

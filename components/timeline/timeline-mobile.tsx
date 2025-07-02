@@ -11,6 +11,110 @@ interface Point {
   y: number;
 }
 
+// Global log collector for mobile debugging
+const mobileDebugLogs: string[] = [];
+const addDebugLog = (message: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = `[${timestamp}] ${message}`;
+    mobileDebugLogs.push(logEntry);
+    
+    // Keep only last 100 logs to prevent memory issues
+    if (mobileDebugLogs.length > 100) {
+        mobileDebugLogs.shift();
+    }
+};
+
+// Add copy logs functionality
+const copyLogsToClipboard = async () => {
+    try {
+        const logsText = mobileDebugLogs.join('\n');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(logsText);
+            alert('לוגים הועתקו ללוח! 📋');
+        } else {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = logsText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('לוגים הועתקו ללוח! 📋');
+        }
+    } catch (error) {
+        console.error('Failed to copy logs:', error);
+        alert('שגיאה בהעתקת הלוגים');
+    }
+};
+
+// Clear logs functionality
+const clearLogs = () => {
+    mobileDebugLogs.length = 0;
+    addDebugLog('Logs cleared by user');
+    alert('לוגים נוקו! 🗑️');
+};
+
+// Create floating debug buttons
+const createDebugButtons = () => {
+    // Remove existing buttons if any
+    const existingCopy = document.getElementById('copy-logs-btn');
+    const existingClear = document.getElementById('clear-logs-btn');
+    if (existingCopy) existingCopy.remove();
+    if (existingClear) existingClear.remove();
+
+    // Copy button
+    const copyButton = document.createElement('button');
+    copyButton.id = 'copy-logs-btn';
+    copyButton.innerHTML = '📋 העתק לוגים';
+    copyButton.style.cssText = `
+        position: fixed;
+        bottom: 130px;
+        right: 10px;
+        z-index: 9999;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        cursor: pointer;
+        font-family: system-ui, -apple-system, sans-serif;
+        direction: rtl;
+    `;
+    
+    // Clear button
+    const clearButton = document.createElement('button');
+    clearButton.id = 'clear-logs-btn';
+    clearButton.innerHTML = '🗑️ נקה לוגים';
+    clearButton.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        right: 10px;
+        z-index: 9999;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        cursor: pointer;
+        font-family: system-ui, -apple-system, sans-serif;
+        direction: rtl;
+    `;
+    
+    copyButton.addEventListener('click', copyLogsToClipboard);
+    clearButton.addEventListener('click', clearLogs);
+    
+    document.body.appendChild(copyButton);
+    document.body.appendChild(clearButton);
+    
+    return { copyButton, clearButton };
+};
+
 export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
     const [isReady, setIsReady] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -67,30 +171,35 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
     useEffect(() => {
         // Only in production and on mobile
         if (process.env.NODE_ENV === 'production' && window.innerWidth < 768) {
+            // Expose debug logger globally for other components
+            window.addDebugLog = addDebugLog;
+            
+            // Create debug buttons
+            const { copyButton, clearButton } = createDebugButtons();
+            
             // Log when timeline mobile component mounts
-            console.log('Timeline Mobile mounted:', {
-                itemsCount: items.length,
-                containerWidth: containerRef.current?.clientWidth || 'not ready',
-                userAgent: navigator.userAgent.slice(0, 50) + '...'
-            });
+            const mountLog = `Timeline Mobile mounted: items=${items.length}, containerWidth=${containerRef.current?.clientWidth || 'not ready'}, userAgent=${navigator.userAgent.slice(0, 50)}...`;
+            console.log(mountLog);
+            addDebugLog(mountLog);
 
             // Log scroll events (throttled)
             let scrollTimeout: NodeJS.Timeout;
             const logScroll = () => {
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
-                    console.log('Mobile scroll position:', {
-                        scrollY: window.scrollY,
-                        lastVisibleIndex,
-                        diamondPositions: diamondPositions.length
-                    });
+                    const scrollLog = `Mobile scroll: scrollY=${window.scrollY}, lastVisibleIndex=${lastVisibleIndex}, diamondPositions=${diamondPositions.length}`;
+                    console.log(scrollLog);
+                    addDebugLog(scrollLog);
                 }, 1000); // Log max once per second
             };
 
             window.addEventListener('scroll', logScroll);
+            
             return () => {
                 window.removeEventListener('scroll', logScroll);
                 clearTimeout(scrollTimeout);
+                copyButton.remove();
+                clearButton.remove();
             };
         }
     }, [items.length, lastVisibleIndex, diamondPositions.length]);
