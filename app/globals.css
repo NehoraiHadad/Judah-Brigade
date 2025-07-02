@@ -313,6 +313,7 @@
     .animate-diamond-appear,
     .btn-enhanced::before,
     .footstep-fade {
+      -webkit-animation: none;
       animation: none;
       transition: none;
     }

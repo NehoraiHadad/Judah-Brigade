@@ -216,11 +216,15 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
       {/* Animation keyframes and helper classes – global scope */}
       {animated && (
         <style jsx global>{`
+          @-webkit-keyframes footstepFadeIn {
+            to { opacity: 0.85; }
+          }
           @keyframes footstepFadeIn {
             to { opacity: 0.85; }
           }
           .footstep-fade {
             opacity: 0;
+            -webkit-animation: footstepFadeIn 0.45s ease-out forwards;
             animation: footstepFadeIn 0.45s ease-out forwards;
           }
           .footstep-static {
