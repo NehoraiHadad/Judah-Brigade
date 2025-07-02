@@ -6,6 +6,13 @@ import { debounce } from "@/lib/timeline-utils";
 import type { TimelineProps } from "@/types/timeline"
 import { useVisibleDiamonds } from "@/hooks/use-visible-diamonds"
 
+// ✅ Global type declaration for debug logging
+declare global {
+  interface Window {
+    addDebugLog?: (message: string) => void;
+  }
+}
+
 interface Point {
   x: number;
   y: number;
@@ -263,7 +270,10 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
         }
     }, []); // ✅ Empty dependency array - only run once!
 
-    const updateDiamondPositions = useCallback(() => {
+    // ✅ Create a stable reference using useRef to prevent recreation
+    const updateDiamondPositionsRef = useRef<() => void>(() => {});
+    
+    updateDiamondPositionsRef.current = () => {
         // ✅ Prevent spam calls
         const now = Date.now();
         if (now - lastUpdateTimeRef.current < 100) { // Minimum 100ms between calls
@@ -318,7 +328,12 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
         setDiamondPositions(positions);
         setIsReady(true);
         isCalculatingRef.current = false;
-    }, [items.length]); // ✅ Only depend on items count, not diamondPositions array
+    };
+    
+    // ✅ Stable wrapper function
+    const updateDiamondPositions = useCallback(() => {
+        updateDiamondPositionsRef.current?.();
+    }, []); // ✅ No dependencies - truly stable
 
     const debouncedUpdatePositions = useMemo(
         () => debounce(updateDiamondPositions, 300), // ✅ Increased debounce to 300ms
@@ -366,10 +381,11 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
     const diamondRefCallback = useCallback((el: HTMLDivElement | null, index: number) => {
         diamondRefs.current[index] = el;
         
-        if (el && diamondRefs.current.filter(Boolean).length === items.length) {
-            setTimeout(updateDiamondPositions, 100);
+        // ✅ Only trigger initial position calculation once when all refs are ready
+        if (el && diamondRefs.current.filter(Boolean).length === items.length && diamondPositions.length === 0) {
+            setTimeout(() => updateDiamondPositions(), 100);
         }
-    }, [items.length, updateDiamondPositions]);
+    }, [items.length]); // ✅ Remove updateDiamondPositions dependency to prevent render loop
 
     // Group items into pairs for diagonal display
     const itemPairs = useMemo(() => {
