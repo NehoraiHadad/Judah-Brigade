@@ -180,9 +180,36 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
         const footstepVisibilityLog = `Footstep visibility: total=${footstepGroups.length}, visible=${visibleFootsteps.length}, classes=[${Array.from(footstepGroups).slice(0,3).map(g => g.getAttribute('class') || '').join(',')}]`;
         console.log(footstepVisibilityLog);
         addDebugLog(footstepVisibilityLog);
+        
+        // ✅ EMERGENCY FALLBACK: If no footsteps are visible after 2 seconds, force them to show
+        if (footstepGroups.length > 0 && visibleFootsteps.length === 0 && animated) {
+          const fallbackTimeout = setTimeout(() => {
+            // Re-check visibility
+            const stillInvisible = Array.from(svgElement.querySelectorAll('g[class*="footstep"]')).filter(g => {
+              const gStyle = window.getComputedStyle(g);
+              return gStyle.opacity !== '0' && gStyle.display !== 'none';
+            });
+            
+            if (stillInvisible.length === 0) {
+              // Force all footsteps to be visible
+              const allFootsteps = svgElement.querySelectorAll('g[class*="footstep-fade"]');
+              allFootsteps.forEach(g => {
+                (g as HTMLElement).style.opacity = '0.85';
+                (g as HTMLElement).style.animation = 'none';
+              });
+              
+              const forceLog = `FALLBACK TRIGGERED: Forced ${allFootsteps.length} footsteps to be visible (CSS animation failed)`;
+              console.warn(forceLog);
+              addDebugLog(forceLog);
+            }
+          }, 2000); // Wait 2 seconds for animations to complete
+          
+          // Clean up timeout when component unmounts
+          return () => clearTimeout(fallbackTimeout);
+        }
       }
     }
-  }, [footsteps.length]);
+  }, [footsteps.length, animated]);
 
   // Lazy SVG creation: don't render if no path or footsteps
   if (!pathData || diamonds.length === 0) return null;
@@ -295,13 +322,48 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
           @keyframes footstepFadeIn {
             to { opacity: 0.85; }
           }
+          
           .footstep-fade {
             opacity: 0;
             -webkit-animation: footstepFadeIn 0.45s ease-out forwards;
             animation: footstepFadeIn 0.45s ease-out forwards;
+            /* Mobile-specific fallbacks */
+            -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
           }
+          
           .footstep-static {
             opacity: 0.85;
+          }
+          
+          /* Emergency fallback for mobile devices where animations don't work */
+          @media screen and (max-width: 768px) {
+            .footstep-fade {
+              /* Shorter animation duration for mobile */
+              -webkit-animation-duration: 0.3s;
+              animation-duration: 0.3s;
+              /* Ensure animation actually runs */
+              -webkit-animation-play-state: running;
+              animation-play-state: running;
+            }
+            
+            /* If animations are disabled/broken, show immediately */
+            .footstep-fade:not(:hover) {
+              opacity: 0.85;
+              -webkit-animation: none;
+              animation: none;
+            }
+          }
+          
+          /* Fallback for very old mobile browsers */
+          @supports not (animation: footstepFadeIn 0.45s ease-out forwards) {
+            .footstep-fade {
+              opacity: 0.85 !important;
+              -webkit-transition: opacity 0.3s ease;
+              transition: opacity 0.3s ease;
+            }
           }
         `}</style>
       )}

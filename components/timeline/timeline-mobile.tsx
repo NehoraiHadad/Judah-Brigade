@@ -55,13 +55,33 @@ const clearLogs = () => {
     alert('לוגים נוקו! 🗑️');
 };
 
+// Force footsteps to show (emergency button)
+const forceShowFootsteps = () => {
+    const allSvgs = document.querySelectorAll('svg');
+    let totalFixed = 0;
+    
+    allSvgs.forEach(svg => {
+        const footsteps = svg.querySelectorAll('g[class*="footstep-fade"]');
+        footsteps.forEach(g => {
+            (g as HTMLElement).style.opacity = '0.85';
+            (g as HTMLElement).style.animation = 'none';
+            totalFixed++;
+        });
+    });
+    
+    addDebugLog(`FORCE SHOW: Fixed ${totalFixed} footsteps manually`);
+    alert(`הוצגו ${totalFixed} צעדים! 👣`);
+};
+
 // Create floating debug buttons
 const createDebugButtons = () => {
     // Remove existing buttons if any
     const existingCopy = document.getElementById('copy-logs-btn');
     const existingClear = document.getElementById('clear-logs-btn');
+    const existingForce = document.getElementById('force-footsteps-btn');
     if (existingCopy) existingCopy.remove();
     if (existingClear) existingClear.remove();
+    if (existingForce) existingForce.remove();
 
     // Copy button
     const copyButton = document.createElement('button');
@@ -69,7 +89,7 @@ const createDebugButtons = () => {
     copyButton.innerHTML = '📋 העתק לוגים';
     copyButton.style.cssText = `
         position: fixed;
-        bottom: 130px;
+        bottom: 180px;
         right: 10px;
         z-index: 9999;
         background: #007bff;
@@ -91,7 +111,7 @@ const createDebugButtons = () => {
     clearButton.innerHTML = '🗑️ נקה לוגים';
     clearButton.style.cssText = `
         position: fixed;
-        bottom: 80px;
+        bottom: 130px;
         right: 10px;
         z-index: 9999;
         background: #dc3545;
@@ -107,13 +127,37 @@ const createDebugButtons = () => {
         direction: rtl;
     `;
     
+    // Force footsteps button
+    const forceButton = document.createElement('button');
+    forceButton.id = 'force-footsteps-btn';
+    forceButton.innerHTML = '👣 הצג צעדים';
+    forceButton.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        right: 10px;
+        z-index: 9999;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        cursor: pointer;
+        font-family: system-ui, -apple-system, sans-serif;
+        direction: rtl;
+    `;
+    
     copyButton.addEventListener('click', copyLogsToClipboard);
     clearButton.addEventListener('click', clearLogs);
+    forceButton.addEventListener('click', forceShowFootsteps);
     
     document.body.appendChild(copyButton);
     document.body.appendChild(clearButton);
+    document.body.appendChild(forceButton);
     
-    return { copyButton, clearButton };
+    return { copyButton, clearButton, forceButton };
 };
 
 export const TimelineMobile = React.memo(function TimelineMobile({ items, onItemSelect }: TimelineProps) {
@@ -176,7 +220,7 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
             window.addDebugLog = addDebugLog;
             
             // Create debug buttons
-            const { copyButton, clearButton } = createDebugButtons();
+            const { copyButton, clearButton, forceButton } = createDebugButtons();
             
             // Log when timeline mobile component mounts
             const mountLog = `Timeline Mobile mounted: items=${items.length}, containerWidth=${containerRef.current?.clientWidth || 'not ready'}, userAgent=${navigator.userAgent.slice(0, 50)}...`;
@@ -201,6 +245,7 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
                 clearTimeout(scrollTimeout);
                 copyButton.remove();
                 clearButton.remove();
+                forceButton.remove();
             };
         }
     }, []); // ✅ Empty dependency array - only run once!
