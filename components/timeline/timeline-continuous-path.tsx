@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useLayoutEffect, useRef, useCallback } from 'react';
+import React, { useMemo, useLayoutEffect, useRef } from 'react';
 import { PathGenerator } from '@/lib/path-generator';
 import { useFootstepStreaming } from '@/hooks/use-footstep-streaming';
 import { pathCache } from '@/utils/path-cache';
@@ -134,7 +134,6 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
           top: 0, 
           left: 0, 
           pointerEvents: 'none',
-          zIndex: -1
         }}
       >
         <defs>

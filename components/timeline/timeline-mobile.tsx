@@ -151,7 +151,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                                 {/* Hidden placeholder */}
                             </div>
                         ) : (
-                            <div className="transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+                            <div className="transform -rotate-1 hover:rotate-0 transition-transform duration-300 z-10">
                                 <TimelineDiamond
                                     title={pair[0].title}
                                     date={pair[0].date}
@@ -176,7 +176,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                                 {/* Hidden placeholder */}
                             </div>
                         ) : (
-                            <div className="transform rotate-1 hover:-rotate-0 transition-transform duration-300">
+                            <div className="transform rotate-1 hover:-rotate-0 transition-transform duration-300 z-10">
                                 <TimelineDiamond
                                     title={pair[1].title}
                                     date={pair[1].date}
