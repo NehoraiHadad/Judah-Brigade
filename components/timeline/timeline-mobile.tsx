@@ -124,6 +124,61 @@ const createDebugButtons = () => {
     return { logButton, forceButton };
 };
 
+// ✅ SIMPLIFIED: Static footsteps without any effects
+const createStaticFootsteps = (containerRef: React.RefObject<HTMLDivElement | null>, positions: Point[]) => {
+    if (!containerRef.current || positions.length < 2) return;
+    
+    const container = containerRef.current;
+    const existingFootsteps = container.querySelector('.static-footsteps');
+    if (existingFootsteps) existingFootsteps.remove();
+    
+    const footstepsContainer = document.createElement('div');
+    footstepsContainer.className = 'static-footsteps';
+    footstepsContainer.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+    `;
+    
+    // Create simple path between diamonds
+    for (let i = 0; i < positions.length - 1; i++) {
+        const start = positions[i];
+        const end = positions[i + 1];
+        
+        // Calculate distance and steps
+        const distance = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2);
+        const steps = Math.floor(distance / 30); // Every 30px
+        
+        for (let step = 0; step <= steps; step++) {
+            const progress = step / steps;
+            const x = start.x + (end.x - start.x) * progress;
+            const y = start.y + (end.y - start.y) * progress;
+            
+            const footprint = document.createElement('div');
+            footprint.innerHTML = step % 2 === 0 ? '👣' : '🦶'; // Alternate footprints
+            footprint.style.cssText = `
+                position: absolute;
+                left: ${x - 8}px;
+                top: ${y - 8}px;
+                font-size: 16px;
+                opacity: 0.7;
+                transform: rotate(${Math.random() * 20 - 10}deg);
+                z-index: 5;
+                pointer-events: none;
+            `;
+            
+            footstepsContainer.appendChild(footprint);
+        }
+    }
+    
+    container.appendChild(footstepsContainer);
+    addDebugLog(`Static footsteps created: ${footstepsContainer.children.length} footprints`);
+};
+
 export const TimelineMobile = React.memo(function TimelineMobile({ items, onItemSelect }: TimelineProps) {
     const [isReady, setIsReady] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -177,6 +232,16 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
             };
         }
     }, [items.length]);
+
+    // ✅ NEW: Create static footsteps when positions are ready
+    useEffect(() => {
+        if (isReady && diamondPositions.length > 1) {
+            // Add delay to ensure DOM is ready
+            setTimeout(() => {
+                createStaticFootsteps(containerRef, diamondPositions);
+            }, 500);
+        }
+    }, [isReady, diamondPositions]);
 
     // ✅ SIMPLIFIED: Calculate positions ONCE when refs are ready
     const calculatePositions = useCallback(() => {
@@ -308,21 +373,7 @@ export const TimelineMobile = React.memo(function TimelineMobile({ items, onItem
             >
                 {itemPairs.map(renderTimelinePair)}
                 
-                {/* ✅ SIMPLIFIED: Show all footsteps immediately when ready */}
-                {isReady && containerRef.current && diamondPositions.length > 1 && (
-                    <TimelineContinuousPath
-                        diamonds={diamondPositions.filter((_, index) => !items[index]?.isHidden)}
-                        width={containerRef.current.clientWidth}
-                        height={containerRef.current.clientHeight}
-                        className="opacity-100" // ✅ Force full opacity immediately
-                        animated={false} // ✅ Disable animations on mobile for reliability
-                        sideOffset={60}
-                        waviness={1.2}
-                        smoothness={0.8}
-                        seed={789}
-                        visibleUntilIndex={999} // ✅ Very high number to ensure all show
-                    />
-                )}
+                {/* ✅ Static footsteps are created via useEffect above - no complex component needed */}
             </div>
         </div>
     )
