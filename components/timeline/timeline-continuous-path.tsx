@@ -107,13 +107,26 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
           console.log('Timeline footsteps generated:', { 
             targetDistance: Math.round(targetDistance), 
             totalLength: Math.round(pathCache.getOrCreateTempPath(pathData).totalLength),
-            visibleIndex: visibleUntilIndex ?? 'initial' 
+            visibleIndex: visibleUntilIndex ?? 'initial',
+            device: window.innerWidth < 768 ? 'mobile' : 'desktop'
           });
         }
       }
-    } catch (error) {
-      console.warn('Error processing path for footsteps:', error);
-    }
+          } catch (error) {
+        // Enhanced error logging for mobile debugging
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorStack = error instanceof Error ? error.stack?.slice(0, 200) : undefined;
+        
+        console.error('Error processing path for footsteps:', {
+          error: errorMessage,
+          stack: errorStack,
+          pathDataLength: pathData?.length || 0,
+          diamondsCount: diamonds.length,
+          visibleIndex: visibleUntilIndex,
+          userAgent: navigator.userAgent.slice(0, 100),
+          viewport: `${window.innerWidth}x${window.innerHeight}`
+        });
+      }
   }, [pathData, visibleUntilIndex, diamonds.length, addFootsteps]);
 
   // Reset when path changes significantly

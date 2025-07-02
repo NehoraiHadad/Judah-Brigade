@@ -63,6 +63,38 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
         }
     }, [handleDiamondVisible, items.length]);
 
+    // Mobile debugging utilities
+    useEffect(() => {
+        // Only in production and on mobile
+        if (process.env.NODE_ENV === 'production' && window.innerWidth < 768) {
+            // Log when timeline mobile component mounts
+            console.log('Timeline Mobile mounted:', {
+                itemsCount: items.length,
+                containerWidth: containerRef.current?.clientWidth || 'not ready',
+                userAgent: navigator.userAgent.slice(0, 50) + '...'
+            });
+
+            // Log scroll events (throttled)
+            let scrollTimeout: NodeJS.Timeout;
+            const logScroll = () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    console.log('Mobile scroll position:', {
+                        scrollY: window.scrollY,
+                        lastVisibleIndex,
+                        diamondPositions: diamondPositions.length
+                    });
+                }, 1000); // Log max once per second
+            };
+
+            window.addEventListener('scroll', logScroll);
+            return () => {
+                window.removeEventListener('scroll', logScroll);
+                clearTimeout(scrollTimeout);
+            };
+        }
+    }, [items.length, lastVisibleIndex, diamondPositions.length]);
+
     const updateDiamondPositions = useCallback(() => {
         if (!containerRef.current || diamondRefs.current.length !== items.length) {
             return;
