@@ -5,6 +5,7 @@ import { TimelineContinuousPath } from "./timeline-continuous-path"
 import { debounce } from "@/lib/timeline-utils";
 import type { TimelineProps } from "@/types/timeline"
 import { useVisibleDiamonds } from "@/hooks/use-visible-diamonds"
+import React from "react";
 
 interface Point {
   x: number;
@@ -115,7 +116,7 @@ const createDebugButtons = () => {
     return { copyButton, clearButton };
 };
 
-export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
+export const TimelineMobile = React.memo(function TimelineMobile({ items, onItemSelect }: TimelineProps) {
     const [isReady, setIsReady] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const diamondRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -167,7 +168,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
         }
     }, [handleDiamondVisible, items.length]);
 
-    // Mobile debugging utilities
+    // Mobile debugging utilities - only run once on mount
     useEffect(() => {
         // Only in production and on mobile
         if (process.env.NODE_ENV === 'production' && window.innerWidth < 768) {
@@ -202,7 +203,7 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
                 clearButton.remove();
             };
         }
-    }, [items.length, lastVisibleIndex, diamondPositions.length]);
+    }, []); // ✅ Empty dependency array - only run once!
 
     const updateDiamondPositions = useCallback(() => {
         if (!containerRef.current || diamondRefs.current.length !== items.length) {
@@ -384,4 +385,4 @@ export function TimelineMobile({ items, onItemSelect }: TimelineProps) {
             </div>
         </div>
     )
-}
+});

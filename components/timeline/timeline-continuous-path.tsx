@@ -109,8 +109,9 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
         targetDistance = Math.max(totalLength, lastTargetDistanceRef.current);
       }
 
-      // Only proceed if we have a new target distance
-      if (targetDistance > lastTargetDistanceRef.current) {
+      // ✅ Better checking: only proceed if we have a MEANINGFUL new target distance
+      const distanceDifference = targetDistance - lastTargetDistanceRef.current;
+      if (distanceDifference > 5) { // Only proceed if difference is > 5 pixels
         lastTargetDistanceRef.current = targetDistance;
         
         const config = getResponsiveConfig();
@@ -118,10 +119,14 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
         
         // Debug: Log footstep generation for production troubleshooting
         if (process.env.NODE_ENV === 'production') {
-          const logMessage = `Footsteps generated: targetDistance=${Math.round(targetDistance)}, totalLength=${Math.round(pathCache.getOrCreateTempPath(pathData).totalLength)}, visibleIndex=${visibleUntilIndex ?? 'initial'}, device=${window.innerWidth < 768 ? 'mobile' : 'desktop'}`;
+          const logMessage = `Footsteps generated: targetDistance=${Math.round(targetDistance)}, totalLength=${Math.round(pathCache.getOrCreateTempPath(pathData).totalLength)}, visibleIndex=${visibleUntilIndex ?? 'initial'}, device=${window.innerWidth < 768 ? 'mobile' : 'desktop'}, diff=${Math.round(distanceDifference)}`;
           console.log(logMessage);
           addDebugLog(logMessage);
         }
+      } else if (process.env.NODE_ENV === 'production' && distanceDifference > 0) {
+        // Log skipped small changes
+        const skipLog = `Footsteps SKIPPED: diff=${Math.round(distanceDifference)} too small (target=${Math.round(targetDistance)}, current=${Math.round(lastTargetDistanceRef.current)})`;
+        addDebugLog(skipLog);
       }
     } catch (error) {
       // Enhanced error logging for mobile debugging
@@ -154,6 +159,28 @@ const TimelineContinuousPathComponent: React.FC<TimelineContinuousPathProps> = (
       const renderLog = `Footsteps rendered: count=${footsteps.length}, lastId=${footsteps[footsteps.length - 1]?.id || 'none'}`;
       console.log(renderLog);
       addDebugLog(renderLog);
+      
+      // ✅ Check SVG visibility in DOM
+      if (pathRef.current) {
+        const svgElement = pathRef.current;
+        const computedStyle = window.getComputedStyle(svgElement);
+        const rect = svgElement.getBoundingClientRect();
+        
+        const visibilityLog = `SVG visibility: display=${computedStyle.display}, opacity=${computedStyle.opacity}, visibility=${computedStyle.visibility}, zIndex=${computedStyle.zIndex}, rect=${Math.round(rect.width)}x${Math.round(rect.height)} at (${Math.round(rect.left)},${Math.round(rect.top)})`;
+        console.log(visibilityLog);
+        addDebugLog(visibilityLog);
+        
+        // Check if any footsteps are actually visible
+        const footstepGroups = svgElement.querySelectorAll('g[class*="footstep"]');
+        const visibleFootsteps = Array.from(footstepGroups).filter(g => {
+          const gStyle = window.getComputedStyle(g);
+          return gStyle.opacity !== '0' && gStyle.display !== 'none';
+        });
+        
+        const footstepVisibilityLog = `Footstep visibility: total=${footstepGroups.length}, visible=${visibleFootsteps.length}, classes=[${Array.from(footstepGroups).slice(0,3).map(g => g.getAttribute('class') || '').join(',')}]`;
+        console.log(footstepVisibilityLog);
+        addDebugLog(footstepVisibilityLog);
+      }
     }
   }, [footsteps.length]);
 
