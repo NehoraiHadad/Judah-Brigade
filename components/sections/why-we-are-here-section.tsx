@@ -7,6 +7,7 @@ import { GradientDivider } from "@/components/ui/gradient-divider";
 import { ImagePreviewModal } from "@/components/ui/image-preview-modal";
 import { CONTENT } from "@/data";
 import { IMAGES } from "@/constants";
+import { getBlurPlaceholder } from "@/lib/blur-placeholder";
 
 export function WhyWeAreHereSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -148,6 +149,8 @@ export function WhyWeAreHereSection() {
                 className="rounded-lg shadow-2xl transition-all duration-300 border-2 border-amber-300/30 group-hover:border-amber-300/60 w-auto h-auto max-w-80 max-h-60 sm:max-w-[30rem] sm:max-h-80 lg:max-w-[40rem] lg:max-h-96"
                 sizes="(max-width: 640px) 320px, (max-width: 1024px) 480px, 640px"
                 priority
+                placeholder="blur"
+                blurDataURL={getBlurPlaceholder('landscape')}
               />
               
               {/* Hover overlay */}

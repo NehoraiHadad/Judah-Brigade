@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Heebo } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { PerformanceMonitor } from "@/components/ui/performance-monitor"
 
 // Configure Heebo font with Hebrew support
 const heebo = Heebo({
@@ -40,6 +41,31 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning className={`${heebo.variable}`}>
       <head>
+        {/* Preload critical resources for better performance */}
+        <link
+          rel="preload"
+          href="/images/judah-brigade-logo-new.webp"
+          as="image"
+          type="image/webp"
+        />
+        {/* Preload the first hero image that's actually shown initially */}
+        <link
+          rel="preload"
+          href="/images/hero/hero-cave-machpelah-1.webp"
+          as="image"
+          type="image/webp"
+        />
+        {/* DNS prefetch for external resources */}
+        <link
+          rel="dns-prefetch"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+        
         {/* Add Eruda mobile console for production debugging */}
         {process.env.NODE_ENV === 'production' && (
           <script 
@@ -50,6 +76,19 @@ export default function RootLayout({
                   script.src = 'https://cdn.jsdelivr.net/npm/eruda@3.0.1/eruda.min.js';
                   script.onload = function() { eruda.init(); };
                   document.head.appendChild(script);
+                }
+                
+                // Register Service Worker
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js')
+                      .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                      })
+                      .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                      });
+                  });
                 }
               `
             }}
@@ -64,6 +103,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <PerformanceMonitor />
         </ThemeProvider>
       </body>
     </html>

@@ -1,5 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
-@config "../tailwind.config.ts";
+
+/* CSS Variables for consistent theme */
+:root {
+  --color-amber-primary: #f59e0b;
+  --color-amber-secondary: #fbbf24;
+  --color-teal-primary: #0d9488;
+  --color-teal-secondary: #14b8a6;
+  --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  --gradient-teal: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 @layer base {
   :root {
@@ -58,273 +70,70 @@
   }
 
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-heebo), 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
   }
 
   html {
     scroll-behavior: smooth;
-  }
-
-  /* RTL Support */
-  [dir="rtl"] {
-    direction: rtl;
-  }
-
-  [dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-x-reverse: 1;
-    margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-    margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
-  }
-
-  [dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-x-reverse: 1;
-    margin-right: calc(1rem * var(--tw-space-x-reverse));
-    margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
-  }
-
-  [dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-x-reverse: 1;
-    margin-right: calc(1.5rem * var(--tw-space-x-reverse));
-    margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 }
 
-@layer components {
-  /* UNIFIED DESIGN SYSTEM COMPONENTS */
-  
-  /* Unified timeline diamond styling */
-  .timeline-diamond {
-    @apply w-16 h-16 transform rotate-45 bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer;
-  }
-
-  .timeline-diamond::before {
-    content: "";
-    @apply absolute inset-2 bg-white/90 transform -rotate-45;
-  }
-
-  .timeline-diamond-enhanced {
-    @apply w-24 h-24 transform rotate-45 border-4 border-primary hover:border-primary/80 bg-gradient-to-br from-primary/10 to-primary/20 hover:from-primary/20 hover:to-primary/30 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer relative overflow-hidden;
-  }
-
-  /* Unified gradients using design system colors */
-  .hero-gradient {
-    background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--primary)) 50%, hsl(var(--primary)/0.8) 100%);
-  }
-
-  .teal-landscape-bg {
-    background: linear-gradient(135deg, hsl(var(--secondary)/0.9) 0%, hsl(var(--secondary)) 25%, hsl(var(--primary)) 75%, hsl(var(--primary)/0.7) 100%);
-  }
-
-  .natural-section {
-    background: linear-gradient(to bottom, #f0fdf4, #ecfdf5);
-  }
-
-  /* Enhanced animations */
-  @keyframes diamondAppear {
-    from {
-      opacity: 0;
-      transform: rotate(45deg) scale(0.3);
-    }
-    to {
-      opacity: 1;
-      transform: rotate(45deg) scale(1);
-    }
-  }
-
-  .animate-diamond-appear {
-    animation: diamondAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
+/* Performance-optimized animations */
+@layer utilities {
   .animate-fade-in-up {
-    animation: fadeInUp 0.6s ease-out;
+    animation: fadeInUp 0.6s ease-out forwards;
   }
-
-  .delay-300 {
-    animation-delay: 300ms;
+  
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
   }
-
-  .delay-500 {
-    animation-delay: 500ms;
-  }
-
-  .delay-700 {
-    animation-delay: 700ms;
-  }
-
-  .delay-1000 {
-    animation-delay: 1000ms;
-  }
-
-  /* Enhanced button styles - using our unified system */
-  .btn-enhanced {
-    @apply relative overflow-hidden transition-all duration-300;
-  }
-
-  .btn-enhanced::before {
-    content: "";
-    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full transition-transform duration-700;
-  }
-
-  .btn-enhanced:hover::before {
-    @apply translate-x-full;
-  }
-
-  /* Improved card shadows - unified */
-  .card-enhanced {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .card-enhanced:hover {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  }
-
-  /* Timeline specific styles */
-  .timeline-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--primary)) transparent;
-    scroll-behavior: smooth;
-  }
-
-  .timeline-scroll::-webkit-scrollbar {
-    width: 6px;
-    height: 8px;
-  }
-
-  .timeline-scroll::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 3px;
-  }
-
-  .timeline-scroll::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary));
-    border-radius: 3px;
-  }
-
-  .timeline-scroll::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary)/0.8);
-  }
-
-  /* Typography helpers */
-  .diamond-text {
-    @apply text-center text-sm font-semibold text-white drop-shadow-lg;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  }
-
-  .diamond-title {
-    @apply text-lg sm:text-xl md:text-2xl font-bold text-center mb-4 text-secondary;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  }
-
-  .diamond-date {
-    @apply text-base sm:text-lg font-semibold text-primary mb-2 text-center;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  }
-
-  .hebrew-title {
-    @apply font-bold text-right;
-    font-family: "Frank Ruhl Libre", serif;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    line-height: 1.1;
-  }
-
-  .hebrew-body {
-    @apply text-right leading-relaxed;
-    font-family: "Heebo", sans-serif;
-    line-height: 1.7;
-    font-weight: 400;
-  }
-
-  /* Focus states - unified */
-  button:focus-visible,
-  [role="button"]:focus-visible {
-    @apply outline-none ring-2 ring-primary ring-offset-2;
-  }
-
-  /* Loading states */
-  .loading {
-    @apply animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%];
-  }
-
-  @keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .timeline-diamond-enhanced {
-      @apply w-16 h-16;
-    }
-
-    .diamond-title {
-      @apply text-base;
-    }
-
-    .diamond-date {
-      @apply text-sm;
-    }
-
-    .container {
-      @apply px-4;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .timeline-diamond-enhanced {
-      @apply w-12 h-12;
-    }
-
-    .diamond-title {
-      @apply text-sm font-semibold;
-    }
-
-    .diamond-date {
-      @apply text-xs;
-    }
-  }
-
-  /* Performance optimizations */
-  .gpu-accelerated {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-  }
-
-  /* Reduced motion support */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fade-in-up,
-    .animate-diamond-appear,
-    .btn-enhanced::before,
-    .footstep-fade {
-      -webkit-animation: none;
-      animation: none;
-      transition: none;
-    }
-    
-    .footstep-fade {
-      opacity: 0.85 !important;
-    }
+  
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
   }
 }
 
-/* Enhanced Timeline Title Styles */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* Hebrew text optimizations */
+.hebrew-title {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+/* Timeline-specific optimizations */
 .timeline-title-container {
   position: relative;
   display: inline-block;
@@ -332,129 +141,52 @@
 
 .timeline-title-background {
   position: absolute;
-  inset: -1rem;
-  background: linear-gradient(45deg, rgba(212, 175, 55, 0.1), rgba(184, 148, 31, 0.2), rgba(212, 175, 55, 0.1));
-  border-radius: 1rem;
-  opacity: 0.3;
-  filter: blur(8px);
-  animation: subtle-pulse 4s ease-in-out infinite;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
 }
 
 .timeline-title-main {
   position: relative;
-  background: linear-gradient(135deg, #b8941f 0%, #d4af37 50%, #b8941f 100%);
-  background-clip: text;
+  z-index: 1;
+  background: var(--gradient-amber);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 4px rgba(184, 148, 31, 0.3));
+  text-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
 }
 
-.timeline-decorative-line {
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, #d4af37 20%, #b8941f 50%, #d4af37 80%, transparent 100%);
-  border-radius: 2px;
+.timeline-diamond-glow {
   position: relative;
-  overflow: hidden;
 }
 
-.timeline-decorative-line::before {
+.timeline-diamond-glow::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
-  animation: shine-flow 3s ease-in-out infinite;
+  inset: -2px;
+  background: var(--gradient-amber);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.timeline-scroll-icon {
-  background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
-  box-shadow: 0 4px 12px rgba(184, 148, 31, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.timeline-diamond-glow:hover::before {
+  opacity: 0.3;
 }
 
-.timeline-scroll-icon:hover {
-  transform: scale(1.1) translateY(-2px);
-  box-shadow: 0 6px 20px rgba(184, 148, 31, 0.6);
-}
-
-.timeline-subtitle {
-  color: #9c7c1a;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.dark .timeline-subtitle {
-  color: #f7c566;
-}
-
-@keyframes subtle-pulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.02);
-  }
-}
-
-@keyframes shine-flow {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-/* Responsive adjustments for timeline title */
-@media (max-width: 768px) {
-  .timeline-title-background {
-    inset: -0.5rem;
-    border-radius: 0.75rem;
+/* Mobile-first responsive utilities */
+@media (max-width: 640px) {
+  .hero-mobile-optimized {
+    min-height: 60vh;
   }
   
-  .timeline-scroll-icon {
-    box-shadow: 0 2px 8px rgba(184, 148, 31, 0.3);
+  .text-responsive {
+    font-size: clamp(0.875rem, 2.5vw, 1.125rem);
   }
-}
-
-@media (max-width: 640px) {
-  .timeline-title-background {
-    inset: -0.25rem;
-    border-radius: 0.5rem;
-  }
-}
-
-/* Image Preview Modal - Mobile Zoom Support */
-.image-modal-content {
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-.image-modal-content img {
-  touch-action: pinch-zoom;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  pointer-events: auto;
-  -webkit-touch-callout: none;
-}
-
-/* Allow natural pinch-to-zoom on modal images */
-.zoomable-image {
-  touch-action: pinch-zoom;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  max-width: none !important;
-  max-height: none !important;
 }

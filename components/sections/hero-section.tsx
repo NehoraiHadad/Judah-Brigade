@@ -11,6 +11,7 @@ import { CONTENT } from "@/data";
 import { HERO_CAROUSEL_IMAGES, IMAGES } from "@/constants";
 import { GradientDivider } from "@/components/ui/gradient-divider";
 import { useCarousel } from "@/hooks/use-carousel";
+import { getBlurPlaceholder } from "@/lib/blur-placeholder";
 
 // Use the centralized HERO_CAROUSEL_IMAGES instead of local array
 const HERO_IMAGES = HERO_CAROUSEL_IMAGES.map((src, index) => ({
@@ -56,6 +57,8 @@ export function HeroSection() {
               priority={index === 0}
               quality={index === 0 ? 85 : 75}
               sizes="100vw"
+              placeholder="blur"
+              blurDataURL={getBlurPlaceholder('hero')}
             />
           </div>
         ))}

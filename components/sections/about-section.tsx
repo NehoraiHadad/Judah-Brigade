@@ -11,6 +11,7 @@ import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { CONTENT } from "@/data"
 import { CAROUSEL_IMAGES } from "@/constants"
+import { getBlurPlaceholder } from "@/lib/blur-placeholder"
 
 export function AboutSection() {
   const { currentIndex, next, prev, goTo, swipeHandlers } = useCarousel(CAROUSEL_IMAGES.length)
@@ -78,10 +79,14 @@ export function AboutSection() {
             {...swipeHandlers}
           >
             <Image
-              src={CAROUSEL_IMAGES[currentIndex] || "/placeholder.svg"}
+              src={CAROUSEL_IMAGES[currentIndex]}
               alt={`תמונה ${currentIndex + 1} מפעילות החטיבה`}
               fill
-              className="object-cover transition-all duration-700 group-hover:scale-105"
+              className="object-cover rounded-lg transition-opacity duration-500"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={currentIndex === 0}
+              placeholder="blur"
+              blurDataURL={getBlurPlaceholder('landscape')}
             />
 
             <Button
