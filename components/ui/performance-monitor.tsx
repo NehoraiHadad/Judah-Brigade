@@ -33,7 +33,7 @@ export function PerformanceMonitor() {
       const memoryUsage = pathCache.getMemoryUsage()
 
       setMetrics({
-        renderTime: navigationTiming?.loadEventEnd - navigationTiming?.navigationStart || 0,
+        renderTime: navigationTiming?.loadEventEnd - navigationTiming?.fetchStart || 0,
         memoryUsage,
         imageLoadTime: avgImageLoadTime,
         bundleSize: 'See Network tab'

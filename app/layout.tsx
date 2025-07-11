@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { Heebo } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { PerformanceMonitor } from "@/components/ui/performance-monitor"
+// import { PerformanceMonitor } from "@/components/ui/performance-monitor"
 
 // Configure Heebo font with Hebrew support
 const heebo = Heebo({
@@ -103,7 +103,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <PerformanceMonitor />
+          {/* <PerformanceMonitor /> */}
         </ThemeProvider>
       </body>
     </html>
