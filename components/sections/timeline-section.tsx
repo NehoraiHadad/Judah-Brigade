@@ -123,20 +123,16 @@ export function TimelineSection() {
                         width: `${displayItems.length * 350}px`,
                       }
                     : {
-                        transform: `translateX(-${currentIndex * 100}%)`,
-                        width: `${displayItems.length * 100}%`,
+                        transform: `translateX(${currentIndex * 100}vw)`,
+                        width: `${displayItems.length * 100}vw`,
                       }
                 }
               >
                 {displayItems.map((item, index) => (
                   <div
                     key={item.id}
-                    className={
-                      isDesktop
-                        ? "flex-shrink-0 flex flex-col"
-                        : "flex-shrink-0 flex flex-col w-full"
-                    }
-                    style={isDesktop ? { width: "350px" } : { width: "100%" }}
+                    className="flex-shrink-0 flex flex-col"
+                    style={isDesktop ? { width: "350px" } : { width: "100vw" }}
                   >
                     {/* Card */}
                     <div

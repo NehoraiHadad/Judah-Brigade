@@ -32,10 +32,15 @@ function WhyWeAreHereCard({ card, index, isVisible }: WhyWeAreHereCardProps) {
     >
       
       {/* Content */}
-      <div className={`relative z-10 ${card.id === 'we-are-here' ? 'p-8 sm:p-4' : 'p-12 pt-12 lg:p-18 lg:pt-30'} h-full flex flex-col ${card.id === 'we-are-here' ? 'justify-center' : 'justify-start'} text-center`}>
+      <div className={`relative z-10 ${card.id === 'we-are-here' ? 'p-8 sm:p-4' : 'p-12 pt-12 lg:p-14 xl:p-18 lg:pt-20 xl:pt-30'} h-full flex flex-col ${card.id === 'we-are-here' ? 'justify-center' : 'justify-start'} text-center`}>
         <div>
           <p 
-            className={`${card.id === 'we-are-here' ? 'text-xl sm:text-3xl lg:text-4xl font-bold' : 'text-xl lg:text-2xl'} ${card.textColor} `}
+            className={`${card.id === 'we-are-here' ? 'font-bold' : ''} ${card.textColor}`}
+            style={{
+              fontSize: card.id === 'we-are-here' 
+                ? 'clamp(1.5rem, 3vw, 2rem)' 
+                : 'clamp(1.2rem, 1.5vw, 1.5rem)'
+            }}
             dangerouslySetInnerHTML={{
               __html: card.content.replace(/אנחנו כאן/g, '<strong>אנחנו כאן</strong>')
             }}
