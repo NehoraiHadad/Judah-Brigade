@@ -1,17 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { SectionTitle } from "@/components/ui/section-title";
-import { GradientDivider } from "@/components/ui/gradient-divider";
-import { ImagePreviewModal } from "@/components/ui/image-preview-modal";
 import { CONTENT } from "@/data";
-import { IMAGES } from "@/constants";
-import { getBlurPlaceholder } from "@/lib/blur-placeholder";
 
 export function WhyWeAreHereSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -104,14 +98,6 @@ export function WhyWeAreHereSection() {
       );
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <section
       id="why-we-are-here"
@@ -129,48 +115,10 @@ export function WhyWeAreHereSection() {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        {/* Memory Circle Section */}
-        <div className="text-center mb-16 sm:mb-20">
-          <SectionTitle className="text-amber-100 mb-8">
-            מעגל הזיכרון
-          </SectionTitle>
-          {/* <GradientDivider size="lg" variant="primary" /> */}
-          
-          {/* Memory Circle Image */}
-          <div className="mt-12 sm:mt-16 mb-16 sm:mb-20 flex justify-center">
-            <div 
-              className="relative cursor-pointer group transition-all duration-300 hover:scale-105 inline-block"
-              onClick={openModal}
-            >
-              <Image
-                src={IMAGES.MEMORY_CIRCLE}
-                alt="מעגל הזכרון - חטיבת יהודה"
-                width={640}
-                height={480}
-                className="rounded-lg shadow-2xl transition-all duration-300 border-2 border-amber-300/30 group-hover:border-amber-300/60 w-auto h-auto max-w-80 max-h-60 sm:max-w-[30rem] sm:max-h-80 lg:max-w-[40rem] lg:max-h-96"
-                sizes="(max-width: 640px) 320px, (max-width: 1024px) 480px, 640px"
-                priority
-                placeholder="blur"
-                blurDataURL={getBlurPlaceholder('landscape')}
-              />
-              
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-all duration-300 flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-sm px-4 py-2 text-sm font-bold text-teal-800 rounded-full shadow-lg">
-                  לחץ לצפייה מלאה
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <GradientDivider size="lg" variant="primary" />
-
         {/* Why We Are Here Section */}
-          <SectionTitle className="text-amber-100 mb-8 mt-16">
-            {CONTENT.WHY_WE_ARE_HERE.TITLE}
-          </SectionTitle>
+        <SectionTitle className="text-amber-100 mb-8">
+          {CONTENT.WHY_WE_ARE_HERE.TITLE}
+        </SectionTitle>
 
         <div
           ref={contentRef}
@@ -192,15 +140,6 @@ export function WhyWeAreHereSection() {
           </div>
         </div>
       </div>
-
-      {/* Image Preview Modal */}
-      <ImagePreviewModal
-        src={IMAGES.MEMORY_CIRCLE}
-        alt="מעגל הזכרון - חטיבת יהודה"
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        title="מעגל הזכרון"
-      />
     </section>
   );
 }

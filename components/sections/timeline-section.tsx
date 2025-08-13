@@ -1,9 +1,7 @@
 "use client"
 
-import { SectionTitle } from "@/components/ui/section-title"
 import { Timeline } from "@/components/timeline/timeline"
 import { TimelineModal } from "@/components/timeline/timeline-modal"
-import { WallGraffitiViewer } from "@/components/ui/wall-graffiti-viewer"
 import { useTimelineModal } from "@/hooks/use-timeline-modal"
 import { timelineData } from "@/data"
 
@@ -19,7 +17,6 @@ export function TimelineSection() {
       </section>
 
       <TimelineModal item={selectedItem} isOpen={isOpen} onClose={closeModal} />
-      <WallGraffitiViewer />
     </>
   )
 }

@@ -8,6 +8,7 @@ export const IMAGES = {
   WHY_WE_ARE_HERE_BACKGROUND: "/images/military-landscape.webp",
   COMMANDER_BRIGADE: "/images/brigade-activities/commander-brigade - Edited.webp",
   MEMORY_CIRCLE: "/images/brigade-activities/memory-circle-V2.webp",
+  MEMORIAL_CANDLES: "/images/brigade-activities/bracha_visual_Memorial_candles_on_the_Judean_Desert_mountains.jpg",
   // Pakal (Shakshuka kit) specific assets
   PAKAL_BACKGROUND: "/images/historical-sites/susya-archaeological-site-for-pakal.webp",
   PAKAL_ILLUSTRATION: "/pakal.webp",

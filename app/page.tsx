@@ -18,6 +18,10 @@ const TimelineSection = nextDynamic(() => import("@/components/sections/timeline
   loading: () => <div className="h-96 flex items-center justify-center bg-gradient-to-br from-stone-50 to-amber-50"><div className="animate-pulse text-amber-600 font-semibold">טוען ציר זמן...</div></div>
 })
 
+const MemoryCircleFullscreen = nextDynamic(() => import("@/components/sections/memory-circle-fullscreen").then(mod => ({ default: mod.MemoryCircleFullscreen })), {
+  loading: () => <div className="h-screen flex items-center justify-center bg-gradient-to-br from-stone-50 to-amber-50"><div className="animate-pulse text-amber-600 font-semibold">טוען מעגל זיכרון...</div></div>
+})
+
 const WhyWeAreHereSection = nextDynamic(() => import("@/components/sections/why-we-are-here-section").then(mod => ({ default: mod.WhyWeAreHereSection })), {
   loading: () => <div className="h-64 flex items-center justify-center bg-gradient-to-br from-stone-50 to-teal-50"><div className="animate-pulse text-teal-600 font-semibold">טוען תוכן...</div></div>
 })
@@ -45,6 +49,7 @@ export default function JudahBrigadeLanding() {
       
       {/* Below-the-fold - lazy loaded */}
       <TimelineSection />
+      <MemoryCircleFullscreen />
       <WhyWeAreHereSection />
       <LinksSection />
       <FooterSection />
