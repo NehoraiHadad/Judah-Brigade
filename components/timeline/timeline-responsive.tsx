@@ -19,13 +19,16 @@ export function TimelineResponsive({ items, onItemSelect }: TimelineResponsivePr
   return (
     <div className="w-full px-4">
       <div className="text-center mb-8 lg:mb-12">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-800 mb-3 lg:mb-4">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-900 mb-4 lg:mb-6">
           ציר הזמן של חטיבת יהודה
         </h2>
-        <p className="text-base lg:text-lg text-gray-700 max-w-3xl mx-auto px-4">
-          גזרת יהודה ספוגה בהיסטוריה עתיקה עוד מימי אברהם אבינו והתרחשו אירועים מכוננים שהשפיעו על תולדות עמנו. 
-          ציוני הדרך מתועדים על קיר גרפיטי מרשים המעביר את הצופה מסע אחורה בזמן.
-        </p>
+        <div className="max-w-4xl mx-auto px-4">
+          <p className="text-lg lg:text-xl text-gray-800 mb-6 leading-relaxed">
+            גזרת יהודה ספוגה בהיסטוריה עתיקה עוד מימי אברהם אבינו והתרחשו 
+            אירועים מכוננים שהשפיעו על תולדות עמנו. ציוני הדרך מתועדים על קיר 
+            גרפיטי מרשים המעביר את הצופה מסע אחורה בזמן.
+          </p>
+        </div>
       </div>
 
       {/* Desktop and Tablet View */}
@@ -102,11 +105,12 @@ interface TimelineCardProps {
 }
 
 function TimelineCard({ item, onClick, index, className }: TimelineCardProps) {
+  // צבעים בדיוק כמו בתמונה - ציבעוניות חמה של הגרפיטי
   const bgColors = [
-    { bg: "#F5DEB3", border: "#D4AF37" },
-    { bg: "#E6E6FA", border: "#9370DB" },
-    { bg: "#FFE4B5", border: "#FF8C00" },
-    { bg: "#F0E68C", border: "#DAA520" },
+    { bg: "#D2B48C", border: "#8B7355" }, // חום זהוב - בית שני
+    { bg: "#B8860B", border: "#6B5B35" }, // זהב כהה - דוד המלך
+    { bg: "#DEB887", border: "#8B7D6B" }, // חום בהיר - כלב ועכסה
+    { bg: "#CD853F", border: "#8B5A2B" }, // שקד חום - אברהם אבינו
   ]
   
   const colors = bgColors[index % bgColors.length]
@@ -115,29 +119,29 @@ function TimelineCard({ item, onClick, index, className }: TimelineCardProps) {
     <div className={cn("flex flex-col items-center relative mx-2", className)}>
       <button
         onClick={onClick}
-        className="group flex flex-col items-center w-full max-w-[200px] transition-all hover:scale-105 hover:shadow-xl"
+        className="group flex flex-col items-center w-full max-w-[250px] transition-all hover:scale-105 hover:shadow-xl rounded-lg overflow-hidden"
         style={{ backgroundColor: colors.bg }}
       >
-        <div className="w-full h-32 lg:h-36 relative overflow-hidden border-b-4" 
-             style={{ borderColor: colors.border }}>
+        <div className="w-full h-40 lg:h-48 relative overflow-hidden" 
+             style={{ borderBottom: `6px solid ${colors.border}` }}>
           <Image
             src={item.image}
             alt={item.title}
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-300"
-            sizes="(max-width: 768px) 50vw, 200px"
+            sizes="(max-width: 768px) 50vw, 250px"
           />
         </div>
         
-        <div className="p-3 lg:p-4 text-center w-full">
-          <h3 className="text-base lg:text-lg font-bold text-gray-800 mb-1 lg:mb-2">
+        <div className="p-4 lg:p-6 text-center w-full">
+          <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-2">
             {item.title}
           </h3>
-          <p className="text-xs lg:text-sm text-gray-600">{item.date}</p>
+          <p className="text-sm lg:text-base text-gray-700 font-medium">{item.date}</p>
         </div>
       </button>
       
-      <div className="absolute -bottom-8 w-3 h-3 lg:w-4 lg:h-4 bg-white border-[3px] rounded-full z-10" 
+      <div className="absolute -bottom-6 w-4 h-4 lg:w-5 lg:h-5 bg-white border-[4px] rounded-full z-10 shadow-md" 
            style={{ borderColor: colors.border }} />
     </div>
   )
@@ -152,10 +156,10 @@ interface TimelineCardMobileProps {
 
 function TimelineCardMobile({ item, onClick, index, isLeft }: TimelineCardMobileProps) {
   const bgColors = [
-    { bg: "#F5DEB3", border: "#D4AF37" },
-    { bg: "#E6E6FA", border: "#9370DB" },
-    { bg: "#FFE4B5", border: "#FF8C00" },
-    { bg: "#F0E68C", border: "#DAA520" },
+    { bg: "#D2B48C", border: "#8B7355" },
+    { bg: "#B8860B", border: "#6B5B35" },
+    { bg: "#DEB887", border: "#8B7D6B" },
+    { bg: "#CD853F", border: "#8B5A2B" },
   ]
   
   const colors = bgColors[index % bgColors.length]

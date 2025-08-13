@@ -110,6 +110,9 @@
 
 /* Performance-optimized animations */
 @layer utilities {
+  .font-salman {
+    font-family: 'OH Salman Habaka', var(--font-noto-sans-hebrew);
+  }
   .animate-fade-in-up {
     animation: fadeInUp 0.6s ease-out forwards;
   }
