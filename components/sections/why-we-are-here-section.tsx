@@ -85,20 +85,11 @@ export function WhyWeAreHereSection() {
 
   return (
     <>
-      {/* Title Section with Dark Background */}
-      <section className="py-12 sm:py-16 bg-gradient-to-b from-slate-900 via-teal-900 to-slate-900 text-white relative overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-amber-900/20 via-transparent to-teal-900/40"></div>
-          <div className="absolute top-10 right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div
-            className="absolute bottom-10 left-10 w-24 h-24 bg-teal-400/10 rounded-full blur-3xl animate-pulse"
-            style={{ animationDelay: "1s" }}
-          ></div>
-        </div>
+      {/* Title Section with White Background */}
+      <section className="py-12 sm:py-16 bg-white relative overflow-hidden">
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <SectionTitle className="text-amber-100 mb-0 text-center">
+          <SectionTitle className="mb-0 text-center font-['Suez_One'] text-[#ba644d]">
             {CONTENT.WHY_WE_ARE_HERE.TITLE}
           </SectionTitle>
         </div>
@@ -110,11 +101,11 @@ export function WhyWeAreHereSection() {
         ref={sectionRef}
         className="py-12 sm:py-16 lg:py-20 bg-white relative"
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <div className="container mx-auto max-w-7xl">
           {/* Grid of Reason Cards */}
           <div
             ref={gridRef}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 max-w-5xl mx-auto"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0 max-w-5xl mx-auto"
           >
             {CONTENT.WHY_WE_ARE_HERE.CARDS.map((card, index) => (
               <WhyWeAreHereCard

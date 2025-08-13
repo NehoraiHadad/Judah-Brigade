@@ -199,9 +199,9 @@ export function ImagePreviewModal({
         className={`fixed inset-0 w-screen h-screen max-w-none max-h-none p-0 bg-transparent border-none shadow-none overflow-hidden ${className || ''}`}
       >
         {/* Title for accessibility */}
-        {/* <DialogTitle className={title ? "absolute top-2 left-2 md:top-4 md:left-4 z-10 text-white text-sm md:text-xl font-bold bg-black/50 backdrop-blur-sm rounded px-2 py-1" : "sr-only"}>
+        <DialogTitle className={title ? "hidden absolute top-2 left-2 md:top-4 md:left-4 z-10 text-white text-sm md:text-xl font-bold bg-black/50 backdrop-blur-sm rounded px-2 py-1" : "sr-only"}>
           {title || currentAlt}
-        </DialogTitle> */}
+        </DialogTitle>
 
         {/* Close button - always show for consistency */}
         <Button

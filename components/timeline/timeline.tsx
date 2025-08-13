@@ -1,8 +1,7 @@
 "use client"
 
 import { TimelineResponsive } from "./timeline-responsive"
-import type { TimelineProps } from "@/types/timeline"
 
-export function Timeline({ items, onItemSelect }: TimelineProps) {
-  return <TimelineResponsive items={items} onItemSelect={onItemSelect} />
+export function Timeline({ onItemSelect }: { onItemSelect: (item: any) => void }) {
+  return <TimelineResponsive onItemSelect={onItemSelect} />
 }

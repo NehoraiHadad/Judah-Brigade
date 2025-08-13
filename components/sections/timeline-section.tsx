@@ -3,7 +3,6 @@
 import { Timeline } from "@/components/timeline/timeline"
 import { TimelineModal } from "@/components/timeline/timeline-modal"
 import { useTimelineModal } from "@/hooks/use-timeline-modal"
-import { timelineData } from "@/data"
 
 export function TimelineSection() {
   const { selectedItem, isOpen, openModal, closeModal } = useTimelineModal()
@@ -12,7 +11,7 @@ export function TimelineSection() {
     <>
       <section id="timeline-section" className="py-16 sm:py-20 lg:py-24 bg-white relative overflow-visible sm:overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-          <Timeline items={timelineData} onItemSelect={openModal} />
+          <Timeline onItemSelect={openModal} />
         </div>
       </section>
 
