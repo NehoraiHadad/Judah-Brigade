@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { SectionTitle } from "@/components/ui/section-title";
 import { CONTENT } from "@/data";
 
 interface ReasonCard {
@@ -10,7 +9,6 @@ interface ReasonCard {
   content: string;
   bgColor: string;
   textColor: string;
-  isHighlight?: boolean;
 }
 
 interface WhyWeAreHereCardProps {
@@ -22,39 +20,30 @@ interface WhyWeAreHereCardProps {
 function WhyWeAreHereCard({ card, index, isVisible }: WhyWeAreHereCardProps) {
   return (
     <div
-      className={`group relative bg-gradient-to-br ${card.bgColor} overflow-hidden
-        transform transition-all duration-700 ease-out hover:scale-105 hover:shadow-xl
+      className={`relative ${card.bgColor} overflow-hidden
+        transform transition-all duration-700 ease-out
         ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
-        ${card.isHighlight ? "ring-2 ring-amber-400/50" : ""}`}
+        `}
       style={{ 
         transitionDelay: isVisible ? `${index * 50}ms` : '0ms',
         minHeight: '120px',
         aspectRatio: '1'
       }}
     >
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
       
       {/* Content */}
-      <div className="relative z-10 p-3 sm:p-4 h-full flex flex-col justify-center text-right">
+      <div className={`relative z-10 ${card.id === 'we-are-here' ? 'p-8 sm:p-4' : 'p-12 pt-12 lg:p-18 lg:pt-30'} h-full flex flex-col ${card.id === 'we-are-here' ? 'justify-center' : 'justify-start'} text-center`}>
         <div>
-          <h3 className={`text-sm sm:text-base lg:text-lg font-bold mb-2 ${card.textColor} leading-tight`}>
-            {card.title}
-          </h3>
-          <p className={`text-xs sm:text-sm ${card.textColor.replace('100', '200')} leading-snug line-clamp-3`}>
-            {card.content}
-          </p>
+          <p 
+            className={`${card.id === 'we-are-here' ? 'text-xl sm:text-3xl lg:text-4xl font-bold' : 'text-xl lg:text-2xl'} ${card.textColor} `}
+            dangerouslySetInnerHTML={{
+              __html: card.content.replace(/אנחנו כאן/g, '<strong>אנחנו כאן</strong>')
+            }}
+          />
         </div>
         
-        {card.isHighlight && (
-          <div className="mt-2">
-            <div className="w-6 h-0.5 bg-amber-400"></div>
-          </div>
-        )}
       </div>
       
-      {/* Hover Effect */}
-      <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </div>
   );
 }
@@ -87,11 +76,10 @@ export function WhyWeAreHereSection() {
     <>
       {/* Title Section with White Background */}
       <section className="py-12 sm:py-16 bg-white relative overflow-hidden">
-
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <SectionTitle className="mb-0 text-center font-['Suez_One'] text-[#ba644d]">
+        <div className="relative z-10">
+          <h2 className="mb-0 text-center font-['Suez_One'] text-[#ba644d] text-4xl  lg:text-6xl">
             {CONTENT.WHY_WE_ARE_HERE.TITLE}
-          </SectionTitle>
+          </h2>
         </div>
       </section>
 
@@ -99,13 +87,13 @@ export function WhyWeAreHereSection() {
       <section
         id="why-we-are-here"
         ref={sectionRef}
-        className="py-12 sm:py-16 lg:py-20 bg-white relative"
+        className="bg-white relative"
       >
-        <div className="container mx-auto max-w-7xl">
+        <div className="w-full">
           {/* Grid of Reason Cards */}
           <div
             ref={gridRef}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0 max-w-5xl mx-auto"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0"
           >
             {CONTENT.WHY_WE_ARE_HERE.CARDS.map((card, index) => (
               <WhyWeAreHereCard
