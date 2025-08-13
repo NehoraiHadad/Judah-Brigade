@@ -24,15 +24,15 @@ export function TimelineResponsive({ items, onItemSelect }: TimelineResponsivePr
             alt="לוגו חטיבת יהודה"
             width={120}
             height={120}
-            className="mb-4"
-            style={{ filter: 'sepia(1) saturate(2) hue-rotate(15deg) brightness(0.8)' }}
+            className="mb-4 sm:scale-110 lg:scale-140 transition-all"
+            style={{ filter: 'sepia(5) saturate(1.8) hue-rotate(326deg) brightness(0.8) contrast(1.3)' }}
           />
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 lg:mb-6" style={{ color: '#af6852' }}>
+          <h2 className="text-4xl sm:text-3xl lg:text-6xl font-suez-one my-6 mb-4 lg:mb-6 lg:mt-12" style={{ color: '#af6852' }}>
             {CONTENT.TIMELINE.TITLE}
           </h2>
         </div>
-        <div className="max-w-4xl mx-auto px-4">
-          <p className="text-lg lg:text-xl text-black mb-6 leading-relaxed text-center">
+        <div className="max-w-5xl mx-auto px-4">
+          <p className="text-xl lg:text-4xl text-black mb-6 leading-normal text-center font-normal tracking-tight" style={{ letterSpacing: '-0.02em' }}>
             גזרת יהודה ספוגה בהיסטוריה עתיקה עוד מימי אברהם אבינו והתרחשו 
             אירועים מכוננים שהשפיעו על תולדות עמנו. ציוני הדרך מתועדים על קיר 
             גרפיטי מרשים המעביר את הצופה מסע אחורה בזמן.
