@@ -4,10 +4,64 @@ import { useState, useEffect, useRef } from "react";
 import { SectionTitle } from "@/components/ui/section-title";
 import { CONTENT } from "@/data";
 
+interface ReasonCard {
+  id: string;
+  title: string;
+  content: string;
+  bgColor: string;
+  textColor: string;
+  isHighlight?: boolean;
+}
+
+interface WhyWeAreHereCardProps {
+  card: ReasonCard;
+  index: number;
+  isVisible: boolean;
+}
+
+function WhyWeAreHereCard({ card, index, isVisible }: WhyWeAreHereCardProps) {
+  return (
+    <div
+      className={`group relative bg-gradient-to-br ${card.bgColor} rounded-lg overflow-hidden
+        transform transition-all duration-700 ease-out hover:scale-105 hover:shadow-2xl
+        ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+        ${card.isHighlight ? "ring-2 ring-amber-400/50" : ""}`}
+      style={{ 
+        transitionDelay: isVisible ? `${index * 100}ms` : '0ms',
+        minHeight: '200px'
+      }}
+    >
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+      
+      {/* Content */}
+      <div className="relative z-10 p-6 h-full flex flex-col justify-between text-right">
+        <div>
+          <h3 className={`text-xl lg:text-2xl font-bold mb-4 ${card.textColor} leading-tight`}>
+            {card.title}
+          </h3>
+          <p className={`text-sm lg:text-base ${card.textColor.replace('100', '200')} leading-relaxed`}>
+            {card.content}
+          </p>
+        </div>
+        
+        {card.isHighlight && (
+          <div className="mt-4">
+            <div className="w-8 h-1 bg-amber-400 rounded-full"></div>
+          </div>
+        )}
+      </div>
+      
+      {/* Hover Effect */}
+      <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    </div>
+  );
+}
+
 export function WhyWeAreHereSection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -18,85 +72,15 @@ export function WhyWeAreHereSection() {
           }
         });
       },
-      { threshold: 0.2, rootMargin: "50px" }
+      { threshold: 0.1, rootMargin: "100px" }
     );
 
-    if (contentRef.current) {
-      observer.observe(contentRef.current);
+    if (gridRef.current) {
+      observer.observe(gridRef.current);
     }
 
     return () => observer.disconnect();
   }, []);
-
-  // Function to format text with emphasis on key parts
-  const formatContent = (text: string) => {
-    return text
-      .replace(
-        /אברהם העברי הראשון/g,
-        '<strong class="text-amber-300 font-bold">אברהם העברי הראשון</strong>'
-      )
-      .replace(
-        /אמהות ואבות האומה הישראלית/g,
-        '<strong class="text-amber-300 font-bold">אמהות ואבות האומה הישראלית</strong>'
-      )
-      .replace(
-        /כלב בן יפונה/g,
-        '<strong class="text-amber-300 font-bold">כלב בן יפונה</strong>'
-      )
-      .replace(/דוד/g, '<strong class="text-amber-300 font-bold">דוד</strong>')
-      .replace(
-        /מלכות בית דוד/g,
-        '<strong class="text-amber-300 font-bold">מלכות בית דוד</strong>'
-      )
-      .replace(
-        /שבי ציון/g,
-        '<strong class="text-amber-300 font-bold">שבי ציון</strong>'
-      )
-      .replace(
-        /הורדוס/g,
-        '<strong class="text-amber-300 font-bold">הורדוס</strong>'
-      )
-      .replace(
-        /מערת המכפלה/g,
-        '<strong class="text-amber-300 font-bold">מערת המכפלה</strong>'
-      )
-      .replace(
-        /בר כוכבא/g,
-        '<strong class="text-amber-300 font-bold">בר כוכבא</strong>'
-      )
-      .replace(
-        /שמעון בן כוסבא/g,
-        '<strong class="text-amber-300 font-bold">שמעון בן כוסבא</strong>'
-      )
-      .replace(
-        /החטיבה הירושלמית/g,
-        '<strong class="text-amber-300 font-bold">החטיבה הירושלמית</strong>'
-      )
-      .replace(
-        /תשכ"ז/g,
-        '<strong class="text-amber-300 font-bold">תשכ"ז</strong>'
-      )
-      .replace(
-        /הכותל המערבי/g,
-        '<strong class="text-amber-300 font-bold">הכותל המערבי</strong>'
-      )
-      .replace(
-        /אנחנו כאן!/g,
-        '<strong class="text-amber-200 font-bold text-2xl">אנחנו כאן!</strong>'
-      )
-      .replace(
-        /"עלה נעלה וְיִרְשָׁנוּ אתָהּ כִי-יָכוֹל נוּכַל לָהּ וְהָאָרֶץ אֲשֶׁר עָבַרְנוּ בָהּ לָתוּר אֹתָהּ טוֹבָה הָאָרֶץ מאד מאד"/g,
-        '<em class="text-teal-200 italic font-medium">"עלה נעלה וְיִרְשָׁנוּ אתָהּ כִי-יָכוֹל נוּכַל לָהּ וְהָאָרֶץ אֲשֶׁר עָבַרְנוּ בָהּ לָתוּר אֹתָהּ טוֹבָה הָאָרֶץ מאד מאד"</em>'
-      )
-      .replace(
-        /"שקל ישראל", "ירושלים הקדושה" ו"לחירות ציון"/g,
-        '<em class="text-teal-200 italic font-medium">"שקל ישראל", "ירושלים הקדושה" ו"לחירות ציון"</em>'
-      )
-      .replace(
-        /"בשנת שלוש לגאולת ישראל על ידי שמעון בן כוסבא נשיא ישראל"/g,
-        '<em class="text-teal-200 italic font-medium">"בשנת שלוש לגאולת ישראל על ידי שמעון בן כוסבא נשיא ישראל"</em>'
-      );
-  };
 
   return (
     <section
@@ -114,30 +98,25 @@ export function WhyWeAreHereSection() {
         ></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        {/* Why We Are Here Section */}
-        <SectionTitle className="text-amber-100 mb-8">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        {/* Section Title */}
+        <SectionTitle className="text-amber-100 mb-12 text-center">
           {CONTENT.WHY_WE_ARE_HERE.TITLE}
         </SectionTitle>
 
+        {/* Grid of Reason Cards */}
         <div
-          ref={contentRef}
-          className={`transform transition-all duration-1500 ease-out ${
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
+          ref={gridRef}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto"
         >
-          <div className="text-right max-w-5xl mx-auto">
-
-            <div
-              className="text-lg sm:text-xl lg:text-2xl leading-relaxed font-medium text-stone-100 space-y-6"
-              dangerouslySetInnerHTML={{
-                __html: formatContent(CONTENT.WHY_WE_ARE_HERE.CONTENT).replace(
-                  /\n/g,
-                  "<br><br>"
-                ),
-              }}
+          {CONTENT.WHY_WE_ARE_HERE.CARDS.map((card, index) => (
+            <WhyWeAreHereCard
+              key={card.id}
+              card={card}
+              index={index}
+              isVisible={isVisible}
             />
-          </div>
+          ))}
         </div>
       </div>
     </section>
