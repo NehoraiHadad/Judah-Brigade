@@ -4,6 +4,7 @@ import { TimelineItem } from "@/types/timeline"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { CONTENT } from "@/data"
+import { IMAGES } from "@/constants"
 
 interface TimelineResponsiveProps {
   items: TimelineItem[]
@@ -17,11 +18,21 @@ export function TimelineResponsive({ items, onItemSelect }: TimelineResponsivePr
   return (
     <div className="w-full px-4">
       <div className="text-center mb-8 lg:mb-12">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-900 mb-4 lg:mb-6">
-          {CONTENT.TIMELINE.TITLE}
-        </h2>
+        <div className="flex flex-col items-center mb-6">
+          <Image 
+            src={IMAGES.LOGO}
+            alt="לוגו חטיבת יהודה"
+            width={120}
+            height={120}
+            className="mb-4"
+            style={{ filter: 'sepia(1) saturate(2) hue-rotate(15deg) brightness(0.8)' }}
+          />
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 lg:mb-6" style={{ color: '#af6852' }}>
+            {CONTENT.TIMELINE.TITLE}
+          </h2>
+        </div>
         <div className="max-w-4xl mx-auto px-4">
-          <p className="text-lg lg:text-xl text-gray-800 mb-6 leading-relaxed">
+          <p className="text-lg lg:text-xl text-black mb-6 leading-relaxed text-center">
             גזרת יהודה ספוגה בהיסטוריה עתיקה עוד מימי אברהם אבינו והתרחשו 
             אירועים מכוננים שהשפיעו על תולדות עמנו. ציוני הדרך מתועדים על קיר 
             גרפיטי מרשים המעביר את הצופה מסע אחורה בזמן.
