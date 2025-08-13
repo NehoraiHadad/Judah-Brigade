@@ -50,14 +50,14 @@ export function MemoryCircleFullscreen() {
       <div className="absolute right-[8%] top-[18%] sm:right-[15%] sm:top-[15%] z-10 text-right max-w-[45%] sm:max-w-[40%] px-2 sm:px-0">
         <h2 
           className="text-white mb-2 sm:mb-4 font-suez-one text-shadow-lg" 
-          style={{ fontSize: 'clamp(1.2rem, 3vw, 4rem)' }}
+          style={{ fontSize: 'clamp(1rem, 2.5vw, 4rem)' }}
         >
           מעגל הזכרון
         </h2>
         
         <p 
           className="text-white/95 xl:max-w-md lg:max-w-lg sm:max-w-sm text-right leading-relaxed drop-shadow-lg" 
-          style={{ fontSize: 'clamp(0.8rem, 1.8vw, 2.2rem)' }}
+          style={{ fontSize: 'clamp(0.7rem, 1.5vw, 2.2rem)' }}
         >
           זיכרון האבות והאמהות שלנו, זיכרון הלוחמים שנפלו בדרך, 
           זיכרון המורשת הגדולה שאנחנו נושאים עמנו בכל צעד וצעד.

@@ -4,7 +4,7 @@ import { TimelineItem } from "@/types/timeline";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { CONTENT } from "@/data";
-import { IMAGES } from "@/constants";
+import { IMAGES, WALL_IMAGES } from "@/constants";
 
 interface TimelineResponsiveProps {
   items: TimelineItem[];
@@ -55,18 +55,33 @@ export function TimelineResponsive({
       {/* Desktop and Tablet View */}
       <div className="hidden sm:block relative max-w-6xl mx-auto">
         <div className="flex flex-col items-center">
-          {/* Timeline items row */}
-          <div className="flex justify-between w-full mb-8">
+          {/* Timeline Background Cards - Images from background folder */}
+          <div className="flex justify-between w-full mb-6">
             {displayItems.slice(0, 4).map((item, index) => (
-              <TimelineCard
-                key={item.id}
-                item={item}
-                onClick={() => onItemSelect(item)}
-                index={index}
-                className="flex-1"
-              />
+              <div key={`bg-${item.id}`} className="flex-1 mx-2">
+                <div className="relative bg-white rounded-lg shadow-md overflow-hidden">
+                  {/* Background image */}
+                  <div className="h-32 lg:h-40 relative">
+                    <Image
+                      src={WALL_IMAGES[index] || WALL_IMAGES[0]}
+                      alt={`רקע ${item.title}`}
+                      fill
+                      className="object-cover"
+                      sizes="25vw"
+                    />
+                    <div className="absolute inset-0 bg-black/20" />
+                  </div>
+                  {/* Title */}
+                  <div className="p-3 text-center">
+                    <h3 className="text-sm lg:text-base font-bold text-gray-800">
+                      {item.title}
+                    </h3>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
+
 
           {/* Timeline Axis with Years - Like graffiti wall */}
           <div className="w-full relative px-12 mt-6 mb-12">
