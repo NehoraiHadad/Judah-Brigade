@@ -1,6 +1,9 @@
 import { HeroSection } from "@/components/sections/hero-section"
 import { IntroductionSection } from "@/components/sections/introduction-section"
-import { AboutSection } from "@/components/sections/about-section"
+import { MissionSection } from "@/components/sections/mission-section"
+import { AreaOfOperationSection } from "@/components/sections/area-of-operation-section"
+import { ValuesBandSection } from "@/components/sections/values-band-section"
+import { ImageGallerySection } from "@/components/sections/image-gallery-section"
 import { PakalSection } from "@/components/sections/pakal-section"
 import { CommanderMessageSection } from "@/components/sections/commander-message-section"
 import nextDynamic from "next/dynamic"
@@ -33,7 +36,10 @@ export default function JudahBrigadeLanding() {
       {/* Above-the-fold - load immediately */}
       <HeroSection />
       <IntroductionSection />
-      <AboutSection />
+      <MissionSection />
+      <AreaOfOperationSection />
+      <ValuesBandSection />
+      <ImageGallerySection />
       <PakalSection />
       <CommanderMessageSection />
       

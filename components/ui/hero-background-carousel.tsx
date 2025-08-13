@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import Image from "next/image"
-import { NavigationDots } from "@/components/ui/navigation-dots"
+// import { NavigationDots } from "@/components/ui/navigation-dots"
 import { HERO_CAROUSEL_IMAGES } from "@/constants"
 
 interface HeroBackgroundCarouselProps {
@@ -28,14 +28,14 @@ export function HeroBackgroundCarousel({
   const preloadAdjacentImages = useCallback((index: number) => {
     const imagesToPreload = new Set<number>()
     
-    // Current image
-    imagesToPreload.add(index)
+    // Current image and next 2 images for smoother transitions
+    for (let i = 0; i < 3; i++) {
+      const imageIndex = (index + i) % HERO_CAROUSEL_IMAGES.length
+      imagesToPreload.add(imageIndex)
+    }
     
-    // Next and previous images
-    const nextIndex = (index + 1) % HERO_CAROUSEL_IMAGES.length
+    // Previous image
     const prevIndex = (index - 1 + HERO_CAROUSEL_IMAGES.length) % HERO_CAROUSEL_IMAGES.length
-    
-    imagesToPreload.add(nextIndex)
     imagesToPreload.add(prevIndex)
     
     setPreloadedImages(imagesToPreload)
@@ -117,6 +117,9 @@ export function HeroBackgroundCarousel({
             className={`absolute inset-0 transition-opacity duration-2000 ease-in-out ${
               isCurrentImage ? "opacity-100" : "opacity-0"
             }`}
+            style={{
+              willChange: isCurrentImage ? 'opacity' : 'auto'
+            }}
           >
             <Image
               src={image}
@@ -124,14 +127,12 @@ export function HeroBackgroundCarousel({
               fill
               className="object-cover"
               priority={index === 0}
-              loading={shouldPreload ? "eager" : "lazy"}
-              quality={isCurrentImage ? 90 : 75}
+              loading={index === 0 ? undefined : (shouldPreload ? "eager" : "lazy")}
+              quality={85}
               sizes="100vw"
               placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             />
-            {/* Gradient overlay for better text readability */}
-            <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/30 to-black/60" />
           </div>
         )
       })}
@@ -142,7 +143,7 @@ export function HeroBackgroundCarousel({
       </div>
       
       {/* Navigation dots - hide when only one image */}
-      {HERO_CAROUSEL_IMAGES.length > 1 && (
+      {/* {HERO_CAROUSEL_IMAGES.length > 1 && (
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
           <NavigationDots
             total={HERO_CAROUSEL_IMAGES.length}
@@ -151,7 +152,7 @@ export function HeroBackgroundCarousel({
             variant="default"
           />
         </div>
-      )}
+      )} */}
     </div>
   )
 } 

@@ -114,6 +114,7 @@ export function WhyWeAreHereSection() {
 
   return (
     <section
+      id="why-we-are-here"
       ref={sectionRef}
       className="py-20 sm:py-24 lg:py-32 bg-gradient-to-b from-slate-900 via-teal-900 to-slate-900 text-white relative overflow-hidden"
     >

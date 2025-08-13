@@ -33,6 +33,7 @@ export function AboutSection() {
           
           {/* Mission Section - Compact, Full Width */}
           <ContentCard variant="compact" animationDelay="300" enableHoverScale>
+            <div id="mission"></div>
             <h3 className="text-xl sm:text-2xl font-bold text-teal-800 mb-4 text-center">
               {CONTENT.ABOUT.MISSION.TITLE}
             </h3>

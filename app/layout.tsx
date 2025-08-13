@@ -1,14 +1,15 @@
 import type { Metadata } from "next"
-import { Heebo } from "next/font/google"
+import { Noto_Sans_Hebrew } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 // import { PerformanceMonitor } from "@/components/ui/performance-monitor"
 
-// Configure Heebo font with Hebrew support
-const heebo = Heebo({
+// Configure Noto Sans Hebrew font with Hebrew support
+const notoSansHebrew = Noto_Sans_Hebrew({
   subsets: ['latin', 'hebrew'],
   display: 'swap',
-  variable: '--font-heebo',
+  variable: '--font-noto-sans-hebrew',
+  weight: ['300', '400', '500', '600', '700'],
 })
 
 // Route Segment Config for better performance
@@ -39,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="he" dir="rtl" suppressHydrationWarning className={`${heebo.variable}`}>
+    <html lang="he" dir="rtl" suppressHydrationWarning className={`${notoSansHebrew.variable}`}>
       <head>
         {/* Preload critical resources for better performance */}
         <link
@@ -65,10 +66,14 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin=""
         />
-        
+        {/* Load Suez One font for headings */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Suez+One&display=swap"
+          rel="stylesheet"
+        />
 
       </head>
-      <body className={`min-h-screen bg-background font-heebo antialiased ${heebo.className}`}>
+      <body className={`min-h-screen bg-background antialiased ${notoSansHebrew.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

@@ -9,10 +9,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      maxWidth: {
+        '8xl': '88rem',
+        '9xl': '96rem',
+        '10xl': '104rem',
+      },
       fontFamily: {
         sans: ["var(--font-heebo)", "Heebo", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
         hebrew: ["var(--font-heebo)", "Heebo", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Arial", "sans-serif"],
         heebo: ["var(--font-heebo)", "Heebo", "sans-serif"],
+        noto: ["var(--font-noto-sans-hebrew)", "Noto Sans Hebrew", "sans-serif"],
       },
       colors: {
         // Essential colors for the project

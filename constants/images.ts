@@ -6,8 +6,11 @@ export const IMAGES = {
   LOGO: "/images/judah-brigade-logo-new.webp",
   MILITARY_LANDSCAPE: "/images/military-landscape.webp",
   WHY_WE_ARE_HERE_BACKGROUND: "/images/military-landscape.webp",
-  COMMANDER_BRIGADE: "/images/brigade-activities/commander-brigade.webp",
+  COMMANDER_BRIGADE: "/images/brigade-activities/commander-brigade - Edited.webp",
   MEMORY_CIRCLE: "/images/brigade-activities/memory-circle-V2.webp",
+  // Pakal (Shakshuka kit) specific assets
+  PAKAL_BACKGROUND: "/images/historical-sites/susya-archaeological-site-for-pakal.webp",
+  PAKAL_ILLUSTRATION: "/pakal.webp",
 } as const
 
 // ===== HERO CAROUSEL IMAGES =====
@@ -15,8 +18,8 @@ export const IMAGES = {
 export const HERO_CAROUSEL_IMAGES = [
   "/images/hero/hero-cave-machpelah-1.webp",
   "/images/hero/hero-cave-machpelah-2.webp", 
-  "/images/hero/hero-yatir-spring.webp",
-  "/images/hero/hero-carmel-settlement.webp",
+  "/images/Soldiers/Soldier3.webp",
+  "/images/Soldiers/Soldier4.webp",
 ] as const
 
 // ===== ABOUT SECTION CAROUSEL =====
@@ -26,7 +29,7 @@ export const CAROUSEL_IMAGES = [
   "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04.webp",
   "/images/yatir-forest/yatir-spring.webp",
   "/images/brigade-activities/nahal-shafan-tzalim-meeting.webp",
-  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04 (1).webp",
+  "/images/Soldiers/Soldier1.webp",
   "/images/aerial-views/yatir-reservoir-aerial.webp",
   "/images/yatir-forest/yatir-autumn.webp",
   "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04 (2).webp",
@@ -107,7 +110,7 @@ export const DESERT_IMAGES = [
 
 // Brigade activities
 export const BRIGADE_IMAGES = [
-  "/images/brigade-activities/commander-brigade.webp",
+  "/images/brigade-activities/commander-brigade - Edited.webp",
   "/images/brigade-activities/memory-circle-V2.webp",
   "/images/brigade-activities/nahal-shafan-tzalim-meeting.webp",
 ] as const

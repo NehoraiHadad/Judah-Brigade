@@ -25,3 +25,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+planV2.md
+web_yehuda_01.pdf
+
+CLAUDE.md
+.claude/
