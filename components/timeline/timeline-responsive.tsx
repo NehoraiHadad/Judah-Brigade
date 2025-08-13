@@ -3,7 +3,7 @@
 import { TimelineItem } from "@/types/timeline"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import { useState } from "react"
+import { CONTENT } from "@/data"
 
 interface TimelineResponsiveProps {
   items: TimelineItem[]
@@ -11,16 +11,14 @@ interface TimelineResponsiveProps {
 }
 
 export function TimelineResponsive({ items, onItemSelect }: TimelineResponsiveProps) {
-  const [currentPage, setCurrentPage] = useState(0)
-  const itemsPerPage = 4
-  const totalPages = Math.ceil(items.length / itemsPerPage)
-  const displayItems = items.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+  // Display all items instead of pagination - show first 4 on desktop
+  const displayItems = items.filter(item => !item.isHidden)
 
   return (
     <div className="w-full px-4">
       <div className="text-center mb-8 lg:mb-12">
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-900 mb-4 lg:mb-6">
-          ציר הזמן של חטיבת יהודה
+          {CONTENT.TIMELINE.TITLE}
         </h2>
         <div className="max-w-4xl mx-auto px-4">
           <p className="text-lg lg:text-xl text-gray-800 mb-6 leading-relaxed">
@@ -37,40 +35,20 @@ export function TimelineResponsive({ items, onItemSelect }: TimelineResponsivePr
           {/* Horizontal line */}
           <div className="absolute top-[calc(100%-2rem)] left-[5%] right-[5%] h-[3px] bg-gray-400 z-0" />
           
-          {/* Desktop: 4 items, Tablet: 2 items */}
+          {/* Desktop: show first 4 items in a row */}
           <div className="flex justify-between w-full">
-            {displayItems.map((item, index) => (
+            {displayItems.slice(0, 4).map((item, index) => (
               <TimelineCard 
                 key={item.id} 
                 item={item} 
                 onClick={() => onItemSelect(item)} 
                 index={index}
-                className={cn(
-                  "flex-1",
-                  // On tablet, show only 2 items
-                  "sm:block",
-                  index >= 2 && "lg:block hidden"
-                )}
+                className="flex-1"
               />
             ))}
           </div>
         </div>
 
-        {/* Pagination for desktop/tablet */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-8">
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i)}
-                className={cn(
-                  "w-2 h-2 rounded-full transition-all",
-                  currentPage === i ? "bg-amber-800 w-8" : "bg-gray-400"
-                )}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Mobile View - Vertical Layout */}
@@ -81,7 +59,7 @@ export function TimelineResponsive({ items, onItemSelect }: TimelineResponsivePr
           
           {/* Timeline items */}
           <div className="space-y-8 relative z-10">
-            {items.map((item, index) => (
+            {displayItems.map((item, index) => (
               <TimelineCardMobile
                 key={item.id}
                 item={item}

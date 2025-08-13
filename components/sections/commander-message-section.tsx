@@ -11,7 +11,7 @@ function renderContent(content: string) {
     // Check if this is the signature section
     if (paragraph.includes('אל"מ שחר ברקאי')) {
       return (
-        <div key={index} className="font-noto translate-y-2 sm:translate-y-3 md:translate-y-4">
+        <div key={index} className="font-noto">
           {paragraph.split("\n").map((line, lineIndex) => {
             if (line.includes('אל"מ שחר ברקאי')) {
               return (
@@ -21,6 +21,7 @@ function renderContent(content: string) {
                   style={{
                     color: "#ba644d",
                     fontSize: "clamp(1.5rem, 3vw, 3.5rem)",
+                    lineHeight: "0.5",
                   }}
                 >
                   {line}
@@ -68,7 +69,7 @@ function renderContent(content: string) {
           key={index}
           className="font-noto leading-relaxed italic text-center"
           style={{ 
-            fontSize: "clamp(1.25rem, 1.5vw, 1.8rem)",
+            fontSize: "clamp(1.25rem, 1.8vw, 2rem)",
           }}
           dangerouslySetInnerHTML={{ __html: cleanPoem }}
         />
@@ -104,7 +105,7 @@ function renderContent(content: string) {
       <p
         key={index}
         className="font-noto leading-relaxed"
-        style={{ fontSize: "clamp(1.5rem, 3vw, 1.5rem)" }}
+        style={{ fontSize: "clamp(1.1rem, 1.5vw, 1.8rem)" }}
       >
         {paragraph}
       </p>
