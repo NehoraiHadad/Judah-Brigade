@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -19,6 +19,8 @@ interface SplitLayoutSectionProps {
   showCta?: boolean;
   ctaText?: string;
   ctaHref?: string;
+  onCtaClick?: () => void;
+  isContentExpanded?: boolean;
   showKeywords?: boolean;
   keywords?: readonly string[];
   titleInPanel?: boolean;
@@ -55,6 +57,8 @@ export function SplitLayoutSection({
   showCta = false,
   ctaText,
   ctaHref,
+  onCtaClick,
+  isContentExpanded = false,
   showKeywords = false,
   keywords = [],
   titleInPanel = false,
@@ -62,6 +66,33 @@ export function SplitLayoutSection({
   className,
 }: SplitLayoutSectionProps) {
   const isImageLeft = imagePosition === "left";
+  const [isMobile, setIsMobile] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationClass, setAnimationClass] = useState("");
+
+  const handleContentToggle = useCallback(() => {
+    if (isAnimating || !onCtaClick) return;
+    
+    setIsAnimating(true);
+    const newAnimationClass = isContentExpanded ? "content-collapse" : "content-expand";
+    setAnimationClass(newAnimationClass);
+    
+    onCtaClick();
+    
+    // Reset animation state after completion
+    const duration = isContentExpanded ? 1200 : 1400; // Match CSS durations
+    setTimeout(() => {
+      setIsAnimating(false);
+      setAnimationClass("");
+    }, duration);
+  }, [isAnimating, onCtaClick, isContentExpanded]);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <section
@@ -85,7 +116,7 @@ export function SplitLayoutSection({
               alt={imageAlt}
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover transition-all duration-700 hover:scale-105"
+              className="object-cover transition-all duration-700"
             />
           </div>
 
@@ -158,14 +189,27 @@ export function SplitLayoutSection({
                     )}
 
                     {typeof content === "string" ? (
-                      <div
-                        className="leading-relaxed"
+                      <div 
+                        className={cn(
+                          "leading-relaxed transition-all",
+                          onCtaClick && isContentExpanded 
+                            ? "md:overflow-y-auto md:custom-scrollbar md:max-h-[40vh]"
+                            : "overflow-hidden",
+                          animationClass,
+                          onCtaClick ? "smooth-height-transition" : ""
+                        )}
                         style={{
-                          color:
-                            panelColor === "mission" ? "#f7f7f7" : "#000000",
+                          color: panelColor === "mission" ? "#f7f7f7" : "#000000",
                           fontFamily: "'Noto Sans Hebrew', sans-serif",
-                                                      fontSize: "clamp(1rem, 2.4cqw, 1.3rem)",
-                          lineHeight: 1.6
+                          fontSize: "clamp(1rem, 2.4cqw, 1.3rem)",
+                          lineHeight: 1.6,
+                          scrollbarWidth: "thin",
+                          scrollbarColor: "#ba644d #f1ede5",
+                          paddingLeft: (onCtaClick && isContentExpanded) ? "8px" : "0",
+                          position: "relative",
+                          zIndex: 10,
+                          maxHeight: !onCtaClick ? "none" : 
+                                    isContentExpanded ? "40vh" : "300px",
                         }}
                       >
                         <div
@@ -194,49 +238,103 @@ export function SplitLayoutSection({
                     )}
                   </div>
                   {/* CTA - Positioned absolutely within the padded content area */}
-                  {showCta && ctaText && ctaHref && (
+                  {showCta && ctaText && (
                     <div
                       className="absolute bottom-[clamp(0.75rem,16cqw,56rem)] left-[clamp(0.75rem,20cqw,56rem)]"
                       dir="rtl"
                     >
-                      <Link href={ctaHref}>
-                        <div
-                          className="inline-flex items-center justify-center font-light transition-all duration-300 hover:opacity-80 px-2"
-                          style={{
-                            fontSize: "clamp(0.9rem, 2.5cqw, 1.3rem)",
-                            borderBottom:
-                              panelColor === "mission"
-                                ? "4px solid #cec2ab"
-                                : "4px solid #ba644d",
-                            color: panelColor === "mission" ? "#f7f7f7" : "black",
-                            fontFamily: "'Noto Sans Hebrew', sans-serif",
-                            fontWeight: "400",
-                            paddingBottom: "2px",
-                          }}
-                        >
-                          {ctaText}
-                          <svg
-                            className="mr-2 mt-1"
-                            width="12"
-                            height="12"
-                            viewBox="0 0 8 8"
-                            fill="none"
-                            style={{ 
-                              transform: panelColor === "mission" ? "rotate(90deg)" : "",
+                      {onCtaClick ? (
+                        <div className="flex flex-col items-center">
+                          <button
+                            onClick={handleContentToggle}
+                            disabled={isAnimating}
+                            className={cn(
+                              "inline-flex items-center justify-center transition-all duration-300 hover:opacity-80",
+                              isAnimating ? "cursor-wait opacity-70" : "cursor-pointer"
+                            )}
+                            style={{
+                              color: panelColor === "mission" ? "#f7f7f7" : "black",
+                              fontSize: "clamp(0.9rem, 2.5cqw, 1.3rem)",
+                              fontFamily: "'Noto Sans Hebrew', sans-serif",
+                              fontWeight: "400",
+                              background: "transparent",
+                              border: "none",
+                              padding: "0",
                             }}
                           >
-                            <path
-                              d="M4 1L4 6M4 6L2 4M4 6L6 4"
-                              stroke={
-                                panelColor === "mission" ? "#f7f7f7" : "black"
-                              }
-                              strokeWidth="1"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                            {ctaText}
+                            <svg
+                              className="mr-2 mt-1 transition-transform duration-700 ease-out"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 8 8"
+                              fill="none"
+                              style={{ 
+                                transform: isContentExpanded 
+                                  ? (panelColor === "mission" ? "rotate(-90deg)" : "rotate(180deg)")
+                                  : (panelColor === "mission" ? "rotate(90deg)" : ""),
+                              }}
+                            >
+                              <path
+                                d="M4 1L4 6M4 6L2 4M4 6L6 4"
+                                stroke={
+                                  panelColor === "mission" ? "#f7f7f7" : "black"
+                                }
+                                strokeWidth="1"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </button>
+                          {/* Underline */}
+                          <div
+                            className="h-1 transition-all duration-500 ease-in-out mt-1"
+                            style={{
+                              backgroundColor: panelColor === "mission" ? "#cec2ab" : "#ba644d",
+                              width: ctaText === "טקסט מקוצר" ? "2rem" : "6rem",
+                            }}
+                          />
                         </div>
-                      </Link>
+                      ) : ctaHref ? (
+                        <Link href={ctaHref}>
+                          <div
+                            className="inline-flex items-center justify-center font-light transition-all duration-300 hover:opacity-80 px-2"
+                            style={{
+                              fontSize: "clamp(0.9rem, 2.5cqw, 1.3rem)",
+                              borderBottom:
+                                panelColor === "mission"
+                                  ? "4px solid #cec2ab"
+                                  : "4px solid #ba644d",
+                              color: panelColor === "mission" ? "#f7f7f7" : "black",
+                              fontFamily: "'Noto Sans Hebrew', sans-serif",
+                              fontWeight: "400",
+                              paddingBottom: "2px",
+                            }}
+                          >
+                            {ctaText}
+                            <svg
+                              className="mr-2 mt-1"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 8 8"
+                              fill="none"
+                              style={{ 
+                                transform: panelColor === "mission" ? "rotate(90deg)" : "",
+                              }}
+                            >
+                              <path
+                                d="M4 1L4 6M4 6L2 4M4 6L6 4"
+                                stroke={
+                                  panelColor === "mission" ? "#f7f7f7" : "black"
+                                }
+                                strokeWidth="1"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+                        </Link>
+                      ) : null}
                     </div>
                   )}
                 </div>
