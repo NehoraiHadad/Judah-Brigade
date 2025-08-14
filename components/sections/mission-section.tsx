@@ -10,7 +10,7 @@ export function MissionSection() {
       title={CONTENT.MISSION.TITLE}
       subtitle={CONTENT.MISSION.SUBTITLE}
       content={CONTENT.MISSION.CONTENT}
-      imageSrc={CONTENT.MISSION.IMAGE}
+      imageSrc={CONTENT.MISSION.IMAGE || ""}
       imageAlt="חיילי חטיבת יהודה במהלך משימה"
       imagePosition="left"
       panelColor="mission"

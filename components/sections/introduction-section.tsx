@@ -17,8 +17,8 @@ export function IntroductionSection() {
       title={CONTENT.INTRODUCTION.TITLE}
       subtitle={CONTENT.INTRODUCTION.SUBTITLE}
       showDash={true}
-      content={isExpanded ? CONTENT.INTRODUCTION.FULL_CONTENT : CONTENT.INTRODUCTION.CONTENT}
-      imageSrc={CONTENT.INTRODUCTION.IMAGE}
+      content={isExpanded ? (CONTENT.INTRODUCTION.FULL_CONTENT || CONTENT.INTRODUCTION.CONTENT) : CONTENT.INTRODUCTION.CONTENT}
+      imageSrc={CONTENT.INTRODUCTION.IMAGE || ""}
       imageAlt="חייל חטיבת יהודה במהלך פעילות"
       imagePosition="right"
       panelColor="teal"
