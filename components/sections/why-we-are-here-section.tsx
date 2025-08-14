@@ -32,14 +32,14 @@ function WhyWeAreHereCard({ card, index, isVisible }: WhyWeAreHereCardProps) {
     >
       
       {/* Content */}
-      <div className={`relative z-10 ${card.id === 'we-are-here' ? 'p-8 sm:p-4' : 'p-12 pt-12 lg:p-14 xl:p-18 lg:pt-20 xl:pt-30'} h-full flex flex-col ${card.id === 'we-are-here' ? 'justify-center' : 'justify-start'} text-center`}>
+      <div className={`relative z-10 ${card.id === 'we-are-here' ? 'p-8 sm:p-4' : 'p-4 pt-6 lg:p-14 xl:p-18 lg:pt-20 xl:pt-30'} h-full flex flex-col ${card.id === 'we-are-here' ? 'justify-center' : 'justify-start'} text-center`}>
         <div>
           <p 
             className={`${card.id === 'we-are-here' ? 'font-bold' : ''} ${card.textColor}`}
             style={{
               fontSize: card.id === 'we-are-here' 
                 ? 'clamp(1.5rem, 3vw, 2rem)' 
-                : 'clamp(1.2rem, 1.5vw, 1.5rem)'
+                : 'clamp(0.65rem, 1.5vw, 1.5rem)'
             }}
             dangerouslySetInnerHTML={{
               __html: card.content.replace(/אנחנו כאן/g, '<strong>אנחנו כאן</strong>')
@@ -98,7 +98,7 @@ export function WhyWeAreHereSection() {
           {/* Grid of Reason Cards */}
           <div
             ref={gridRef}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-0"
           >
             {CONTENT.WHY_WE_ARE_HERE.CARDS.map((card: any, index: number) => (
               <WhyWeAreHereCard
