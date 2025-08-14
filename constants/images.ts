@@ -42,78 +42,13 @@ export const CAROUSEL_IMAGES = [
   "/images/historical-sites/susya-archaeological-site.webp",
 ] as const
 
-// ===== TIMELINE IMAGES =====
-// Historical timeline images in chronological order
-export const TIMELINE_IMAGES = {
-  ABRAHAM: "/images/timeline/timeline-01-abraham.webp",
-  CALEB: "/images/timeline/timeline-02-caleb.webp",
-  DAVID: "/images/timeline/timeline-03-david.webp",
-  SECOND_TEMPLE: "/images/timeline/timeline-04-second-temple.webp",
-  BAR_KOKHBA: "/images/timeline/timeline-05-bar-kokhba.webp",
-  MISHNAH: "/images/timeline/timeline-06-mishnah.webp",
-  MUSLIM: "/images/timeline/timeline-07-muslim.webp",
-  CRUSADER: "/images/timeline/timeline-08-crusader.webp",
-  MAMLUK: "/images/timeline/timeline-09-mamluk.webp",
-  OTTOMAN: "/images/timeline/timeline-10-ottoman.webp",
-  PRE_STATE: "/images/timeline/timeline-11-pre-state.webp",
-  EARLY_STATE: "/images/timeline/timeline-12-early-state.webp",
-  SIX_DAY_WAR: "/images/timeline/timeline-13-six-day-war.webp",
-  WHY_WE_ARE_HERE: "/images/timeline/timeline-14-why-are-we-here.webp",
-  SUMMARY: "/images/timeline/timeline-15-summary.webp",
-} as const
-
-// ===== TIMELINE ORDERED ARRAY =====
-// For easy iteration in timeline components
-export const TIMELINE_IMAGES_ARRAY = [
-  TIMELINE_IMAGES.ABRAHAM,
-  TIMELINE_IMAGES.CALEB,
-  TIMELINE_IMAGES.DAVID,
-  TIMELINE_IMAGES.SECOND_TEMPLE,
-  TIMELINE_IMAGES.BAR_KOKHBA,
-  TIMELINE_IMAGES.MISHNAH,
-  TIMELINE_IMAGES.MUSLIM,
-  TIMELINE_IMAGES.CRUSADER,
-  TIMELINE_IMAGES.MAMLUK,
-  TIMELINE_IMAGES.OTTOMAN,
-  TIMELINE_IMAGES.PRE_STATE,
-  TIMELINE_IMAGES.EARLY_STATE,
-  TIMELINE_IMAGES.SIX_DAY_WAR,
-  TIMELINE_IMAGES.WHY_WE_ARE_HERE,
-  TIMELINE_IMAGES.SUMMARY,
-] as const
 
 // ===== SPECIALIZED COLLECTIONS =====
 
-// Cave of Machpelah images
-export const CAVE_IMAGES = [
-  "/images/cave-of-machpelah/cave-of-machpelah-1.webp",
-  "/images/cave-of-machpelah/cave-of-machpelah-2.webp",
-] as const
-
-// Yatir Forest images
-export const YATIR_IMAGES = [
-  "/images/yatir-forest/yatir-spring.webp",
-  "/images/yatir-forest/yatir-autumn.webp",
-] as const
-
-// Aerial views
-export const AERIAL_IMAGES = [
-  "/images/aerial-views/dji-aerial-landscape.webp",
-  "/images/aerial-views/mitzpe-yair-viewpoint.webp",
-  "/images/aerial-views/yatir-reservoir-aerial.webp",
-] as const
-
-// Desert landscapes
-export const DESERT_IMAGES = [
-  "/images/desert-landscapes/desert-camels-landscape.webp",
-  "/images/desert-landscapes/sunset-shamea.webp",
-] as const
-
-// Brigade activities
+// Brigade activities (only used images)
 export const BRIGADE_IMAGES = [
   "/images/brigade-activities/commander-brigade - Edited.webp",
   "/images/brigade-activities/memory-circle-V2.webp",
-  "/images/brigade-activities/nahal-shafan-tzalim-meeting.webp",
 ] as const
 
 // New WhatsApp images (converted to WebP)
@@ -152,4 +87,3 @@ export const WALL_IMAGES = [
 // ===== TYPE EXPORTS FOR BETTER TYPE SAFETY =====
 export type HeroImage = typeof HERO_CAROUSEL_IMAGES[number]
 export type CarouselImage = typeof CAROUSEL_IMAGES[number]
-export type TimelineImage = typeof TIMELINE_IMAGES_ARRAY[number]

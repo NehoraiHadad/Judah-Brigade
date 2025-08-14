@@ -1,10 +1,8 @@
-const CACHE_NAME = 'be-shvil-yehoda-v2';
+const CACHE_NAME = 'be-shvil-yehoda-v3';
 const STATIC_ASSETS = [
   '/images/judah-brigade-logo-new.webp',
   '/images/hero/hero-cave-machpelah-1.webp',
   '/images/hero/hero-cave-machpelah-2.webp',
-  '/images/hero/hero-carmel-settlement.webp',
-  '/images/hero/hero-yatir-spring.webp',
   '/images/brigade-activities/memory-circle-V2.webp',
 ];
 
