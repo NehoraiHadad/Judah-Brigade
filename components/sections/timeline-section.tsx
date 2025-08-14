@@ -60,16 +60,20 @@ export function TimelineSection() {
       const visibleCardIndices = Array.from({ length: visibleItems }, (_, i) => currentIndex + i)
         .filter(index => index < displayItems.length);
       
+      console.log('Timeline animation: currentIndex=', currentIndex, 'visibleItems=', visibleItems, 'visibleCardIndices=', visibleCardIndices);
+      
       if (visibleCardIndices.length > 0) {
         const randomIndex = visibleCardIndices[Math.floor(Math.random() * visibleCardIndices.length)];
+        console.log('Timeline animation: selected card index=', randomIndex);
         setAnimatingCardIndex(randomIndex);
         
-        // Clear animation after 400ms
+        // Clear animation after 800ms (increased for more visibility)
         setTimeout(() => {
           setAnimatingCardIndex(null);
-        }, 400);
+          console.log('Timeline animation: cleared');
+        }, 800);
       }
-    }, 5000);
+    }, 3000); // Reduced to 3 seconds for testing
 
     return () => clearInterval(interval);
   }, [currentIndex, visibleItems, displayItems.length]);
@@ -219,10 +223,13 @@ export function TimelineSection() {
                     {/* Card */}
                     <div className="mb-6 px-2 sm:px-4" onClick={() => openModal(item)}>
                       <div
-                        className={`relative shadow-md overflow-hidden cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out w-full mx-auto ${
-                          animatingCardIndex === index ? 'animate-bounce' : ''
-                        }`}
-                        style={{ backgroundColor: "#ba644d" }}
+                        className="relative shadow-md overflow-hidden cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out w-full mx-auto"
+                        style={{
+                          backgroundColor: "#ba644d",
+                          transform: animatingCardIndex === index ? 'scale(1.1)' : 'scale(1)',
+                          boxShadow: animatingCardIndex === index ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : undefined,
+                          transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out'
+                        }}
                       >
                         <div className="h-36 sm:h-44 lg:h-56 relative">
                           <Image
