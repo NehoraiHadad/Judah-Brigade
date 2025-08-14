@@ -78,7 +78,7 @@ export function LinksSection() {
 
         {/* Enhanced Icons Grid - Mobile Optimized */}
         <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12 lg:gap-16 max-w-4xl mx-auto">
-          {CONTENT.LINKS_SECTION.LINKS.map((link, index) => {
+          {CONTENT.LINKS_SECTION.LINKS.map((link: any, index: number) => {
             const IconComponent = getIconComponent(link.text)
             const iconColor = getIconColor(link.text)
             

@@ -100,7 +100,7 @@ export function WhyWeAreHereSection() {
             ref={gridRef}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0"
           >
-            {CONTENT.WHY_WE_ARE_HERE.CARDS.map((card, index) => (
+            {CONTENT.WHY_WE_ARE_HERE.CARDS.map((card: any, index: number) => (
               <WhyWeAreHereCard
                 key={card.id}
                 card={card}

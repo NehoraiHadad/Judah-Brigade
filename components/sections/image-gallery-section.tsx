@@ -9,7 +9,7 @@ export function ImageGallerySection() {
   return (
     <section className="w-full">
       <div className="grid grid-cols-2 md:grid-cols-4 w-full">
-        {IMAGES.map((image, index) => (
+        {IMAGES.map((image: any, index: number) => (
           <div key={index} className="relative aspect-square">
             <Image
               src={image.src}

@@ -10,6 +10,24 @@ export function PakalSection() {
   //   linksSection?.scrollIntoView({ behavior: 'smooth' })
   // }
 
+  // Map each sub-region to its corresponding PDF file
+  const pdfFiles = [
+    'city-sector-pakal.pdf',
+    'hebron-envelope-pakal.pdf',
+    'judah-fortresses-pakal.pdf',
+    'otniel-sector-pakal.pdf'
+  ];
+
+  const handlePdfDownload = (index: number) => {
+    const pdfUrl = `/pdf/${pdfFiles[index]}`;
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = pdfFiles[index];
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <section
       id="pakal"
@@ -109,16 +127,17 @@ export function PakalSection() {
               style={{ gap: "clamp(0.5rem, 2vw, 2rem)" }}
             >
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 justify-items-stretch w-full max-w-4xl">
-                {CONTENT.PAKAL.SUB_REGIONS.map((region, index) => (
+                {CONTENT.PAKAL.SUB_REGIONS.map((region: any, index: number) => (
                   <button
                     key={index}
-                    className="group bg-[#ba644d] hover:bg-[#a55a44] text-white hover:text-white shadow-lg hover:shadow-2xl transition-all duration-300 border border-[#ba644d] hover:border-[#a55a44] backdrop-blur-sm font-bold font-['Noto_Sans_Hebrew']"
+                    className="group bg-[#ba644d] hover:bg-[#a55a44] text-white hover:text-white shadow-lg hover:shadow-2xl transition-all duration-300 border border-[#ba644d] hover:border-[#a55a44] backdrop-blur-sm font-bold font-['Noto_Sans_Hebrew'] cursor-pointer"
                     style={{
                       padding:
                         "clamp(0.5rem, 1.2vw, 1.2rem) clamp(0.25rem, 1vw, 1rem)",
                       fontSize: "clamp(0.75rem, 1.2vw, 1.3rem)",
                       lineHeight: "1.2",
                     }}
+                    onClick={() => handlePdfDownload(index)}
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.backgroundColor = "#a55a44")
                     }
