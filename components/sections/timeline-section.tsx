@@ -17,6 +17,7 @@ export function TimelineSection() {
   const [touchEnd, setTouchEnd] = useState(0);
   const [slideWidth, setSlideWidth] = useState(350);
   const [visibleItems, setVisibleItems] = useState(1);
+  const [animatingCardIndex, setAnimatingCardIndex] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   // Handle responsive slide width
@@ -51,6 +52,27 @@ export function TimelineSection() {
 
     return () => clearInterval(interval);
   }, [displayItems.length, maxIndex]);
+
+  // Random card pulse animation every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Choose a random visible card index
+      const visibleCardIndices = Array.from({ length: visibleItems }, (_, i) => currentIndex + i)
+        .filter(index => index < displayItems.length);
+      
+      if (visibleCardIndices.length > 0) {
+        const randomIndex = visibleCardIndices[Math.floor(Math.random() * visibleCardIndices.length)];
+        setAnimatingCardIndex(randomIndex);
+        
+        // Clear animation after 400ms
+        setTimeout(() => {
+          setAnimatingCardIndex(null);
+        }, 400);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [currentIndex, visibleItems, displayItems.length]);
 
   // Navigation functions
   const goToPrevious = () => {
@@ -197,7 +219,9 @@ export function TimelineSection() {
                     {/* Card */}
                     <div className="mb-6 px-2 sm:px-4" onClick={() => openModal(item)}>
                       <div
-                        className="relative shadow-md overflow-hidden cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out w-full mx-auto"
+                        className={`relative shadow-md overflow-hidden cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out w-full mx-auto ${
+                          animatingCardIndex === index ? 'animate-bounce' : ''
+                        }`}
                         style={{ backgroundColor: "#ba644d" }}
                       >
                         <div className="h-36 sm:h-44 lg:h-56 relative">
