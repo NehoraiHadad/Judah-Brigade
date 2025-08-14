@@ -16,10 +16,10 @@ import { getBlurPlaceholder } from "@/lib/blur-placeholder"
 export function AboutSection() {
   const { currentIndex, next, prev, goTo, swipeHandlers } = useCarousel(CAROUSEL_IMAGES.length)
   const { displayText, isExpanded, hasMore, toggleExpanded } = useReadMore(
-    CONTENT.ABOUT.SECTOR_CHARACTERISTICS.CONTENT,
+    CONTENT.ABOUT.SECTOR_CHARACTERISTICS.FULL_CONTENT,
     { 
-      truncateAt: "בחברון פועל גדוד העיר, האמון על ביטחון העיר חברון וסביבתה.",
-      mobiletruncateAt: "הווה מאתגר ואחריות לעתיד."
+      truncateAt: "מתוך שליחות להגן על תושבי האזור, לכונן ביטחון ולמנוע טרור בגזרת חברון.",
+      mobiletruncateAt: "מתוך שליחות להגן על תושבי האזור, לכונן ביטחון ולמנוע טרור בגזרת חברון."
     }
   )
 

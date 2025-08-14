@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { timelineData } from "@/data/timeline-data";
 import { WALL_IMAGES } from "@/constants/images";
@@ -11,32 +11,101 @@ export function TimelineSection() {
   const { selectedItem, isOpen, openModal, closeModal } = useTimelineModal();
   const displayItems = timelineData;
 
-  // Auto-scrolling timeline carousel state (starts with first 4 cards visible)
+  // Auto-scrolling timeline carousel state
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [slideWidth, setSlideWidth] = useState(350);
+  const [visibleItems, setVisibleItems] = useState(1);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Check screen size
+  // Handle responsive slide width
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsDesktop(window.innerWidth >= 640);
+    const updateSlideSettings = () => {
+      const width = window.innerWidth;
+      setSlideWidth(width < 640 ? width : 420);
+      // For desktop, show about 3-4 items, for mobile show 1
+      const itemsToShow = width < 640 ? 1 : Math.min(4, Math.floor(width / 420));
+      setVisibleItems(itemsToShow);
     };
 
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-
-    return () => window.removeEventListener("resize", checkScreenSize);
+    updateSlideSettings();
+    window.addEventListener('resize', updateSlideSettings);
+    return () => window.removeEventListener('resize', updateSlideSettings);
   }, []);
 
-  // Auto-advance carousel every 4 seconds - slide one card at a time (left to right)
+  // Calculate max index - stop when last item is fully visible
+  const maxIndex = Math.max(0, displayItems.length - visibleItems);
+
+  // Auto-advance carousel every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % displayItems.length);
+      setCurrentIndex((prev) => {
+        // If we're at max index, jump back to start
+        if (prev >= maxIndex) {
+          return 0;
+        }
+        return prev + 1;
+      });
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [displayItems.length]);
+  }, [displayItems.length, maxIndex]);
+
+  // Navigation functions
+  const goToPrevious = () => {
+    setCurrentIndex((prev) => {
+      if (prev === 0) {
+        return maxIndex;
+      }
+      return prev - 1;
+    });
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => {
+      if (prev >= maxIndex) {
+        return 0;
+      }
+      return prev + 1;
+    });
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goToNext(); // RTL: left arrow goes to next
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goToPrevious(); // RTL: right arrow goes to previous
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Mouse wheel navigation
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (!carouselRef.current?.contains(e.target as Node)) return;
+      
+      e.preventDefault();
+      if (e.deltaY > 0) {
+        goToNext();
+      } else if (e.deltaY < 0) {
+        goToPrevious();
+      }
+    };
+
+    const carousel = carouselRef.current;
+    if (carousel) {
+      carousel.addEventListener("wheel", handleWheel, { passive: false });
+      return () => carousel.removeEventListener("wheel", handleWheel);
+    }
+  }, []);
 
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -55,13 +124,12 @@ export function TimelineSection() {
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
 
+    // RTL: Swipe left goes to previous, swipe right goes to next
     if (isLeftSwipe) {
-      setCurrentIndex((prev) => (prev + 1) % displayItems.length);
+      goToPrevious();
     }
     if (isRightSwipe) {
-      setCurrentIndex(
-        (prev) => (prev - 1 + displayItems.length) % displayItems.length
-      );
+      goToNext();
     }
   };
 
@@ -69,7 +137,7 @@ export function TimelineSection() {
     <>
       <section
         id="timeline-section"
-        className="py-16 sm:py-20 lg:py-24 bg-white relative overflow-visible sm:overflow-hidden"
+        className="pt-16 pb-0 sm:pt-20 lg:pt-24 bg-white relative overflow-visible sm:overflow-hidden"
       >
         <div className="w-full">
           {/* Header Section */}
@@ -105,148 +173,173 @@ export function TimelineSection() {
             </div>
           </div>
 
-          {/* Unified Timeline View - Responsive */}
+          {/* Timeline Carousel */}
           <div className="relative w-full">
             <div
-              className="w-full overflow-hidden"
+              ref={carouselRef}
+              className="w-full overflow-hidden cursor-grab active:cursor-grabbing"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              {/* Timeline Container - Responsive */}
               <div
                 className="flex transition-transform duration-1000 ease-in-out"
-                style={
-                  isDesktop
-                    ? {
-                        transform: `translateX(${currentIndex * 350}px)`,
-                        width: `${displayItems.length * 350}px`,
-                      }
-                    : {
-                        transform: `translateX(${currentIndex * 100}vw)`,
-                        width: `${displayItems.length * 100}vw`,
-                      }
-                }
+                style={{
+                  transform: `translateX(${currentIndex * slideWidth}px)`,
+                  width: `${displayItems.length * slideWidth}px`,
+                }}
               >
                 {displayItems.map((item, index) => (
                   <div
                     key={item.id}
-                    className="flex-shrink-0 flex flex-col"
-                    style={isDesktop ? { width: "350px" } : { width: "100vw" }}
+                    className="flex-shrink-0 flex flex-col w-screen sm:w-[420px]"
                   >
                     {/* Card */}
-                    <div
-                      className={isDesktop ? "mb-6 px-4" : "mb-6 px-12"}
-                      onClick={() => openModal(item)}
-                    >
+                    <div className="mb-6 px-2 sm:px-4" onClick={() => openModal(item)}>
                       <div
-                        className={
-                          isDesktop
-                            ? "relative rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-                            : "relative rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow w-64 mx-auto"
-                        }
+                        className="relative shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow w-full mx-auto"
                         style={{ backgroundColor: "#ba644d" }}
                       >
-                        <div className={isDesktop ? "h-40 lg:h-48 relative" : "h-32 relative"}>
+                        <div className="h-36 sm:h-44 lg:h-56 relative">
                           <Image
-                            src={
-                              WALL_IMAGES[index % WALL_IMAGES.length] ||
-                              WALL_IMAGES[0]
-                            }
+                            src={WALL_IMAGES[index % WALL_IMAGES.length] || WALL_IMAGES[0]}
                             alt={item.title}
                             fill
-                            className="object-cover rounded-t-md"
-                            sizes={isDesktop ? "342px" : "256px"}
+                            className="object-cover"
+                            sizes="(max-width: 640px) 320px, 412px"
                           />
-                          <div className="absolute inset-0 bg-black/20 rounded-t-md" />
+                          <div className="absolute inset-0 bg-black/20" />
                         </div>
-                        <div
-                          className="p-4 text-center"
-                          style={{ backgroundColor: "#ba644d" }}
-                        >
-                          <h3
-                            className={
-                              isDesktop
-                                ? "text-base lg:text-lg font-bold text-white"
-                                : "text-base font-bold text-white"
-                            }
-                          >
+                        <div className="p-4 text-center" style={{ backgroundColor: "#ba644d" }}>
+                          <h3 className="text-base lg:text-3xl font-bold text-white">
                             {item.title}
                           </h3>
-                          {!isDesktop && (
-                            <p className="text-sm text-white/90 mt-1">{item.date}</p>
-                          )}
                         </div>
                       </div>
                     </div>
 
                     {/* Timeline Mark and Date */}
-                    <div
-                      className={
-                        isDesktop
-                          ? "flex flex-col items-center relative"
-                          : "flex flex-col items-center relative mb-8"
-                      }
-                    >
-                      {/* Main timeline line segment */}
+                    <div className="flex flex-col items-center relative mb-8 sm:mb-0">
                       <div
                         className="absolute top-0 left-0 right-0 h-0.5"
                         style={{ backgroundColor: "#e9e0d3" }}
                       />
-
-                      {/* Tick mark */}
+                      {/* Long timeline mark */}
                       <div
                         style={{
                           backgroundColor: "#e9e0d3",
-                          width: "3px",
-                          height: "20px",
+                          width: "2px", // אותו עובי כמו השנתות הקצרות
+                          height: "50px", // פי 2 מהשנתות הקצרות (25px * 2 = 50px)
                           marginTop: "-1px",
                           zIndex: 1,
                         }}
                       />
-
-                      {/* Year text */}
+                      {/* Multiple short timeline marks between periods */}
+                      {(
+                        <>
+                          {/* שנתות קצרות מחולקות באופן שווה בין השנתות הארוכות */}
+                          {Array.from({ length: 16 }, (_, markIndex) => (
+                            <div
+                              key={markIndex}
+                              className="absolute"
+                              style={{
+                                left: "50%",
+                                transform: `translateX(${26.25 * (markIndex + 1)}px)`, // חלוקה שווה של 420px ל-16 חלקים
+                                top: "-1px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  backgroundColor: "#e9e0d3",
+                                  width: "2px", // אותו עובי כמו השנתות הארוכות
+                                  height: "25px", // גובה אחיד לכל השנתות הקצרות
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </>
+                      )}
                       <div className="mt-2 text-center">
                         <div
-                          className={
-                            isDesktop
-                              ? "text-lg font-bold leading-tight"
-                              : "text-xl font-bold leading-tight"
-                          }
+                          className="text-2xl sm:text-xl lg:text-xl xl:text-2xl leading-tight"
                           style={{ color: "#d2c2a8" }}
                         >
-                          {item.date.includes("לפני הספירה") ? (
-                            <>
-                              <div>{item.date.replace(" לפני הספירה", "")}</div>
-                              <div
-                                className={isDesktop ? "text-sm" : "text-base"}
-                              >
-                                לפני הספירה
-                              </div>
-                            </>
-                          ) : (
-                            <div>{item.date}</div>
-                          )}
+                          {(() => {
+                            const dateText = item.date;
+                            
+                            // פיצול הטקסט לשתי שורות בהתאם לתוכן
+                            if (dateText.includes("לפני הספירה")) {
+                              const yearPart = dateText.replace(" לפני הספירה", "");
+                              return (
+                                <>
+                                  <div>{yearPart}</div>
+                                  <div>לפני הספירה</div>
+                                </>
+                              );
+                            } else if (dateText.includes("לספירה")) {
+                              const parts = dateText.split(" לספירה");
+                              return (
+                                <>
+                                  <div>{parts[0]}</div>
+                                  <div>לספירה</div>
+                                </>
+                              );
+                            } else if (dateText.includes("עד 70 לספירה")) {
+                              const parts = dateText.replace(" עד 70 לספירה", "");
+                              return (
+                                <>
+                                  <div>{parts}</div>
+                                  <div>עד 70 לספירה</div>
+                                </>
+                              );
+                            } else if (dateText.includes("המנדט הבריטי")) {
+                              const parts = dateText.replace(" המנדט הבריטי", "");
+                              return (
+                                <>
+                                  <div>{parts}</div>
+                                  <div>המנדט הבריטי</div>
+                                </>
+                              );
+                            } else if (dateText.includes("עד מלחמת ששת הימים")) {
+                              const parts = dateText.replace(" עד מלחמת ששת הימים", "");
+                              return (
+                                <>
+                                  <div>{parts}</div>
+                                  <div>עד מלחמת ששת הימים</div>
+                                </>
+                              );
+                            } else if (dateText.includes("עד היום")) {
+                              const parts = dateText.replace(" עד היום", "");
+                              return (
+                                <>
+                                  <div>{parts}</div>
+                                  <div>עד היום</div>
+                                </>
+                              );
+                            } else {
+                              // עבור תאריכים אחרים, ננסה לחלק באמצע
+                              const words = dateText.split(" ");
+                              if (words.length > 2) {
+                                const mid = Math.ceil(words.length / 2);
+                                const firstPart = words.slice(0, mid).join(" ");
+                                const secondPart = words.slice(mid).join(" ");
+                                return (
+                                  <>
+                                    <div>{firstPart}</div>
+                                    <div>{secondPart}</div>
+                                  </>
+                                );
+                              } else {
+                                return <div>{dateText}</div>;
+                              }
+                            }
+                          })()}
                         </div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-              
-              {/* Touch indicators - Mobile only */}
-              {!isDesktop && (
-                <div className="flex justify-center space-x-2 mt-6">
-                  {displayItems.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                        index === currentIndex ? 'bg-amber-600' : 'bg-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </div>

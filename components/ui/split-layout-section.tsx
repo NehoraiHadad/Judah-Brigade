@@ -74,18 +74,13 @@ export function SplitLayoutSection({
     if (isAnimating || !onCtaClick) return;
     
     setIsAnimating(true);
-    const newAnimationClass = isContentExpanded ? "content-collapse" : "content-expand";
-    setAnimationClass(newAnimationClass);
-    
     onCtaClick();
     
     // Reset animation state after completion
-    const duration = isContentExpanded ? 1200 : 1400; // Match CSS durations
     setTimeout(() => {
       setIsAnimating(false);
-      setAnimationClass("");
-    }, duration);
-  }, [isAnimating, onCtaClick, isContentExpanded]);
+    }, 1000);
+  }, [isAnimating, onCtaClick]);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -191,12 +186,15 @@ export function SplitLayoutSection({
                     {typeof content === "string" ? (
                       <div 
                         className={cn(
-                          "leading-relaxed transition-all",
-                          onCtaClick && isContentExpanded 
-                            ? "md:overflow-y-auto md:custom-scrollbar md:max-h-[40vh]"
-                            : "overflow-hidden",
-                          animationClass,
-                          onCtaClick ? "smooth-height-transition" : ""
+                          "leading-relaxed",
+                          onCtaClick ? [
+                            "transition-all duration-700 ease-in-out",
+                            isContentExpanded 
+                              ? isMobile 
+                                ? "max-h-[220vh] overflow-visible opacity-100" 
+                                : "max-h-[50vh] overflow-y-auto custom-scrollbar opacity-100"
+                              :  "max-h-[80vh] overflow-hidden opacity-95"
+                          ] : []
                         )}
                         style={{
                           color: panelColor === "mission" ? "#f7f7f7" : "#000000",
@@ -208,8 +206,6 @@ export function SplitLayoutSection({
                           paddingLeft: (onCtaClick && isContentExpanded) ? "8px" : "0",
                           position: "relative",
                           zIndex: 10,
-                          maxHeight: !onCtaClick ? "none" : 
-                                    isContentExpanded ? "40vh" : "300px",
                         }}
                       >
                         <div
@@ -264,7 +260,7 @@ export function SplitLayoutSection({
                           >
                             {ctaText}
                             <svg
-                              className="mr-2 mt-1 transition-transform duration-700 ease-out"
+                              className="mr-2 mt-1 transition-transform duration-1000 ease-out"
                               width="12"
                               height="12"
                               viewBox="0 0 8 8"

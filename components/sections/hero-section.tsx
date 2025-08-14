@@ -65,7 +65,7 @@ export function HeroSection() {
           <div className="flex justify-center" style={{ gap: 'clamp(0.5rem, 2vw, 2rem)' }}>
             {[
               { label: "המשימה\nשלנו", href: "#mission" },
-              { label: "על\nהגזרה", href: "#about" },
+              { label: "על\nהגזרה", href: "#area-of-operation" },
               { label: "המורשת\nשלנו", href: "#timeline-section" },
               { label: "דבר\nהמפקד", href: "#commander-message" },
             ].map((card) => (
