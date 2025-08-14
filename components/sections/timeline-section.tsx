@@ -197,7 +197,7 @@ export function TimelineSection() {
                     {/* Card */}
                     <div className="mb-6 px-2 sm:px-4" onClick={() => openModal(item)}>
                       <div
-                        className="relative shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow w-full mx-auto"
+                        className="relative shadow-md overflow-hidden cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out w-full mx-auto"
                         style={{ backgroundColor: "#ba644d" }}
                       >
                         <div className="h-36 sm:h-44 lg:h-56 relative">
@@ -210,8 +210,8 @@ export function TimelineSection() {
                           />
                           <div className="absolute inset-0 bg-black/20" />
                         </div>
-                        <div className="p-4 text-center" style={{ backgroundColor: "#ba644d" }}>
-                          <h3 className="text-base lg:text-3xl font-bold text-white">
+                        <div className="p-2 md:p-4 text-center" style={{ backgroundColor: "#ba644d" }}>
+                          <h3 className="text-2xl lg:text-3xl font-bold text-white">
                             {item.title}
                           </h3>
                         </div>
