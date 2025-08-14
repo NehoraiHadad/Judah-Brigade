@@ -55,7 +55,7 @@ function renderContent(content: string) {
       );
     }
 
-    // Check if this paragraph is the poem (starts with **"ועת נשוב)
+    // Check if this paragraph is the poem (starts with **"When we return)
     if (paragraph.includes('"ועת נשוב')) {
       // Remove the ** markers and format the poem
       const cleanPoem = paragraph

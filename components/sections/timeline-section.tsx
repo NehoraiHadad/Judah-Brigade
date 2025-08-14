@@ -228,8 +228,8 @@ export function TimelineSection() {
                       <div
                         style={{
                           backgroundColor: "#e9e0d3",
-                          width: "2px", // אותו עובי כמו השנתות הקצרות
-                          height: "50px", // פי 2 מהשנתות הקצרות (25px * 2 = 50px)
+                          width: "2px", // Same thickness as short marks
+                          height: "50px", // 2x the height of short marks (25px * 2 = 50px)
                           marginTop: "-1px",
                           zIndex: 1,
                         }}
@@ -237,22 +237,22 @@ export function TimelineSection() {
                       {/* Multiple short timeline marks between periods */}
                       {(
                         <>
-                          {/* שנתות קצרות מחולקות באופן שווה בין השנתות הארוכות */}
+                          {/* Short marks evenly distributed between long marks */}
                           {Array.from({ length: 16 }, (_, markIndex) => (
                             <div
                               key={markIndex}
                               className="absolute"
                               style={{
                                 left: "50%",
-                                transform: `translateX(${(slideWidth / 17) * (markIndex + 1)}px)`, // חלוקה ל-17 חלקים כדי שיהיו 16 שנתות קצרות בין השנתות הארוכות
+                                transform: `translateX(${(slideWidth / 17) * (markIndex + 1)}px)`, // Divide into 17 parts to have 16 short marks between long marks
                                 top: "-1px",
                               }}
                             >
                               <div
                                 style={{
                                   backgroundColor: "#e9e0d3",
-                                  width: "2px", // אותו עובי כמו השנתות הארוכות
-                                  height: "25px", // גובה אחיד לכל השנתות הקצרות
+                                  width: "2px", // Same thickness as long marks
+                                  height: "25px", // Uniform height for all short marks
                                 }}
                               />
                             </div>
@@ -267,7 +267,7 @@ export function TimelineSection() {
                           {(() => {
                             const dateText = item.date;
                             
-                            // פיצול הטקסט לשתי שורות בהתאם לתוכן
+                            // Split text into two lines based on content
                             if (dateText.includes("לפני הספירה")) {
                               const yearPart = dateText.replace(" לפני הספירה", "");
                               return (
@@ -317,7 +317,7 @@ export function TimelineSection() {
                                 </>
                               );
                             } else {
-                              // עבור תאריכים אחרים, ננסה לחלק באמצע
+                              // For other dates, try to split in the middle
                               const words = dateText.split(" ");
                               if (words.length > 2) {
                                 const mid = Math.ceil(words.length / 2);
