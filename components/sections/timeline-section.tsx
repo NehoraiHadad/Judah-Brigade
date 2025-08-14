@@ -244,7 +244,7 @@ export function TimelineSection() {
                               className="absolute"
                               style={{
                                 left: "50%",
-                                transform: `translateX(${26.25 * (markIndex + 1)}px)`, // חלוקה שווה של 420px ל-16 חלקים
+                                transform: `translateX(${(slideWidth / 16) * (markIndex + 1)}px)`, // חלוקה שווה מותאמת לרוחב המסך
                                 top: "-1px",
                               }}
                             >
