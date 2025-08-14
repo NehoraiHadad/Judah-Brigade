@@ -2,8 +2,8 @@
 
 import Image from "next/image"
 import { X } from "lucide-react"
-import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog"
-import { IMAGES } from "@/constants"
+import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog"
+import { WALL_IMAGES } from "@/constants"
 import type { TimelineItem } from "@/types/timeline"
 
 interface TimelineModalProps {
@@ -15,54 +15,56 @@ interface TimelineModalProps {
 export function TimelineModal({ item, isOpen, onClose }: TimelineModalProps) {
   if (!item) return null
 
+  // Use background image from WALL_IMAGES based on item ID
+  const backgroundImage = WALL_IMAGES[(item.id - 1) % WALL_IMAGES.length]
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white relative">
-        {/* Header with logo, title and close button */}
-        <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Image 
-              src={IMAGES.LOGO}
-              alt="לוגו חטיבת יהודה"
-              width={60}
-              height={60}
-              className="object-contain"
-            />
-            <h2 className="text-2xl font-bold">{item.title}</h2>
-          </div>
-          <DialogClose className="hover:opacity-70 transition-opacity">
-            <X className="h-7 w-7" />
-          </DialogClose>
+      <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[95vh] sm:max-h-[90vh] p-0 overflow-hidden z-50" style={{ backgroundColor: "#ffffff" }} overlayClassName="bg-[#878a87]">
+        <DialogTitle className="sr-only">{item.title}</DialogTitle>
+        
+        {/* Close button positioned at top right */}
+        <DialogClose className="absolute top-4 left-4 z-10 bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors">
+          <X className="h-6 w-6 text-white" />
+        </DialogClose>
+        
+        {/* Short title at the top */}
+        <div className="absolute top-2 sm:top-6 left-1/2 transform -translate-x-1/2 z-10">
+          <h3 className="text-lg sm:text-2xl font-bold px-2 sm:px-4 py-1 sm:py-2 rounded" style={{ color: "#ffffff" }}>
+            {item.title}
+          </h3>
         </div>
         
-        {/* Image section - larger and more prominent */}
-        <div className="relative h-[500px] w-full">
+        {/* Image section */}
+        <div className="relative h-[250px] sm:h-[400px] w-full">
           <Image
-            src={item.image}
+            src={backgroundImage}
             alt={item.title}
             fill
             className="object-cover"
             priority
-            sizes="(max-width: 768px) 100vw, 1024px"
+            sizes="100vw"
           />
         </div>
         
-        {/* Content section with white background and simple styling */}
-        <div className="p-8 relative bg-white">
-          <div className="text-right">
-            <h3 className="text-2xl font-bold text-orange-600 mb-3">{item.title}</h3>
-            <p className="text-lg text-orange-500 font-medium mb-6">{item.date}</p>
-            
-            <p className="text-base text-gray-700 leading-relaxed">
-              {item.content}
-            </p>
-          </div>
+        {/* Content section with header */}
+        <div className="p-3 pt-0 sm:p-6 text-center overflow-y-auto max-h-[250px] sm:max-h-[300px]" style={{ backgroundColor: "#ffffff" }}>
+          {/* Full title above date */}
+          <h2 className="text-base sm:text-xl font-bold" style={{ color: "#ba644d" }}>
+            {item.fullTitle}
+          </h2>
           
-          {/* Red circle with text - positioned like in the image */}
-          <div className="absolute bottom-6 right-6 w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold text-center leading-tight shadow-lg">
-            לפרטים
+          {/* Date in brown color */}
+          <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-4" style={{ color: "#ba644d" }}>
+            {item.date}
+          </h3>
+          
+          {/* Content text */}
+          <div className="text-xs sm:text-sm leading-relaxed whitespace-pre-line text-black">
+            {item.content}
           </div>
         </div>
+        
       </DialogContent>
     </Dialog>
   )
