@@ -26,19 +26,9 @@ export const HERO_CAROUSEL_IMAGES = [
 // ===== ABOUT SECTION CAROUSEL =====
 // Brigade activities and sector landscapes
 export const CAROUSEL_IMAGES = [
-  "/images/cave-of-machpelah/cave-of-machpelah-1.webp",
-  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04.webp",
-  "/images/yatir-forest/yatir-spring.webp",
-  "/images/brigade-activities/nahal-shafan-tzalim-meeting.webp",
   "/images/Soldiers/Soldier1.webp",
-  "/images/aerial-views/yatir-reservoir-aerial.webp",
   "/images/yatir-forest/yatir-autumn.webp",
-  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04 (2).webp",
   "/images/aerial-views/mitzpe-yair-viewpoint.webp",
-  "/images/desert-landscapes/desert-camels-landscape.webp",
-  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.05.webp",
-  "/images/desert-landscapes/sunset-shamea.webp",
-  "/images/aerial-views/dji-aerial-landscape.webp",
   "/images/historical-sites/susya-archaeological-site.webp",
 ] as const
 
@@ -51,13 +41,6 @@ export const BRIGADE_IMAGES = [
   "/images/brigade-activities/memory-circle-V2.webp",
 ] as const
 
-// New WhatsApp images (converted to WebP)
-export const NEW_IMAGES = [
-  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04.webp",
-  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04 (1).webp",
-  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.04 (2).webp",
-  "/images/new-images/WhatsApp Image 2025-06-25 at 15.08.05.webp",
-] as const
 
 // Historical sites
 export const HISTORICAL_IMAGES = [
