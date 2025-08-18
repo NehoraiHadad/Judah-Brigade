@@ -4,6 +4,22 @@ import { Globe } from "lucide-react"
 import { GradientDivider } from "@/components/ui/gradient-divider"
 import { CONTENT } from "@/data"
 
+// Custom CSS animations for better UX
+const pulseAnimation = `
+@keyframes gentle-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-gentle-pulse {
+  animation: gentle-pulse 2s ease-in-out infinite;
+}
+`
+
 // Static SVG icons instead of simple-icons library for better performance
 const InstagramIcon = ({ className = "h-12 w-12" }) => (
   <svg role="img" viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -39,45 +55,51 @@ const getIconComponent = (text: string) => {
   return Globe
 }
 
-// Color schemes for different platforms
+// Color schemes for different platforms with glow effects
 const getIconColor = (text: string) => {
   const lowerText = text.toLowerCase()
   if (lowerText.includes('אינסטגרם') || lowerText.includes('instagram')) {
-    return 'text-pink-500 hover:text-pink-600'
+    return 'text-pink-500 hover:text-pink-600 hover:drop-shadow-[0_0_8px_rgba(236,72,153,0.6)]'
   }
   if (lowerText.includes('וואטסאפ') || lowerText.includes('whatsapp')) {
-    return 'text-green-500 hover:text-green-600'
+    return 'text-green-500 hover:text-green-600 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]'
   }
   if (lowerText.includes('יוטיוב') || lowerText.includes('youtube')) {
-    return 'text-red-500 hover:text-red-600'
+    return 'text-red-500 hover:text-red-600 hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]'
   }
   // Default teal for website
-  return 'text-teal-500 hover:text-teal-600'
+  return 'text-teal-500 hover:text-teal-600 hover:drop-shadow-[0_0_8px_rgba(20,184,166,0.6)]'
 }
 
 export function LinksSection() {
   return (
-    <section id="links" className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-amber-50 via-white to-teal-50 relative overflow-hidden">
+    <>
+      {/* Inject CSS animations */}
+      <style jsx>{pulseAnimation}</style>
+      
+      <section id="links" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-amber-50 via-white to-teal-50 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-10 right-10 w-32 h-32 bg-teal-600 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 left-20 w-24 h-24 bg-amber-500 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
-        <div className="text-center mb-12 sm:mb-16 animate-fade-in-up">
-          {/* <SectionTitle className="text-teal-800 mb-6">{CONTENT.LINKS_SECTION.TITLE}</SectionTitle> */}
-          <p className="text-xl sm:text-2xl lg:text-3xl text-teal-600 font-medium mb-8 max-w-4xl mx-auto leading-relaxed">
-            {CONTENT.LINKS_SECTION.SUBTITLE}
-          </p>
-          <GradientDivider size="lg" variant="accent" className="mb-8" />
-          <p className="text-lg sm:text-xl lg:text-2xl text-amber-700 font-bold max-w-3xl mx-auto">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl relative z-10">
+        {/* Title Section */}
+        <div className="text-center mb-8 sm:mb-12 animate-fade-in-up">
+          <h2 className="mb-0 text-center font-['Suez_One'] text-[#ba644d] text-4xl  lg:text-6xl">
+            {CONTENT.LINKS_SECTION.TITLE}
+          </h2>
+        </div>
+
+        <div className="text-center mb-8 sm:mb-12 animate-fade-in-up">
+          <p className="text-base sm:text-lg lg:text-xl text-[#0f2d38] font-bold max-w-3xl mx-auto">
             {CONTENT.LINKS_SECTION.ACTION_TEXT}
           </p>
         </div>
 
-        {/* Enhanced Icons Grid - Mobile Optimized */}
-        <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12 lg:gap-16 max-w-4xl mx-auto">
+        {/* Enhanced Icons Grid - Single Row Layout */}
+        <div className="flex justify-center items-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 max-w-4xl mx-auto overflow-x-auto pb-2">
           {CONTENT.LINKS_SECTION.LINKS.map((link: any, index: number) => {
             const IconComponent = getIconComponent(link.text)
             const iconColor = getIconColor(link.text)
@@ -85,7 +107,7 @@ export function LinksSection() {
             return (
               <div
                 key={index}
-                className="group animate-fade-in-up"
+                className="group animate-fade-in-up flex-shrink-0"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <a
@@ -95,13 +117,14 @@ export function LinksSection() {
                   className="block p-3 sm:p-4 md:p-5 rounded-full hover:bg-white/30 transition-all duration-300 transform hover:scale-110"
                   title={link.text}
                 >
-                  <IconComponent className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 ${iconColor} transition-all duration-300`} />
+                  <IconComponent className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 lg:h-20 lg:w-20 ${iconColor} transition-all duration-300 animate-gentle-pulse`} />
                 </a>
               </div>
             )
           })}
         </div>
         </div>
-    </section>
+      </section>
+    </>
   )
 } 
