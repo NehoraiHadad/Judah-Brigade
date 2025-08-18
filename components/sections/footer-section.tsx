@@ -36,7 +36,7 @@ export function FooterSection() {
 
             {/* Contact Section */}
             <div className="text-center md:text-center animate-fade-in-up delay-300">
-              <h4 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-amber-200">
+              <h4 className="text-lg sm:text-xl font-bold m-4 sm:mb-6 text-amber-200">
                 {CONTENT.FOOTER.CONTACT_TITLE}
               </h4>
               <div className="flex flex-col sm:flex-row items-center md:items-start gap-4 sm:gap-8">

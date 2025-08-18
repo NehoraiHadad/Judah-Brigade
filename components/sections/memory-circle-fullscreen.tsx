@@ -47,8 +47,8 @@ export function MemoryCircleFullscreen() {
           className="text-white/90 max-w-md text-right leading-normal"
           style={{ fontSize: "clamp(0.6rem, 1.8vw, 2.2rem)" }}
         >
-          זיכרון האבות והאמהות שלנו, זיכרון הלוחמים שנפלו בדרך, זיכרון המורשת
-          הגדולה שאנחנו נושאים עמנו בכל צעד וצעד.
+          זיכרון המסע שעברנו, זיכרון הלוחמים שנפלו בדרך, זיכרון המורשת
+          הגדולה שאנחנו נושאים עמנו בכל צעד וצעד. (טקסט זמני)
         </p>
       </div>
 

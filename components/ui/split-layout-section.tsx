@@ -192,7 +192,7 @@ export function SplitLayoutSection({
                             isContentExpanded 
                               ? isMobile 
                                 ? "max-h-[220vh] overflow-visible opacity-100" 
-                                : "max-h-[50vh] overflow-y-auto custom-scrollbar opacity-100"
+                                : "max-h-[45vh] overflow-y-auto custom-scrollbar opacity-100"
                               :  "max-h-[80vh] overflow-hidden opacity-95"
                           ] : []
                         )}
