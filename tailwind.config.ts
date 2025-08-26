@@ -65,6 +65,7 @@ const config: Config = {
         "slide-up": "slideUp 0.6s ease-out",
         "gentle-float": "gentleFloat 3s ease-in-out infinite",
         "pulse-glow": "pulseGlow 2s ease-in-out infinite",
+        "blink": "blink 4s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -80,8 +81,12 @@ const config: Config = {
           "50%": { transform: "translateY(-10px)" },
         },
         pulseGlow: {
-          "0%, 100%": { boxShadow: "0 0 5px rgba(251, 191, 36, 0.4)" },
+          "0%, 100%": { boxShadow: "0 0 10px rgba(251, 191, 36, 0.5), 0 0 20px rgba(251, 191, 36, 0.3)" },
           "50%": { boxShadow: "0 0 20px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.4)" },
+        },
+        blink: {
+          "0%, 50%": { opacity: "1" },
+          "25%, 75%": { opacity: "0.3" },
         },
       },
     },

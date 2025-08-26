@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { ImagePreviewModal } from "@/components/ui/image-preview-modal";
 import { IMAGES } from "@/constants";
+import { Eye } from "lucide-react";
 
 export function MemoryCircleFullscreen() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,12 +28,17 @@ export function MemoryCircleFullscreen() {
         />
       </div>
 
-      {/* Clickable area - positioned over specific part of image */}
+      {/* Clickable area with eye icon indicator */}
       <div
         className="absolute left-[15%] top-[20%] w-[32%] h-[60%] cursor-pointer z-20 transition-colors duration-300 rounded-lg"
         onClick={() => setIsModalOpen(true)}
         title="לחץ לצפיה במעגל הזיכרון המלא"
-      />
+      >
+        {/* Eye icon - responsive size and positioning */}
+        <div className="absolute top-6 right-8 md:top-25 md:right-40 bg-black/60 text-white p-2 md:p-6 rounded-full shadow-lg animate-pulse">
+          <Eye className="w-4 h-4 md:w-10 md:h-10" />
+        </div>
+      </div>
 
       {/* Content */}
       <div className="absolute right-[10%] md:right-[15%] top-[20%] md:top-[25%] z-10 text-right max-w-[40%]">
