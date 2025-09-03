@@ -1,101 +1,100 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { CONTENT } from "@/data"
+import { useImageGalleryCarousel } from "@/hooks/use-image-gallery-carousel"
 
 export function ImageGallerySection() {
   const { IMAGES } = CONTENT.IMAGE_GALLERY
-  const [currentStartIndex, setCurrentStartIndex] = useState(0)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const carouselRef = useRef<HTMLDivElement>(null)
   
-  const IMAGES_PER_SLIDE = 4
-  const totalSlides = Math.ceil(IMAGES.length / IMAGES_PER_SLIDE)
+  const {
+    currentIndex,
+    slideWidth,
+    carouselRef,
+    IMAGES_PER_SLIDE,
+    MOVE_BY,
+    isMobile
+  } = useImageGalleryCarousel({
+    imagesLength: IMAGES.length,
+    autoAdvanceInterval: 4000
+  })
 
-  const nextSlide = () => {
-    if (isTransitioning) return
-    
-    // Step 1: Start fade out
-    setIsTransitioning(true)
-    
-    // Step 2: Change images after fade out completes
-    setTimeout(() => {
-      setCurrentStartIndex((prev) => (prev + 1) % IMAGES.length)
-    }, 500) // Wait for fade out
-    
-    // Step 3: Start fade in
-    setTimeout(() => {
-      setIsTransitioning(false)
-    }, 600) // Small delay after image change
-  }
-
-  // Auto-play functionality
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide()
-    }, 4000) // Change slide every 4 seconds
-
-    return () => clearInterval(interval)
-  }, [isTransitioning])
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-        e.preventDefault()
-        nextSlide()
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
-
-  // Mouse wheel navigation
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      if (!carouselRef.current?.contains(e.target as Node)) return
-      
-      e.preventDefault()
-      nextSlide()
-    }
-
-    const carousel = carouselRef.current
-    if (carousel) {
-      carousel.addEventListener("wheel", handleWheel, { passive: false })
-      return () => carousel.removeEventListener("wheel", handleWheel)
-    }
-  }, [])
-
-  const getCurrentImages = () => {
-    const currentImages = []
-    for (let i = 0; i < IMAGES_PER_SLIDE; i++) {
-      const imageIndex = (currentStartIndex + i) % IMAGES.length
-      currentImages.push(IMAGES[imageIndex])
-    }
-    return currentImages
-  }
+  // Calculate transform based on device type
+  const imageWidth = slideWidth / IMAGES_PER_SLIDE  // Desktop: width of single image
+  const transformValue = isMobile 
+    ? (currentIndex / 2) * slideWidth  // Mobile: move by half screens (currentIndex is in steps of 2)
+    : currentIndex * imageWidth        // Desktop: move by single image width
+  
+  console.log('Gallery Debug:', { 
+    currentIndex, 
+    slideWidth,
+    imageWidth,
+    transformValue,
+    imagesLength: IMAGES.length,
+    isMobile,
+    MOVE_BY
+  })
 
   return (
-    <section className="w-full" ref={carouselRef}>
-      <div className="grid grid-cols-2 md:grid-cols-4 w-full">
-        {getCurrentImages().map((image: any, index: number) => (
-          <div key={index} className="relative aspect-square overflow-hidden">
-            <Image
-              src={image.src}
-              alt={image.alt}
-              fill
-              className={`object-cover transition-opacity duration-500 ease-in-out ${
-                isTransitioning ? "opacity-0" : "opacity-100"
-              }`}
-              sizes="(max-width: 768px) 50vw, 25vw"
-              priority={index < 2}
-            />
-          </div>
-        ))}
+    <section className="w-full overflow-hidden" ref={carouselRef}>
+      <div className={`w-full ${isMobile ? 'aspect-square' : 'aspect-[4/1]'}`}>
+        {/* Sliding container */}
+        <div
+          className="flex transition-transform duration-1000 ease-in-out h-full"
+          style={{
+            transform: `translateX(${transformValue}px)`,
+            width: `${isMobile ? Math.floor(IMAGES.length / 4) * slideWidth : IMAGES.length * imageWidth}px`,
+          }}
+        >
+          {isMobile ? (
+            // Mobile: Create 2x2 grids
+            // Note: We exclude incomplete slides (less than 4 images) to prevent white space
+            // in the last slide. This ensures a better visual experience where each slide
+            // shows a complete 2x2 grid instead of having orphaned images with empty spaces.
+            Array.from({ length: Math.floor(IMAGES.length / 4) }).map((_, slideIndex) => (
+              <div
+                key={slideIndex}
+                className="grid grid-cols-2 grid-rows-2 gap-0 flex-shrink-0"
+                style={{ width: `${slideWidth}px`, height: '100%' }}
+              >
+                {IMAGES.slice(slideIndex * 4, slideIndex * 4 + 4).map((image: any, index: number) => (
+                  <div
+                    key={image.src}
+                    className="relative aspect-square overflow-hidden"
+                  >
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className="object-cover"
+                      sizes="50vw"
+                      priority={slideIndex === 0 && index < 4}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))
+          ) : (
+            // Desktop: Single row
+            IMAGES.map((image: any, index: number) => (
+              <div
+                key={image.src}
+                className="relative aspect-square overflow-hidden flex-shrink-0"
+                style={{ width: `${imageWidth}px` }}
+              >
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="object-cover"
+                  sizes="25vw"
+                  priority={index < IMAGES_PER_SLIDE}
+                />
+              </div>
+            ))
+          )}
+        </div>
       </div>
-      
     </section>
   )
 }
