@@ -22,7 +22,7 @@ export function ImageGallerySection() {
   // Calculate transform based on device type
   const imageWidth = slideWidth / IMAGES_PER_SLIDE  // Desktop: width of single image
   const transformValue = isMobile 
-    ? (currentIndex / 2) * slideWidth  // Mobile: move by half screens (currentIndex is in steps of 2)
+    ? currentIndex * slideWidth        // Mobile: currentIndex 0,1,2... move by full slide width
     : currentIndex * imageWidth        // Desktop: move by single image width
   
   console.log('Gallery Debug:', { 

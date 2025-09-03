@@ -34,11 +34,13 @@ export function useImageGalleryCarousel({
   // Responsive images per slide: mobile shows 2x2 (4 images), moves by 2
   // Desktop shows 4x1 (4 images), moves by 1
   const IMAGES_PER_SLIDE = 4; // How many images visible at once
-  const MOVE_BY = isMobile ? 2 : 1; // How many images to move per step
+  const MOVE_BY = isMobile ? 1 : 1; // Mobile: move by 1 slide, Desktop: move by 1 image
   // For mobile: only show complete 2x2 grids, so max slides = floor(imagesLength / 4)
   // For desktop: show all images with normal sliding behavior
   const totalSlides = isMobile ? Math.floor(imagesLength / 4) : Math.ceil(imagesLength / IMAGES_PER_SLIDE);
-  const maxIndex = Math.max(0, (totalSlides - 1) * MOVE_BY); // Last possible starting position
+  const maxIndex = isMobile 
+    ? Math.max(0, totalSlides - 1) // Mobile: slide indices (0, 1, ...)
+    : Math.max(0, imagesLength - IMAGES_PER_SLIDE); // Desktop: last starting position to show all images
 
   // Auto-advance carousel - move by MOVE_BY images
   useEffect(() => {
@@ -72,7 +74,7 @@ export function useImageGalleryCarousel({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [goToNext, goToPrevious]);
 
   // Mouse wheel navigation
   useEffect(() => {
@@ -92,7 +94,7 @@ export function useImageGalleryCarousel({
       carousel.addEventListener("wheel", handleWheel, { passive: false });
       return () => carousel.removeEventListener("wheel", handleWheel);
     }
-  }, []);
+  }, [goToNext, goToPrevious]);
 
   return {
     currentIndex,
