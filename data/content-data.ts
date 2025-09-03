@@ -258,15 +258,15 @@ FULL_CONTENT: `בלב חבל הארץ בו נכתבה ונכתבת ההיסטו�
         title: "לוחמי צה\"ל",
         content: "אנחנו כאן כי בימי פעולות התגמול יצאו לוחמי צה\"ל בפעולות נועזות אל הרי חברון שמעבר לגבול, כדי להבהיר לאויב שדם יהודי אינו הפקר ועל הבית מגינים בכל מחיר.",
         bgColor: " bg-[#BA644D]",
-        textColor: "text-white",
-        backgroundImage: "/images/Soldiers/Soldier1.webp"
+        textColor: "text-white"
       },
       {
         id: "jerusalem-brigade",
         title: "השיבה הירושלמית",
         content: "אנחנו כאן כי החטיבה הירושלמית בתשכ\"ז המשיכה את מסעה מן הכותל המערבי אל עבר מערת המכפלה, קברי האבות ושיפולי ההר הדרומיים.",
         bgColor: "bg-[#222E35]",
-        textColor: "text-white"
+        textColor: "text-white",
+        backgroundImage: "/images/Soldiers/Soldier1.webp"
       },
       {
         id: "judean-trails",
