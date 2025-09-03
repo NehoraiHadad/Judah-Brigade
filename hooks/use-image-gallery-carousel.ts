@@ -39,7 +39,7 @@ export function useImageGalleryCarousel({
   // For desktop: show all images with normal sliding behavior
   const totalSlides = isMobile ? Math.floor(imagesLength / 4) : Math.ceil(imagesLength / IMAGES_PER_SLIDE);
   const maxIndex = isMobile 
-    ? Math.max(0, totalSlides - 1) // Mobile: slide indices (0, 1, ...)
+    ? Math.max(0, totalSlides) // Mobile: can move one more position with half-screen steps (0, 1, 2)
     : Math.max(0, imagesLength - IMAGES_PER_SLIDE); // Desktop: last starting position to show all images
 
   // Auto-advance carousel - move by MOVE_BY images
