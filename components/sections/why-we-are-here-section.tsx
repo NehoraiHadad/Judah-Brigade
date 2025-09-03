@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { CONTENT } from "@/data";
+import Image from "next/image";
 
 interface ReasonCard {
   id: string;
@@ -9,6 +10,7 @@ interface ReasonCard {
   content: string;
   bgColor: string;
   textColor: string;
+  backgroundImage?: string;
 }
 
 interface WhyWeAreHereCardProps {
@@ -30,16 +32,31 @@ function WhyWeAreHereCard({ card, index, isVisible }: WhyWeAreHereCardProps) {
         aspectRatio: '1'
       }}
     >
+      {/* Background Image */}
+      {card.backgroundImage && (
+        <div className="absolute inset-0">
+          <Image
+            src={card.backgroundImage}
+            alt={card.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
+          />
+          {/* Overlay for text readability */}
+          <div className={`absolute inset-0 ${card.bgColor} opacity-70`} />
+        </div>
+      )}
       
       {/* Content */}
       <div className={`relative z-10 ${card.id === 'we-are-here' ? 'p-8 sm:p-4' : 'p-4 pt-6 lg:p-14 lg:pt-17 xl:p-15 xl:pt-23'} h-full flex flex-col ${card.id === 'we-are-here' ? 'justify-center' : 'justify-start'} text-center`}>
         <div>
           <p 
-            className={`${card.id === 'we-are-here' ? 'font-bold' : ''} ${card.textColor}`}
+            className={`${card.id === 'we-are-here' ? 'font-bold' : ''} ${card.textColor} ${card.backgroundImage ? 'drop-shadow-lg' : ''}`}
             style={{
               fontSize: card.id === 'we-are-here' 
                 ? 'clamp(1.5rem, 3vw, 2rem)' 
-                : 'clamp(0.65rem, 1.2vw, 1.5rem)'
+                : 'clamp(0.65rem, 1.2vw, 1.5rem)',
+              textShadow: card.backgroundImage ? '1px 1px 2px rgba(0,0,0,0.8)' : 'none'
             }}
             dangerouslySetInnerHTML={{
               __html: card.content.replace(/אנחנו כאן/g, '<strong>אנחנו כאן</strong>')

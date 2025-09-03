@@ -113,6 +113,36 @@ FULL_CONTENT: `בלב חבל הארץ בו נכתבה ונכתבת ההיסטו�
         title: "יער יתיר",
         description: "תמונת גלישת עננים"
       },
+      {
+        src: "/images/hero/hero-cave-machpelah-1.webp",
+        alt: "מערת המכפלה",
+        title: "מערת המכפלה",
+        description: "קברי האבות בחברון"
+      },
+      {
+        src: "/images/hero/hero-cave-machpelah-2.webp",
+        alt: "מערת המכפלה",
+        title: "מערת המכפלה",
+        description: "קברי האבות בחברון"
+      },
+      {
+        src: "/images/Soldiers/Soldier3.webp",
+        alt: "לוחמי החטיבה",
+        title: "לוחמי החטיבה",
+        description: "בפעילות מבצעית"
+      },
+      {
+        src: "/images/Soldiers/Soldier4.webp",
+        alt: "לוחמי החטיבה",
+        title: "לוחמי החטיבה",
+        description: "בפעילות מבצעית"
+      },
+      {
+        src: "/images/aerial-views/mitzpe-yair-viewpoint.webp",
+        alt: "מצפה יאיר",
+        title: "מצפה יאיר",
+        description: "נוף הרי יהודה"
+      }
     ]
   },
   PAKAL: {
@@ -168,7 +198,8 @@ FULL_CONTENT: `בלב חבל הארץ בו נכתבה ונכתבת ההיסטו�
         title: "אברהם אבינו",
         content: "אנחנו כאן בגלל אברהם, העברי הראשון, שנטה כאן את אהלו, ושם פעמיו מבאר שבע אל העקדה בהר המוריה דרך הרי חברון.",
         bgColor: "bg-[#2D4E69]",
-        textColor: "text-white"
+        textColor: "text-white",
+        backgroundImage: "/images/hero/hero-cave-machpelah-1.webp"
       },
       {
         id: "caleb",
@@ -189,14 +220,16 @@ FULL_CONTENT: `בלב חבל הארץ בו נכתבה ונכתבת ההיסטו�
         title: "דוד המלך",
         content: "אנחנו כאן כי פה דוד, בין עדרי הצאן של ספר המדבר, בבורחו מפני שאול, למד מהי מנהיגות. אנחנו כאן כי בחברון נוסדה מלכות בית דוד. אנחנו כאן כי לכאן שבו 'שבי ציון' אחרי גלות בבל.",
         bgColor: "bg-[#222e35]",
-        textColor: "text-white"
+        textColor: "text-white",
+        backgroundImage: "/images/yatir-forest/yatir-autumn.webp"
       },
       {
         id: "herod-legacy",
         title: "מורשת הורדוס",
         content: "אנחנו כאן, במקום בו הורדוס הקים לדורות את ההנצחה לקברי האבות. הבנין היחיד בעולם העומד בשלמותו כבר אלפיים שנה.",
         bgColor: "bg-[#222E35]",
-        textColor: "text-white"
+        textColor: "text-white",
+        backgroundImage: "/images/historical-sites/susya-archaeological-site.webp"
       },
       {
         id: "synagogues",
@@ -210,7 +243,8 @@ FULL_CONTENT: `בלב חבל הארץ בו נכתבה ונכתבת ההיסטו�
         title: "אגרות ממרד בר כוכבא",
         content: "אנחנו כאן כי פליטי מרד בר כוכבא, לפני שמצאו את קיצם במערות, הספיקו להשאיר מכתבים ואיגרות חתומות: \"בשנת שלוש לגאולת ישראל על ידי שמעון בן כוסבא נשיא ישראל\".",
         bgColor: "bg-[#5D625E]",
-        textColor: "text-white"
+        textColor: "text-white",
+        backgroundImage: "/images/Soldiers/Soldier4.webp"
       },
       {
         id: "second-temple",
@@ -224,7 +258,8 @@ FULL_CONTENT: `בלב חבל הארץ בו נכתבה ונכתבת ההיסטו�
         title: "לוחמי צה\"ל",
         content: "אנחנו כאן כי בימי פעולות התגמול יצאו לוחמי צה\"ל בפעולות נועזות אל הרי חברון שמעבר לגבול, כדי להבהיר לאויב שדם יהודי אינו הפקר ועל הבית מגינים בכל מחיר.",
         bgColor: " bg-[#BA644D]",
-        textColor: "text-white"
+        textColor: "text-white",
+        backgroundImage: "/images/Soldiers/Soldier1.webp"
       },
       {
         id: "jerusalem-brigade",
@@ -238,7 +273,8 @@ FULL_CONTENT: `בלב חבל הארץ בו נכתבה ונכתבת ההיסטו�
         title: "שבילי יהודה",
         content: "אנחנו כאן כי אלה הן נקודות הציון המפוארות של עם ישראל הפוסע כיום בשבילי יהודה ומקשיב לשבילים המספרים מדוע...",
         bgColor: "bg-[#D2C2A8]",
-        textColor: "text-white"
+        textColor: "text-white",
+        backgroundImage: "/images/hero/hero-cave-machpelah-2.webp"
       },
       {
         id: "we-are-here",

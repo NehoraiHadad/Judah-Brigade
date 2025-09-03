@@ -236,7 +236,7 @@ export function SplitLayoutSection({
                   {/* CTA - Positioned absolutely within the padded content area */}
                   {showCta && ctaText && (
                     <div
-                      className="absolute bottom-[clamp(0.75rem,16cqw,56rem)] left-[clamp(0.75rem,20cqw,56rem)]"
+                      className="absolute bottom-[clamp(0.75rem,18cqw,74rem)] left-[clamp(0.75rem,20cqw,56rem)]"
                       dir="rtl"
                     >
                       {onCtaClick ? (
@@ -245,8 +245,7 @@ export function SplitLayoutSection({
                             onClick={handleContentToggle}
                             disabled={isAnimating}
                             className={cn(
-                              "inline-flex items-center justify-center transition-all duration-300 hover:opacity-80",
-                              isAnimating ? "cursor-wait opacity-70" : "cursor-pointer"
+                              "inline-flex items-center justify-center transition-all duration-300 hover:opacity-80 cursor-pointer"
                             )}
                             style={{
                               color: panelColor === "mission" ? "#f7f7f7" : "black",
