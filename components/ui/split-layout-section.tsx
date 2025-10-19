@@ -102,7 +102,7 @@ export function SplitLayoutSection({
           {/* Image */}
           <div
             className={cn(
-              `relative w-full ${aspectClass} animate-fade-in-up delay-200`,
+              `relative w-full min-h-[400px] lg:${aspectClass} animate-fade-in-up delay-200`,
               isImageLeft ? "lg:order-1" : "lg:order-2"
             )}
           >
@@ -118,7 +118,7 @@ export function SplitLayoutSection({
           {/* Content Panel */}
           <div
             className={cn(
-              `relative w-full ${aspectClass} animate-fade-in-up delay-300 lg:delay-500`,
+              `relative w-full min-h-[400px] lg:${aspectClass} animate-fade-in-up delay-300 lg:delay-500`,
               isImageLeft ? "lg:order-2" : "lg:order-1"
             )}
           >
