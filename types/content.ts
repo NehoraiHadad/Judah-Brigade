@@ -1,6 +1,6 @@
 export interface ContentSection {
   TITLE: string
-  SUBTITLE: string
+  SUBTITLE?: string
   CONTENT: string
   FULL_CONTENT?: string
   IMAGE?: string
